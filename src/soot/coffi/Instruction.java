@@ -224,6 +224,24 @@ package soot.coffi;
       //s = (short)((int)(bc[index])<<8 + bc[index+1]);
       return s;
    }
+
+   /** Utility routines, used mostly by the parse routines of various
+    * Instruction subclasses;
+    * this method converts two bytes into an unsigned short.
+    * @param bc complete array of bytecode.
+    * @param index offset of data in bc.
+    * @return the short constructed from the two bytes.
+    * @see Instruction#parse
+    * @see Instruction#shortToBytes
+    */
+   public static int getUnsignedShort(byte bc[],int index) {
+      short bh,bl;
+      bh = (bc[index]); bl = (bc[index+1]);
+      int s = ((bh<<8)&0xff00) | (bl&0xff);
+      //s = (short)((int)(bc[index])<<8 + bc[index+1]);
+      return s;
+   }
+
    /** Utility routines, used mostly by the parse routines of various
     * Instruction subclasses;
     * this method converts four bytes into an int.

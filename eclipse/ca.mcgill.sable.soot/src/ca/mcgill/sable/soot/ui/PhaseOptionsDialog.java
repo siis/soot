@@ -72,6 +72,8 @@ Composite Annotation_OptionsChild = Annotation_OptionsCreate(getPageContainer())
 
 Composite Miscellaneous_OptionsChild = Miscellaneous_OptionsCreate(getPageContainer());
 
+Composite Dex_Specific_OptionsChild = Dex_Specific_OptionsCreate(getPageContainer());
+
 Composite jbChild = jbCreate(getPageContainer());
 
 Composite jjChild = jjCreate(getPageContainer());
@@ -5217,6 +5219,26 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 			getConfig().put(getMiscellaneous_Optionssubtract_gc_widget().getAlias(), new Boolean(boolRes));
 		}
 		
+		boolRes = getDex_Specific_Optionsdex_mode_widget().getButton().getSelection();
+		
+		
+		defBoolRes = false;
+		
+
+		if (boolRes != defBoolRes) {
+			getConfig().put(getDex_Specific_Optionsdex_mode_widget().getAlias(), new Boolean(boolRes));
+		}
+		
+		boolRes = getDex_Specific_Optionssynchronous_only_widget().getButton().getSelection();
+		
+		
+		defBoolRes = false;
+		
+
+		if (boolRes != defBoolRes) {
+			getConfig().put(getDex_Specific_Optionssynchronous_only_widget().getAlias(), new Boolean(boolRes));
+		}
+		
 		
 		setSootMainClass(getSootMainClassWidget().getText().getText());			
 		return setSootMainProject(getSootMainProjectWidget().getText().getText());
@@ -6325,6 +6347,10 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 		SootOption Miscellaneous_Options_branch = new SootOption("Miscellaneous Options", "Miscellaneous_Options");
 		root.addChild(Miscellaneous_Options_branch);
 		parent = Miscellaneous_Options_branch;		
+		
+		SootOption Dex_Specific_Options_branch = new SootOption("Dex-Specific Options", "Dex_Specific_Options");
+		root.addChild(Dex_Specific_Options_branch);
+		parent = Dex_Specific_Options_branch;		
 		
 
 		addOtherBranches(root);
@@ -9815,6 +9841,26 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 	
 	public BooleanOptionWidget getMiscellaneous_Optionssubtract_gc_widget() {
 		return Miscellaneous_Optionssubtract_gc_widget;
+	}	
+	
+	private BooleanOptionWidget Dex_Specific_Optionsdex_mode_widget;
+	
+	private void setDex_Specific_Optionsdex_mode_widget(BooleanOptionWidget widget) {
+		Dex_Specific_Optionsdex_mode_widget = widget;
+	}
+	
+	public BooleanOptionWidget getDex_Specific_Optionsdex_mode_widget() {
+		return Dex_Specific_Optionsdex_mode_widget;
+	}	
+	
+	private BooleanOptionWidget Dex_Specific_Optionssynchronous_only_widget;
+	
+	private void setDex_Specific_Optionssynchronous_only_widget(BooleanOptionWidget widget) {
+		Dex_Specific_Optionssynchronous_only_widget = widget;
+	}
+	
+	public BooleanOptionWidget getDex_Specific_Optionssynchronous_only_widget() {
+		return Dex_Specific_Optionssynchronous_only_widget;
 	}	
 	
 
@@ -19707,6 +19753,68 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 
 		
 		return editGroupMiscellaneous_Options;
+	}
+
+
+
+	private Composite Dex_Specific_OptionsCreate(Composite parent) {
+		String defKey;
+		String defaultString;
+		boolean defaultBool = false;
+	    String defaultArray;
+       
+		Group editGroupDex_Specific_Options = new Group(parent, SWT.NONE);
+		GridLayout layout = new GridLayout();
+		editGroupDex_Specific_Options.setLayout(layout);
+	
+	 	editGroupDex_Specific_Options.setText("Dex-Specific Options");
+	 	
+		editGroupDex_Specific_Options.setData("id", "Dex_Specific_Options");
+		
+		String descDex_Specific_Options = "";	
+		if (descDex_Specific_Options.length() > 0) {
+			Label descLabelDex_Specific_Options = new Label(editGroupDex_Specific_Options, SWT.WRAP);
+			descLabelDex_Specific_Options.setText(descDex_Specific_Options);
+		}
+		OptionData [] data;	
+		
+		
+		
+		
+		defKey = ""+" "+""+" "+"dex-mode";
+		defKey = defKey.trim();
+
+		if (isInDefList(defKey)) {
+			defaultBool = getBoolDef(defKey);	
+		}
+		else {
+			
+			defaultBool = false;
+			
+		}
+
+		setDex_Specific_Optionsdex_mode_widget(new BooleanOptionWidget(editGroupDex_Specific_Options, SWT.NONE, new OptionData("Dex-Mode", "", "","dex-mode", "\nGenerate exceptional CFG in a way which represents the feasible \npaths when the application is executed in the Dalvik Virtual \nMachine. ", defaultBool)));
+		
+		
+		
+		defKey = ""+" "+""+" "+"synchronous-only";
+		defKey = defKey.trim();
+
+		if (isInDefList(defKey)) {
+			defaultBool = getBoolDef(defKey);	
+		}
+		else {
+			
+			defaultBool = false;
+			
+		}
+
+		setDex_Specific_Optionssynchronous_only_widget(new BooleanOptionWidget(editGroupDex_Specific_Options, SWT.NONE, new OptionData("Synchronous Exceptions Only", "", "","synchronous-only", "\nGenerate an exceptional CFG in a way which does not account for \npossible asynchronous exceptions (VM errors, etc.). ", defaultBool)));
+		
+		
+
+		
+		return editGroupDex_Specific_Options;
 	}
 
 

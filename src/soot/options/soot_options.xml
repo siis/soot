@@ -5966,4 +5966,23 @@ the reports of times required for transformations.
 </long_desc>
 		</boolopt>
 	</section>
+	<section>
+		<name>Dex-Specific Options</name>
+		<boolopt>
+			<name>Dex-Mode</name>
+			<alias>dex-mode</alias>
+			<short_desc>Exceptional CFG represents an Android application.</short_desc>
+			<long_desc>
+Generate exceptional CFG in a way which represents the feasible paths when the application is executed in the Dalvik Virtual Machine.
+</long_desc>
+		</boolopt>
+		<boolopt>
+			<name>Synchronous Exceptions Only</name>
+			<alias>synchronous-only</alias>
+			<short_desc>Only include synchronous exceptions.</short_desc>
+			<long_desc>
+Generate an exceptional CFG in a way which does not account for possible asynchronous exceptions (VM errors, etc.).
+</long_desc>
+		</boolopt>
+	</section>
 </options>

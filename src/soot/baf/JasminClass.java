@@ -171,9 +171,9 @@ public class JasminClass extends AbstractJasminClass
 
 		handlerUnits.add(trap.getHandlerUnit());
                 if(trap.getBeginUnit() != trap.getEndUnit()) {
-                    emit(".catch " + slashify(trap.getException().getName()) + " from " +
-                        unitToLabel.get(trap.getBeginUnit()) + " to " + unitToLabel.get(trap.getEndUnit()) +
-                        " using " + unitToLabel.get(trap.getHandlerUnit()));
+                    emit(".catch " + slashify(trap.getException().getName()) + " <from> " +
+                        unitToLabel.get(trap.getBeginUnit()) + " <to> " + unitToLabel.get(trap.getEndUnit()) +
+                        " <using> " + unitToLabel.get(trap.getHandlerUnit()));
 		}
             }
         }

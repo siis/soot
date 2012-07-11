@@ -698,7 +698,7 @@ public abstract class AbstractJasminClass
        }
        
        // Emit epilogue
-            emit(".end method");
+            emit(".end <method>");
 
 	    Iterator it =  method.getTags().iterator();
 	    while(it.hasNext()) {

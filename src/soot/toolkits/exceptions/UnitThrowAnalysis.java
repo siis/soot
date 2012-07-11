@@ -24,6 +24,7 @@ import soot.*;
 import soot.baf.*;
 import soot.jimple.*;
 import soot.grimp.*;
+import soot.options.Options;
 import soot.shimple.ShimpleValueSwitch;
 import soot.shimple.PhiExpr;
 
@@ -47,10 +48,10 @@ public class UnitThrowAnalysis extends AbstractThrowAnalysis {
 	protected final ThrowableSet.Manager mgr = ThrowableSet.Manager.v();
 	
     // Cache the response to mightThrowImplicitly():
-    private final ThrowableSet implicitThrowExceptions 
-	= ThrowableSet.Manager.v().VM_ERRORS
-	.add(ThrowableSet.Manager.v().NULL_POINTER_EXCEPTION)
-	.add(ThrowableSet.Manager.v().ILLEGAL_MONITOR_STATE_EXCEPTION);
+    private ThrowableSet implicitThrowExceptions = null;
+//	= ThrowableSet.Manager.v().VM_ERRORS
+//	.add(ThrowableSet.Manager.v().NULL_POINTER_EXCEPTION)
+//	.add(ThrowableSet.Manager.v().ILLEGAL_MONITOR_STATE_EXCEPTION);
 
     /**
      * Constructs a <code>UnitThrowAnalysis</code> for inclusion in 
@@ -59,7 +60,18 @@ public class UnitThrowAnalysis extends AbstractThrowAnalysis {
      * @param g guarantees that the constructor may only be called 
      * from {@link Singletons}.
      */
-    public UnitThrowAnalysis(Singletons.Global g) {}
+//    public UnitThrowAnalysis(Singletons.Global g) {}
+    public UnitThrowAnalysis(Singletons.Global g) {
+    	if (!Options.v().synchronous_only()) {
+    		implicitThrowExceptions
+	    		= ThrowableSet.Manager.v().VM_ERRORS
+	    		.add(ThrowableSet.Manager.v().NULL_POINTER_EXCEPTION)
+	    		.add(ThrowableSet.Manager.v().ILLEGAL_MONITOR_STATE_EXCEPTION);
+    	} else {
+    		implicitThrowExceptions
+    		= ThrowableSet.Manager.v().EMPTY;
+    	}
+    }
 
     /**
      * A protected constructor for use by unit tests.
@@ -131,18 +143,29 @@ public class UnitThrowAnalysis extends AbstractThrowAnalysis {
     protected class UnitSwitch implements InstSwitch, StmtSwitch {
 
 	// Asynchronous errors are always possible:
-	private ThrowableSet result = defaultResult();
+	private ThrowableSet result = null;// defaultResult();
 	
+	protected UnitSwitch() {
+ 		if (Options.v().synchronous_only())
+ 			result = mgr.EMPTY;
+ 		else
+ 			result = mgr.VM_ERRORS;
+ 	}
+
 	ThrowableSet getResult() {
 	    return result;
 	}
 
 	public void caseReturnVoidInst(ReturnVoidInst i) {
-	    result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
+//	    result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
+		if (!Options.v().dex_mode())
+			result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
 	}
 	    
 	public void caseReturnInst(ReturnInst i) {
-	    result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
+//	    result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
+		if (!Options.v().dex_mode())
+			result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
 	}
 
 	public void caseNopInst(NopInst i) {
@@ -454,10 +477,15 @@ public class UnitThrowAnalysis extends AbstractThrowAnalysis {
 	public void caseReturnStmt(ReturnStmt s) {
 //	    result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
 //	    result = result.add(mightThrow(s.getOp()));
+	    if (!Options.v().dex_mode())
+			result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
+	    result = result.add(mightThrow(s.getOp()));
 	}
 
 	public void caseReturnVoidStmt(ReturnVoidStmt s) {
 //	    result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
+	    if (!Options.v().dex_mode())
+			result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
 	}
 
 	public void caseTableSwitchStmt(TableSwitchStmt s) {
@@ -477,7 +505,14 @@ public class UnitThrowAnalysis extends AbstractThrowAnalysis {
     protected class ValueSwitch implements GrimpValueSwitch, ShimpleValueSwitch {
 
 	// Asynchronous errors are always possible:
-	private ThrowableSet result = defaultResult();
+	private ThrowableSet result = null;// defaultResult();
+
+	protected ValueSwitch() {
+		if (Options.v().synchronous_only())
+			result = mgr.EMPTY;
+		else
+			result = mgr.VM_ERRORS;
+	}
 
 	ThrowableSet getResult() {
 	    return result;

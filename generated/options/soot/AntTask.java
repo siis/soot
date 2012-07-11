@@ -467,6 +467,14 @@ public class AntTask extends MatchingTask {
             if(arg) addArg("-subtract-gc");
         }
   
+        public void setdex_mode(boolean arg) {
+            if(arg) addArg("-dex-mode");
+        }
+  
+        public void setsynchronous_only(boolean arg) {
+            if(arg) addArg("-synchronous-only");
+        }
+  
         public Object createp_jb() {
             Object ret = new PhaseOptjb();
             phaseopts.add(ret);

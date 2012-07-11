@@ -898,6 +898,16 @@ public class Options extends OptionsBase {
             )
                 subtract_gc = true;
   
+            else if( false 
+            || option.equals( "dex-mode" )
+            )
+                dex_mode = true;
+  
+            else if( false 
+            || option.equals( "synchronous-only" )
+            )
+                synchronous_only = true;
+  
             else {
                 G.v().out.println( "Invalid option -"+option );
                 return false;
@@ -1161,6 +1171,14 @@ public class Options extends OptionsBase {
     private boolean subtract_gc = false;
     public void set_subtract_gc( boolean setting ) { subtract_gc = setting; }
   
+    public boolean dex_mode() { return dex_mode; }
+    private boolean dex_mode = false;
+    public void set_dex_mode( boolean setting ) { dex_mode = setting; }
+  
+    public boolean synchronous_only() { return synchronous_only; }
+    private boolean synchronous_only = false;
+    public void set_synchronous_only( boolean setting ) { synchronous_only = setting; }
+  
 
     public String getUsage() {
         return ""
@@ -1260,7 +1278,11 @@ public class Options extends OptionsBase {
 +"\nMiscellaneous Options:\n"
       
 +padOpt(" -time", "Report time required for transformations" )
-+padOpt(" -subtract-gc", "Subtract gc from time" );
++padOpt(" -subtract-gc", "Subtract gc from time" )
++"\nDex-Specific Options:\n"
+      
++padOpt(" -dex-mode", "Exceptional CFG represents an Android application." )
++padOpt(" -synchronous-only", "Only include synchronous exceptions." );
     }
 
 
