@@ -18,6 +18,9 @@ polyglot.jar=libs/polyglot.jar
 ## Location of Jasmin classes jar file
 jasmin.jar=../jasmin/lib/jasminclasses-2.5.0.jar
 
+## Location of Java CUP jar file
+java_cup.jar=../jasmin/libs/java_cup.jar
+
 ## Location of Eclipse installation.
 ## This should have a directory called plugins in it.
 eclipse.loc=/usr/share/eclipse

@@ -293,7 +293,7 @@
             <zipfileset src="${release.loc}/sootclasses-${soot.version}.jar"/>
             <zipfileset src="${jasmin.jar}"/>
             <zipfileset src="${polyglot.jar}"/>
-            <zipfileset src="${javacup.jar}"/>
+            <zipfileset src="${java_cup.jar}"/>
         </jar>
 		<delete dir="META-INF"/>
     </target>
