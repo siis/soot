@@ -2,7 +2,7 @@ package soot.jimple.toolkits.ide;
 
 import heros.IDETabulationProblem;
 import heros.InterproceduralCFG;
-import heros.debugsupport.NewEdgeSerializer;
+//import heros.debugsupport.NewEdgeSerializer;
 import heros.solver.IDESolver;
 
 import java.io.FileNotFoundException;
@@ -66,9 +66,9 @@ public class JimpleIDESolver<D, V> extends IDESolver<Unit, D, SootMethod, V, Int
 		}
 	}
 	
-	@Override
-	protected NewEdgeSerializer<SootMethod, D, Unit, V> createEdgeListener(ObjectOutputStream oos) {
-		return new EdgeSerializer<D,V>(oos);
-	}
+//	@Override
+//	protected NewEdgeSerializer<SootMethod, D, Unit, V> createEdgeListener(ObjectOutputStream oos) {
+//		return new EdgeSerializer<D,V>(oos);
+//	}
 
 }
