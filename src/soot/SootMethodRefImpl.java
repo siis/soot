@@ -28,7 +28,6 @@ import soot.jimple.JimpleBody;
 import soot.jimple.NewExpr;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.StringConstant;
-import soot.jimple.VirtualInvokeExpr;
 import soot.options.Options;
 import soot.util.*;
 
@@ -123,7 +122,7 @@ class SootMethodRefImpl implements SootMethodRef {
                     "Looking in "+cl+" which has methods "+cl.getMethods()+"\n" );
             if( cl.declaresMethod( getSubSignature() ) )
                 return checkStatic(cl.getMethod( getSubSignature() ));
-            if(Scene.v().allowsPhantomRefs() && cl.isPhantom())
+            if(Scene.v().allowsPhantomRefs() && (cl.isPhantom() || Options.v().ignore_resolution_errors()))
             {
                 SootMethod m = new SootMethod(name, parameterTypes, returnType, isStatic()?Modifier.STATIC:0);
                 m.setPhantom(true);
@@ -153,7 +152,7 @@ class SootMethodRefImpl implements SootMethodRef {
         //we simply create the methods on the fly; the method body will throw an appropriate
         //error just in case the code *is* actually reached at runtime
         if(Options.v().allow_phantom_refs()) {
-        	SootMethod m = new SootMethod(name, parameterTypes, returnType);
+        	SootMethod m = new SootMethod(name, parameterTypes, returnType, isStatic()?Modifier.STATIC:0);
         	JimpleBody body = Jimple.v().newBody(m);
 			m.setActiveBody(body);
 			
@@ -177,7 +176,12 @@ class SootMethodRefImpl implements SootMethodRef {
 			declaringClass.addMethod(m);
 			return m; 
         } else if( trace == null ) {
-        	throw new ClassResolutionFailedException();
+        	ClassResolutionFailedException e = new ClassResolutionFailedException();
+        	if(Options.v().ignore_resolution_errors())
+        		G.v().out.println(e.getMessage());
+        	else
+        		throw e;
+
         }
         return null;
     }

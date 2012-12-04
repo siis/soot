@@ -58,15 +58,16 @@ public class Options extends OptionsBase {
     public static final int output_format_grimp = 8;
     public static final int output_format_X = 9;
     public static final int output_format_xml = 9;
-    public static final int output_format_n = 10;
-    public static final int output_format_none = 10;
-    public static final int output_format_jasmin = 11;
-    public static final int output_format_c = 12;
-    public static final int output_format_class = 12;
-    public static final int output_format_d = 13;
-    public static final int output_format_dava = 13;
-    public static final int output_format_t = 14;
-    public static final int output_format_template = 14;
+    public static final int output_format_dex = 10;
+    public static final int output_format_n = 11;
+    public static final int output_format_none = 11;
+    public static final int output_format_jasmin = 12;
+    public static final int output_format_c = 13;
+    public static final int output_format_class = 13;
+    public static final int output_format_d = 14;
+    public static final int output_format_dava = 14;
+    public static final int output_format_t = 15;
+    public static final int output_format_template = 15;
     public static final int throw_analysis_pedantic = 1;
     public static final int throw_analysis_unit = 2;
 
@@ -213,6 +214,40 @@ public class Options extends OptionsBase {
             || option.equals( "oaat" )
             )
                 oaat = true;
+  
+            else if( false
+            || option.equals( "android-jars" )
+            ) {
+                if( !hasMoreOptions() ) {
+                    G.v().out.println( "No value given for option -"+option );
+                    return false;
+                }
+                String value = nextOption();
+    
+                if( android_jars.length() == 0 )
+                    android_jars = value;
+                else {
+                    G.v().out.println( "Duplicate values "+android_jars+" and "+value+" for option -"+option );
+                    return false;
+                }
+            }
+  
+            else if( false
+            || option.equals( "force-android-jar" )
+            ) {
+                if( !hasMoreOptions() ) {
+                    G.v().out.println( "No value given for option -"+option );
+                    return false;
+                }
+                String value = nextOption();
+    
+                if( force_android_jar.length() == 0 )
+                    force_android_jar = value;
+                else {
+                    G.v().out.println( "Duplicate values "+force_android_jar+" and "+value+" for option -"+option );
+                    return false;
+                }
+            }
   
             else if( false 
             || option.equals( "ast-metrics" )
@@ -473,6 +508,17 @@ public class Options extends OptionsBase {
                 }
     
                 else if( false
+                || value.equals( "dex" )
+                ) {
+                    if( output_format != 0
+                    && output_format != output_format_dex ) {
+                        G.v().out.println( "Multiple values given for option "+option );
+                        return false;
+                    }
+                    output_format = output_format_dex;
+                }
+    
+                else if( false
                 || value.equals( "n" )
                 || value.equals( "none" )
                 ) {
@@ -728,6 +774,12 @@ public class Options extends OptionsBase {
                 pushOptions( "unit" );
                 pushOptions( "-throw-analysis" );
             }
+  
+            else if( false 
+            || option.equals( "ire" )
+            || option.equals( "ignore-resolution-errors" )
+            )
+                ignore_resolution_errors = true;
   
             else if( false
             || option.equals( "i" )
@@ -1007,6 +1059,12 @@ public class Options extends OptionsBase {
     private boolean oaat = false;
     public void set_oaat( boolean setting ) { oaat = setting; }
   
+    public String android_jars() { return android_jars; }
+    public void set_android_jars( String setting ) { android_jars = setting; }
+    private String android_jars = "";
+    public String force_android_jar() { return force_android_jar; }
+    public void set_force_android_jar( String setting ) { force_android_jar = setting; }
+    private String force_android_jar = "";
     public boolean ast_metrics() { return ast_metrics; }
     private boolean ast_metrics = false;
     public void set_ast_metrics( boolean setting ) { ast_metrics = setting; }
@@ -1102,7 +1160,7 @@ public class Options extends OptionsBase {
     public void set_via_shimple( boolean setting ) { via_shimple = setting; }
   
     public int throw_analysis() {
-        if( throw_analysis == 0 ) return throw_analysis_pedantic;
+        if( throw_analysis == 0 ) return throw_analysis_unit;
         return throw_analysis; 
     }
     public void set_throw_analysis( int setting ) { throw_analysis = setting; }
@@ -1110,6 +1168,10 @@ public class Options extends OptionsBase {
     public boolean omit_excepting_unit_edges() { return omit_excepting_unit_edges; }
     private boolean omit_excepting_unit_edges = false;
     public void set_omit_excepting_unit_edges( boolean setting ) { omit_excepting_unit_edges = setting; }
+  
+    public boolean ignore_resolution_errors() { return ignore_resolution_errors; }
+    private boolean ignore_resolution_errors = false;
+    public void set_ignore_resolution_errors( boolean setting ) { ignore_resolution_errors = setting; }
   
     public List include() { 
         if( include == null )
@@ -1204,6 +1266,8 @@ public class Options extends OptionsBase {
 +padOpt(" -pp -prepend-classpath", "Prepend the given soot classpath to the default classpath." )
 +padOpt(" -process-path DIR -process-dir DIR", "Process all classes found in DIR" )
 +padOpt(" -oaat", "From the process-dir, processes one class at a time." )
++padOpt(" -android-jars PATH", "Use PATH as the path for finding the android.jar file" )
++padOpt(" -force-android-jar PATH", "Force Soot to use PATH as the path for the android.jar file." )
 +padOpt(" -ast-metrics", "Compute AST Metrics if performing java to jimple" )
 +padOpt(" -src-prec FORMAT", "Sets source precedence to FORMAT files" )
 +padVal(" c class (default)", "Favour class files as Soot source" )
@@ -1230,6 +1294,7 @@ public class Options extends OptionsBase {
 +padVal(" G grimple", "Produce .grimple files" )
 +padVal(" g grimp", "Produce .grimp (abbreviated Grimp) files" )
 +padVal(" X xml", "Produce .xml Files" )
++padVal(" dex", "Produce Dalvik Virtual Machine files" )
 +padVal(" n none", "Produce no output" )
 +padVal(" jasmin", "Produce .jasmin files" )
 +padVal(" c class (default)", "Produce .class Files" )
@@ -1252,10 +1317,11 @@ public class Options extends OptionsBase {
 +padOpt(" -via-grimp", "Convert to bytecode via Grimp instead of via Baf" )
 +padOpt(" -via-shimple", "Enable Shimple SSA representation" )
 +padOpt(" -throw-analysis ARG", "" )
-+padVal(" pedantic (default)", "Pedantically conservative throw analysis" )
-+padVal(" unit", "Unit Throw Analysis" )
++padVal(" pedantic", "Pedantically conservative throw analysis" )
++padVal(" unit (default)", "Unit Throw Analysis" )
 +padOpt(" -omit-excepting-unit-edges", "Omit CFG edges to handlers from excepting units which lack side effects" )
 +padOpt(" -trim-cfgs", "Trim unrealizable exceptional edges from CFGs" )
++padOpt(" -ire -ignore-resolution-errors", "Does not throw an exception when a program references an undeclared field or method." )
 +"\nApplication Mode Options:\n"
       
 +padOpt(" -i PKG -include PKG", "Include classes in PKG as application classes" )

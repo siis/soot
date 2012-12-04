@@ -189,6 +189,16 @@ public class AntTask extends MatchingTask {
             if(arg) addArg("-oaat");
         }
   
+        public void setandroid_jars(String arg) {
+            addArg("-android-jars");
+            addArg(arg);
+        }
+  
+        public void setforce_android_jar(String arg) {
+            addArg("-force-android-jar");
+            addArg(arg);
+        }
+  
         public void setast_metrics(boolean arg) {
             if(arg) addArg("-ast-metrics");
         }
@@ -261,6 +271,7 @@ public class AntTask extends MatchingTask {
                 || arg.equals( "grimp" )
                 || arg.equals( "X" )
                 || arg.equals( "xml" )
+                || arg.equals( "dex" )
                 || arg.equals( "n" )
                 || arg.equals( "none" )
                 || arg.equals( "jasmin" )
@@ -365,6 +376,10 @@ public class AntTask extends MatchingTask {
   
         public void settrim_cfgs(boolean arg) {
             if(arg) addArg("-trim-cfgs");
+        }
+  
+        public void setignore_resolution_errors(boolean arg) {
+            if(arg) addArg("-ignore-resolution-errors");
         }
   
         public void setinclude(Path arg) {

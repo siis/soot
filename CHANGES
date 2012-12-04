@@ -1,3 +1,28 @@
+Improvements and API changes in HEAD
+
+1. Added support for Android. TODO Further comments...
+
+2. Changed default throw analysis from "pedantic" to "unit based". This
+   changes the default the assumptions that Soot makes about which
+   statements can throw what kinds of exceptions. "unit based" is more
+   optimistic than "pedantic" but should also be more realistic in
+   most settings. (see the documentation on command line options
+   for details)  
+   
+3. Added option -ire to ignore field and method resolution errors.
+   Missing methods and fields will unsoundly be ignored. 
+   
+4. Added option -oaat which will instruct Soot to process one class
+   at a time. Soot will load only one class at a time from the
+   -process-dir and then run the jtp pack over all bodies in that class.
+   This is repeated until all classes are processed. 
+
+5. Ben Bellamy modified the fast type assigner to handle variables that
+   during their lifetime both point to array and non-array typed objects.
+   This is necessary for dalvik-to-Jimple code generation.
+   
+6. Soot now requires Java 1.6 to build and run. 
+
 Improvements and API changes in version 2.5.0
 
 1. Modified SourceLocator so that it will automatically load a SootClass

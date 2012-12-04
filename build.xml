@@ -16,8 +16,8 @@
             debug="true"
 	    includeantruntime="true"
             deprecation="on"
-        	source="1.5"
-        	target="1.5"
+        	source="1.6"
+        	target="1.6"
         	fork="true"
         	memorymaximumsize="512m"
         >
@@ -29,7 +29,10 @@
         	<classpath>
         		<pathelement location="classes"/>
         		<pathelement location="${polyglot.jar}"/>
+           		<pathelement location="${xmlprinter.jar}"/>
            		<pathelement location="${jasmin.jar}"/>
+           		<pathelement location="${heros.jar}"/>
+           		<pathelement location="${axmlprinter2.jar}"/>
         	</classpath>
             <src path="src"/>
             <src path="generated/singletons"/>
@@ -51,19 +54,19 @@
 
     <target name="options" depends="settings">
         <xslt
-            style="src/soot/options/make-soot-options.xsl"
-            in="src/soot/options/soot_options.xml"
-            out="generated/options/soot/options/Options.java"
+            style="${basedir}/src/soot/options/make-soot-options.xsl"
+            in="${basedir}/src/soot/options/soot_options.xml"
+            out="${basedir}/generated/options/soot/options/Options.java"
         />
         <xslt
-            style="src/soot/options/ant-task.xsl"
-            in="src/soot/options/soot_options.xml"
-            out="generated/options/soot/AntTask.java"
+            style="${basedir}/src/soot/options/ant-task.xsl"
+            in="${basedir}/src/soot/options/soot_options.xml"
+            out="${basedir}/generated/options/soot/AntTask.java"
         />
         <xslt
-            style="src/soot/options/phase_options_dialog.xsl"
-            in="src/soot/options/soot_options.xml"
-            out="eclipse/ca.mcgill.sable.soot/src/ca/mcgill/sable/soot/ui/PhaseOptionsDialog.java"
+            style="${basedir}/src/soot/options/phase_options_dialog.xsl"
+            in="${basedir}/src/soot/options/soot_options.xml"
+            out="${basedir}/eclipse/ca.mcgill.sable.soot/src/ca/mcgill/sable/soot/ui/PhaseOptionsDialog.java"
         />
     </target>
 
@@ -78,10 +81,7 @@
     </target>
 
     <target name="sablecc" depends="determine-sablecc-uptodate,settings" unless="sablecc.uptodate">
-        <apply executable="sablecc">
-            <arg value="-d generated/sablecc"/>
-            <fileset dir="src" includes="jimple.scc"/>
-        </apply>
+
     </target>
 	
     <target name="determine-jastadd-uptodate" depends="settings" if="jastaddfrontend.loc">
@@ -103,7 +103,7 @@
 
     <target name="javadoc">
         <javadoc
-            classpath="classes:${polyglot.jar}:${jasmin.jar}"
+            classpath="classes:${polyglot.jar}:${jasmin.jar}:${heros.jar}"
             sourcepath="src:generated/singletons:generated/sablecc:generated/options"
             destdir="doc"
             maxmemory="400m"
@@ -292,6 +292,7 @@
         <jar destfile="${release.loc}/soot-${soot.version}.jar" manifest="META-INF/MANIFEST.MF">
             <zipfileset src="${release.loc}/sootclasses-${soot.version}.jar"/>
             <zipfileset src="${jasmin.jar}"/>
+            <zipfileset src="${heros.jar}"/>
             <zipfileset src="${polyglot.jar}"/>
             <zipfileset src="${java_cup.jar}"/>
         </jar>

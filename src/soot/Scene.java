@@ -30,7 +30,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,6 +42,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.ContextSensitiveCallGraph;
@@ -57,6 +62,10 @@ import soot.util.MapNumberer;
 import soot.util.Numberer;
 import soot.util.SingletonList;
 import soot.util.StringNumberer;
+
+import org.xmlpull.v1.XmlPullParser;
+import android.content.res.AXmlResourceParser;
+import test.AXMLPrinter;
 
 /** Manages the SootClasses of the application being analyzed. */
 public class Scene  //extends AbstractHost
@@ -220,18 +229,130 @@ public class Scene  //extends AbstractHost
 	            	sootClassPath += File.pathSeparator + defaultSootClassPath;
 	            } 
 	            //else, leave it as it is
-	        }        
+	        }   
+	        
+	        //add process-dirs
+	        List<String> process_dir = Options.v().process_dir();
+	        StringBuffer pds = new StringBuffer();
+	        for (String path : process_dir) {
+	        	if(!sootClassPath.contains(path)) {
+		        	pds.append(path);
+		        	pds.append(File.pathSeparator);
+	        	}
+			}
+	        sootClassPath = pds + sootClassPath;
         }
+
+
 
         return sootClassPath;
     }
-    
+
+	public String getAndroidJarPath(String jars, String apk) {
+		File jarsF = new File(jars);
+		File apkF = new File(apk);
+
+		int APIVersion = -1;
+		String jarPath = "";
+
+		if (!jarsF.exists())
+			throw new RuntimeException("file '" + jars + "' does not exist!");
+
+		if (!apkF.exists())
+			throw new RuntimeException("file '" + apk + "' does not exist!");
+
+		// get AndroidManifest
+		InputStream manifestIS = null;
+		try {
+			ZipFile archive = new ZipFile(apkF);
+			for (@SuppressWarnings("rawtypes") Enumeration entries = archive.entries(); entries.hasMoreElements();) {
+				ZipEntry entry = (ZipEntry) entries.nextElement();
+				String entryName = entry.getName();
+				// We are dealing with the Android manifest
+				if (entryName.equals("AndroidManifest.xml")) {
+					manifestIS = archive.getInputStream(entry);
+					break;
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Error when looking for manifest in apk: " + e);
+		}
+		final int defaultSdkVersion = 15;
+		if (manifestIS == null) {
+			G.v().out.println("Could not find sdk version in Android manifest! Using default: "+defaultSdkVersion);
+			APIVersion = defaultSdkVersion;
+		} else {
+
+			// process AndroidManifest.xml
+			int sdkTargetVersion = -1;
+			int minSdkVersion = -1;
+			try {
+				AXmlResourceParser parser = new AXmlResourceParser();
+				parser.open(manifestIS);
+				int depth = 0;
+				while (true) {
+					int type = parser.next();
+					if (type == XmlPullParser.END_DOCUMENT) {
+						// throw new RuntimeException
+						// ("target sdk version not found in Android manifest ("+
+						// apkF +")");
+						break;
+					}
+					switch (type) {
+					case XmlPullParser.START_DOCUMENT: {
+						break;
+					}
+					case XmlPullParser.START_TAG: {
+						depth++;
+						String tagName = parser.getName();
+						if (depth == 2 && tagName.equals("uses-sdk")) {
+							for (int i = 0; i != parser.getAttributeCount(); ++i) {
+								String attributeName = parser.getAttributeName(i);
+								String attributeValue = AXMLPrinter.getAttributeValue(parser, i);
+								if (attributeName.equals("targetSdkVersion")) {
+									sdkTargetVersion = Integer.parseInt(attributeValue);
+								} else if (attributeName.equals("minSdkVersion")) {
+									minSdkVersion = Integer.parseInt(attributeValue);
+								}
+							}
+						}
+						break;
+					}
+					case XmlPullParser.END_TAG:
+						depth--;
+						break;
+					case XmlPullParser.TEXT:
+						break;
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			if (sdkTargetVersion != -1) {
+				APIVersion = sdkTargetVersion;
+			} else if (minSdkVersion != -1) {
+				APIVersion = minSdkVersion;
+			} else {
+				G.v().out.println("Could not find sdk version in Android manifest! Using default: "+defaultSdkVersion);
+				APIVersion = defaultSdkVersion;
+			}
+			
+			if (APIVersion <= 2)
+					APIVersion = 3;
+		}
+
+		// get path to appropriate android.jar
+		jarPath = jars + File.separator + "android-" + APIVersion + File.separator + "android.jar";
+
+		return jarPath;
+
+	}
+
 	public String defaultClassPath() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(System.getProperty("java.class.path")+File.pathSeparator);
         if(System.getProperty("os.name").equals("Mac OS X")) {
-	        //in Mac OS X, rt.jar is split into classes.jar and ui.jar
-	        sb.append(File.pathSeparator);
+	        //in older Mac OS X versions, rt.jar was split into classes.jar and ui.jar
 	        sb.append(System.getProperty("java.home"));
 	        sb.append(File.separator);
 	        sb.append("..");
@@ -248,16 +369,14 @@ public class Scene  //extends AbstractHost
 	        sb.append("Classes");
 	        sb.append(File.separator);
 	        sb.append("ui.jar");
-
-
-        } else {
-            sb.append(File.pathSeparator);
-            sb.append(System.getProperty("java.home"));
-            sb.append(File.separator);
-            sb.append("lib");
-            sb.append(File.separator);
-            sb.append("rt.jar");
+	        sb.append(File.pathSeparator);
         }
+        
+        sb.append(System.getProperty("java.home"));
+        sb.append(File.separator);
+        sb.append("lib");
+        sb.append(File.separator);
+        sb.append("rt.jar");
         
 		if(Options.v().whole_program() || Options.v().output_format()==Options.output_format_dava) {
 			//add jce.jar, which is necessary for whole program mode
@@ -265,8 +384,50 @@ public class Scene  //extends AbstractHost
 			sb.append(File.pathSeparator+
 				System.getProperty("java.home")+File.separator+"lib"+File.separator+"jce.jar");
 		}
+
+		String defaultClassPath = sb.toString();
 		
-		return sb.toString();
+		if (Options.v().src_prec() == Options.src_prec_apk) {
+			// check that android.jar is not in classpath
+			if (!defaultClassPath.contains ("android.jar")) {
+				String androidJars = Options.v().android_jars();
+				String forceAndroidJar = Options.v().force_android_jar();
+				if (androidJars.equals("") && forceAndroidJar.equals("")) {
+					throw new RuntimeException("You are analyzing an Android application but did not define android.jar. Options -android-jars or -force-android-jar should be used.");
+				}
+
+				String jarPath = "";
+				if (!forceAndroidJar.equals("")) {
+					jarPath = forceAndroidJar;
+				} else if (!androidJars.equals("")) {
+					List<String> classPathEntries = new LinkedList<String>(Arrays.asList(Options.v().soot_classpath().split(File.pathSeparator)));
+					classPathEntries.addAll(Options.v().process_dir());
+					Set<String> targetApks = new HashSet<String>();
+					for (String entry : classPathEntries) {
+						if(entry.endsWith(".apk"))
+							targetApks.add(entry);
+					}					
+					if (targetApks.size() == 0)
+						throw new RuntimeException("no apk file given");
+					else if (targetApks.size() > 1)
+						throw new RuntimeException("only one Android application can be analyzed when using option -android-jars.");
+					jarPath = getAndroidJarPath (androidJars, (String)targetApks.toArray()[0]);
+				}
+				if (jarPath.equals(""))
+					throw new RuntimeException("android.jar not found.");
+				File f = new File (jarPath);
+				if (!f.exists())
+					throw new RuntimeException("file '"+ jarPath +"' does not exist!");
+				else
+					G.v().out.println("Using '"+ jarPath +"' as android.jar");
+				defaultClassPath = jarPath + File.pathSeparator + defaultClassPath;
+
+			} else {
+				G.v().out.println("warning: defaultClassPath contains android.jar! Options -android-jars and -force-android-jar are ignored!");
+			}
+		}
+
+		return defaultClassPath;
 	}
 
 
@@ -1160,13 +1321,18 @@ public class Scene  //extends AbstractHost
         }
     }
 
-    public boolean isExcluded(SootClass sc) {
-    	String name = sc.getName();
-    	for(String pkg: excludedPackages){
-			if(name.startsWith(pkg)) {
-    			return true;
-    		}
-    	}
+	public boolean isExcluded(SootClass sc) {
+		String name = sc.getName();
+		for (String pkg : excludedPackages) {
+			if (name.startsWith(pkg)) {
+				for (String inc : (List<String>) Options.v().include()) {
+					if (name.startsWith(inc)) {
+						return false;
+					}
+				}
+				return true;
+			}
+		}
 		return false;
 	}
 
