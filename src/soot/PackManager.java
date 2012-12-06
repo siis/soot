@@ -856,7 +856,7 @@ public class PackManager {
                 m.setActiveBody(Grimp.v().newBody(m.getActiveBody(), "gb"));
                 PackManager.v().getPack("gop").apply(m.getActiveBody());
             } else if (produceBaf) {
-        		m.setActiveBody(convertJimpleBodyToBaf(m));
+//        		m.setActiveBody(convertJimpleBodyToBaf(m));
             }
         }
             

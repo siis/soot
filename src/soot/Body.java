@@ -691,7 +691,7 @@ public abstract class Body extends AbstractHost implements Serializable
 				       +errorSuffix+" in "+getMethod());
 		} else {
 		    if(!Scene.v().getActiveHierarchy().isClassSubclassOfIncluding(rightClass,leftClass))
-			throw new RuntimeException("Warning: Bad use of class type"+errorSuffix+" in "+getMethod());
+			throw new RuntimeException("Warning: Bad use of class type"+errorSuffix+" in "+getMethod() + " : " + rightClass + " - " + leftClass);
 		}
 	    }
 	    return;
