@@ -86,7 +86,11 @@ public class UnitThrowAnalysis extends AbstractThrowAnalysis {
     public static UnitThrowAnalysis v() { return G.v().soot_toolkits_exceptions_UnitThrowAnalysis(); }
 
 	protected ThrowableSet defaultResult() {
-		return mgr.VM_ERRORS;
+		if (Options.v().synchronous_only()) {
+			return mgr.EMPTY;
+		} else {
+			return mgr.VM_ERRORS;
+		}
 	}
 
 	protected UnitSwitch unitSwitch() {
