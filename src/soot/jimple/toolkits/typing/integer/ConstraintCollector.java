@@ -162,69 +162,53 @@ class ConstraintCollector extends AbstractStmtSwitch
 
     //******** LEFT ********
 
-    if(l instanceof ArrayRef)
-      {
-	ArrayRef ref = (ArrayRef) l;
-	Type baset = ((Local) ref.getBase()).getType();
-	if(!(baset instanceof NullType))
-	{
-	  ArrayType base = (ArrayType) baset;
-	  Value index = ref.getIndex();
+    if(l instanceof ArrayRef) {
+		ArrayRef ref = (ArrayRef) l;
+		Type baset = ((Local) ref.getBase()).getType();
+//		if(!(baset instanceof NullType)) {
+		if (baset instanceof ArrayType) {
+			ArrayType base = (ArrayType) baset;
+			Value index = ref.getIndex();
 	
-	  if(uses)
-	    {
-	      if((base.numDimensions == 1) &&
-	         (base.baseType instanceof IntegerType))
-	        {
-	  	  left = resolver.typeVariable(base.baseType);
-	        }
+			if(uses) {
+				if((base.numDimensions == 1) &&
+						(base.baseType instanceof IntegerType)) {
+					left = resolver.typeVariable(base.baseType);
+				}
 	    
-	      if(index instanceof Local)
-	        {
-		  resolver.typeVariable((Local) index).addParent(resolver.INT);
-	        }
-	    }
-	}
-      }
-    else if(l instanceof Local)
-      {
-	if(((Local) l).getType() instanceof IntegerType)
-	  {
-	    left = resolver.typeVariable((Local) l);
-	  }
-      }
-    else if(l instanceof InstanceFieldRef)
-      {
-	if(uses)
-	  {
-	    InstanceFieldRef ref = (InstanceFieldRef) l;
+				if(index instanceof Local) {
+					resolver.typeVariable((Local) index).addParent(resolver.INT);
+				}
+			}
+		}
+    } else if(l instanceof Local) {
+    	if(((Local) l).getType() instanceof IntegerType) {
+    		left = resolver.typeVariable((Local) l);
+    	}
+    }
+    else if(l instanceof InstanceFieldRef) {
+    	if(uses) {
+    		InstanceFieldRef ref = (InstanceFieldRef) l;
 	    
-	    Type fieldType = ref.getField().getType();
+    		Type fieldType = ref.getField().getType();
 	    
-	    if(fieldType instanceof IntegerType)
-	      {
-		left = resolver.typeVariable(ref.getField().getType());
-	      }
-	  }
-      }
-    else if(l instanceof StaticFieldRef)
-      {
-	if(uses)
-	  {
-	    StaticFieldRef ref = (StaticFieldRef) l;
+    		if(fieldType instanceof IntegerType) {
+    			left = resolver.typeVariable(ref.getField().getType());
+    		}
+    	}
+  	} else if(l instanceof StaticFieldRef) {
+  		if(uses) {
+  			StaticFieldRef ref = (StaticFieldRef) l;
 	    
-	    Type fieldType = ref.getField().getType();
+  			Type fieldType = ref.getField().getType();
 	    
-	    if(fieldType instanceof IntegerType)
-	      {
-		left = resolver.typeVariable(ref.getField().getType());
-	      }
-	  }
-      }
-    else
-      {
-	throw new RuntimeException("Unhandled assignment left hand side type: " + l.getClass());
-      }
+  			if(fieldType instanceof IntegerType) {
+  				left = resolver.typeVariable(ref.getField().getType());
+  			}
+  		}
+  	} else {
+  		throw new RuntimeException("Unhandled assignment left hand side type: " + l.getClass());
+  	}
 
     //******** RIGHT ********
 
