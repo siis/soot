@@ -174,6 +174,8 @@ class SootMethodRefImpl implements SootMethodRef {
 			body.getUnits().insertAfter(Jimple.v().newThrowStmt(exceptionLocal), initStmt);
 
 			declaringClass.addMethod(m);
+			body.insertIdentityStmts();
+
 			return m; 
         } else if( trace == null ) {
         	ClassResolutionFailedException e = new ClassResolutionFailedException();

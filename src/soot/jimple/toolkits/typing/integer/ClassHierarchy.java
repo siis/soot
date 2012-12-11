@@ -175,7 +175,7 @@ public class ClassHierarchy
 
     if(typeNode == null)
       {
-	throw new InternalTypingException();
+    	System.err.println("Warning: found a null TypeNode");
       }
 
     return typeNode;
