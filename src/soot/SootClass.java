@@ -581,8 +581,9 @@ public class SootClass extends AbstractHost implements Numberable
         */
         
         if(subSigToMethods.get(m.getNumberedSubSignature()) != null ) {
-            throw new RuntimeException(
-                    "Attempting to add method "+m.getSubSignature()+" to class "+this+", but the class already has a method with that signature.");
+        	return;
+//            throw new RuntimeException(
+//                    "Attempting to add method "+m.getSubSignature()+" to class "+this+", but the class already has a method with that signature.");
         }
         subSigToMethods.put(m.getNumberedSubSignature(),m);
         methodList.add(m);

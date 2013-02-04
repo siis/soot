@@ -791,9 +791,12 @@ public class CFG {
 	    }
 
 	    oldinsn = entry.handler_inst;
-	    newinsn = replacedInsns.get(oldinsn);
-	    if (newinsn != null)
-		entry.handler_inst = newinsn;
+	    
+	    if (oldinsn != null) {
+		    newinsn = replacedInsns.get(oldinsn);
+		    if (newinsn != null)
+			entry.handler_inst = newinsn;
+	    }
 	}
     }
 
