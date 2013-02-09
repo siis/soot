@@ -34,14 +34,10 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
 
 import soot.jimple.CaughtExceptionRef;
 import soot.jimple.DefinitionStmt;
@@ -61,7 +57,6 @@ import soot.toolkits.graph.UnitGraph;
 import soot.toolkits.scalar.FlowSet;
 import soot.toolkits.scalar.InitAnalysis;
 import soot.toolkits.scalar.LocalDefs;
-import soot.toolkits.scalar.Pair;
 import soot.toolkits.scalar.SimpleLiveLocals;
 import soot.toolkits.scalar.SmartLocalDefs;
 import soot.util.Chain;
@@ -334,14 +329,11 @@ public abstract class Body extends AbstractHost implements Serializable
                     // no def already; we check anyhow.
                     List<Unit> l = ld.getDefsOfAt((Local)v, u);
                     if (l.size() == 0){
-                    	if (findMissingDef(u, (Local) v, g)) {
-	                        for( Iterator<Unit> uuIt = getUnits().iterator(); uuIt.hasNext(); ) {
-	                            final Unit uu = uuIt.next();
-	                            System.err.println(""+uu);
-	                        }
-	                        throw new RuntimeException("no defs for value: "+v+"!"+" in "+
-	                        		getMethod());
-                    	}
+                        for( Iterator<Unit> uuIt = getUnits().iterator(); uuIt.hasNext(); ) {
+                            final Unit uu = uuIt.next();
+                            System.err.println(""+uu);
+                        }
+                        throw new RuntimeException("no defs for value: "+v+"!"+" in "+getMethod());
                     }
                 }
             }
@@ -691,12 +683,12 @@ public abstract class Body extends AbstractHost implements Serializable
 				       +errorSuffix+" in "+getMethod());
 		} else {
 		    if(!Scene.v().getActiveHierarchy().isClassSubclassOfIncluding(rightClass,leftClass))
-			throw new RuntimeException("Warning: Bad use of class type"+errorSuffix+" in "+getMethod() + " : " + rightClass + " - " + leftClass);
+			throw new RuntimeException("Warning: Bad use of class type"+errorSuffix+" in "+getMethod());
 		}
 	    }
 	    return;
 	}
-//	throw new RuntimeException("Warning: Bad types"+errorSuffix+" in "+getMethod());
+	throw new RuntimeException("Warning: Bad types"+errorSuffix+" in "+getMethod());
     }
 
     @SuppressWarnings("unchecked")
@@ -719,64 +711,13 @@ public abstract class Body extends AbstractHost implements Serializable
 		Value v=((usesIt.next())).getValue();
 		if(v instanceof Local) {
 		    Local l=(Local) v;
-		    if(!init.contains(l)) {
-//		    	System.out.println(method.getActiveBody());
-		    	if (findMissingDef(s, l, g)) {
-					throw new RuntimeException("Warning: Local variable "+l
-							   +" not definitely defined at "+s
-							   +" in "+method);
-		    	}
-		    }
+		    if(!init.contains(l))
+			throw new RuntimeException("Warning: Local variable "+l
+					   +" not definitely defined at "+s
+					   +" in "+method);
 		}
 	    }
 	}
-    }
-    
-    private boolean findMissingDef(Unit start, Local local, UnitGraph graph) {
-    	Set<Unit> visitedUnits = new HashSet<Unit>();
-    	Stack<Pair<Unit, List<Unit>>> stack = new Stack<Pair<Unit, List<Unit>>>();
-    	
-    	stack.push(new Pair<Unit, List<Unit>>(start, Collections.singletonList(start)));
-    	
-    	boolean found = false;
-    	
-    	while (!stack.empty()) {
-			Pair<Unit, List<Unit>> current = stack.pop();
-			Unit currentUnit = current.getO1();
-			if (visitedUnits.contains(currentUnit)) {
-				continue;
-			} else {
-				visitedUnits.add(currentUnit);
-			}
-			List<Unit> currentPath = current.getO2();
-			
-			if (currentUnit instanceof DefinitionStmt) {
-				DefinitionStmt definitionStmt = (DefinitionStmt) currentUnit;
-				
-				if (definitionStmt.getLeftOp() instanceof Local) {
-					Local leftLocal = (Local) definitionStmt.getLeftOp();
-					if (leftLocal.equivTo(local)
-							|| (leftLocal.getName().equals(local.getName())
-									&& definitionStmt.getRightOp().getType().equals(
-											NullType.v()))) {
-						continue;
-					}
-				}
-			} else {
-				List<Unit> predecessors = graph.getPredsOf(currentUnit);
-				if (predecessors == null || predecessors.isEmpty()) {
-					found = true;
-				} else {
-					for (Unit predecessor : predecessors) { 
-						List<Unit> newPath = new ArrayList<Unit>(currentPath);
-						newPath.add(predecessor);
-						stack.add(new Pair<Unit, List<Unit>>(predecessor, newPath));
-					}
-				}
-			}
-		}
-    	
-    	return found;
     }
     
     /**
