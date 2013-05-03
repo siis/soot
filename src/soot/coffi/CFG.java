@@ -1197,7 +1197,8 @@ public class CFG {
 								} catch (RuntimeException re)
 								{
 									G.v().out.println("Considering "+s);
-									throw re;
+//									throw re;
+									newTypeStack = oldTypeStack;
 								}
 							}
                             if(!newTypeStack.equals(oldTypeStack))

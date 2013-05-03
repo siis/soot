@@ -107,7 +107,7 @@ class SootMethodRefImpl implements SootMethodRef {
     
     private SootMethod checkStatic(SootMethod ret) {
         if( ret.isStatic() != isStatic()) {
-            throw new ResolutionFailedException( "Resolved "+this+" to "+ret+" which has wrong static-ness" );
+//            throw new ResolutionFailedException( "Resolved "+this+" to "+ret+" which has wrong static-ness" );
         }
         return ret;
     }

@@ -285,7 +285,7 @@ public class MethodNodeFactory extends AbstractShimpleValueSwitch {
         setResult(classConstantLocal);
     }
     final public void defaultCase( Object v ) {
-	throw new RuntimeException( "failed to handle "+v );
+//	throw new RuntimeException( "failed to handle "+v );
     }
     protected PAG pag;
     protected MethodPAG mpag;

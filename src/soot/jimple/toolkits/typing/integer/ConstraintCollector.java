@@ -232,7 +232,7 @@ class ConstraintCollector extends AbstractStmtSwitch
       {
 	ArrayRef ref = (ArrayRef) r;
 	Type baset = ((Local) ref.getBase()).getType();
-	if(!(baset instanceof NullType))
+	if(baset instanceof ArrayType)
 	{
 	  ArrayType base = (ArrayType) baset;
 	  Value index = ref.getIndex();
