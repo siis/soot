@@ -113,7 +113,7 @@ public class ShimpleBodyBuilder
         }
 
         renameLocals();
-        phi.trimExceptionalPhiNodes();
+//        phi.trimExceptionalPhiNodes();
         makeUniqueLocalNames();
     }
 

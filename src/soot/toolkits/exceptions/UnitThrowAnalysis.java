@@ -298,7 +298,7 @@ public class UnitThrowAnalysis extends AbstractThrowAnalysis {
     protected class UnitSwitch implements InstSwitch, StmtSwitch {
 
 	// Asynchronous errors are always possible:
-	private ThrowableSet result = null;// defaultResult();
+	protected ThrowableSet result = null;// defaultResult();
 	
 	protected UnitSwitch() {
  		if (Options.v().synchronous_only())
