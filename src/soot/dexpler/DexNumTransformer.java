@@ -24,6 +24,7 @@
 
 package soot.dexpler;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -169,7 +170,7 @@ public class DexNumTransformer extends DexTransformer {
                         Type arType = ar.getType();
                         Debug.printDbg("ar: ", r ," ", arType);
                         if (arType instanceof UnknownType) {
-                          Type t = findArrayType (g, localDefs, localUses, stmt, 0); // TODO: check where else to update if(ArrayRef...
+                          Type t = findArrayType (g, localDefs, localUses, stmt, 0, Collections.<Unit>emptySet()); // TODO: check where else to update if(ArrayRef...
                           Debug.printDbg(" array type:", t);
                           usedAsFloatingPoint = isFloatingPointLike (t);
                         } else {
@@ -258,6 +259,15 @@ public class DexNumTransformer extends DexTransformer {
                                   doBreak = true;
                                   return;
                                  }
+
+                                if (left instanceof FieldRef && r instanceof Local) {
+                                    FieldRef fr = (FieldRef) left;
+                                    if (isFloatingPointLike(fr.getType())) {
+                                        usedAsFloatingPoint = true;
+                                    }
+                                    doBreak = true;
+                                    return;
+                                }
                                   
                             }
 
@@ -265,6 +275,8 @@ public class DexNumTransformer extends DexTransformer {
                                 usedAsFloatingPoint = stmt.getOp() == l && isFloatingPointLike(body.getMethod().getReturnType());
                                 Debug.printDbg (" [return stmt] ", stmt ," usedAsObject: ", usedAsFloatingPoint ,", return type: ", body.getMethod().getReturnType());
                                 Debug.printDbg (" class: ", body.getMethod().getReturnType().getClass());
+                                doBreak = true;
+                                return;
                             }
                         });
                     

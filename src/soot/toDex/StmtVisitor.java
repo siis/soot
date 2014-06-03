@@ -17,6 +17,7 @@ import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
+import soot.Unit;
 import soot.Value;
 import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
@@ -46,6 +47,7 @@ import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThisRef;
 import soot.jimple.ThrowStmt;
+import soot.tagkit.Tag;
 import soot.toDex.instructions.AddressInsn;
 import soot.toDex.instructions.Insn;
 import soot.toDex.instructions.Insn10t;
@@ -118,6 +120,11 @@ public class StmtVisitor implements StmtSwitch {
 	
 	private List<SwitchPayload> switchPayloads;
 	
+    // maps used to transfer tags (line number, ...) from Jimple statements to
+    // Dalvik instructions
+    private Map<Insn, List<Tag>> insnTagMap = new HashMap<Insn, List<Tag>>();
+    private Map<Instruction, List<Tag>> instructionTagMap = new HashMap<Instruction, List<Tag>>();
+
 	public StmtVisitor(SootMethod belongingMethod, DexFile belongingFile) {
 		this.belongingMethod = belongingMethod;
 		this.belongingFile = belongingFile;
@@ -140,9 +147,16 @@ public class StmtVisitor implements StmtSwitch {
 		return belongingMethod.getDeclaringClass();
 	}
 	
-	protected void addInsn(Insn insn) {
+    public Map<Instruction, List<Tag>> getInstructionTagMap() {
+        return this.instructionTagMap;
+    }
+
+    protected void addInsn(Insn insn, Stmt s) {
 		int highestIndex = insns.size();
 		addInsn(highestIndex, insn);
+        if (s != null && s.getTags().size() > 0) { // get tags
+            insnTagMap.put(insn, s.getTags());
+        }
 	}
 	
 	private void addInsn(int positionInList, Insn insn) {
@@ -154,7 +168,7 @@ public class StmtVisitor implements StmtSwitch {
 	}
 	
 	protected void beginNewStmt(Stmt s) {
-		addInsn(new AddressInsn(s));
+        addInsn(new AddressInsn(s), null);
 	}
 	
 	private void setTargets() {
@@ -187,8 +201,8 @@ public class StmtVisitor implements StmtSwitch {
 	private void addSwitchPayloads() {
 		// add switch payloads to the end of the insns
 		for (SwitchPayload payload : switchPayloads) {
-			addInsn(new AddressInsn(payload));
-			addInsn(payload);
+            addInsn(new AddressInsn(payload), null);
+            addInsn(payload, null);
 		}
 	}
 
@@ -200,6 +214,9 @@ public class StmtVisitor implements StmtSwitch {
 			}
 			Instruction realInsn = i.getRealInsn();
 			finalInsns.add(realInsn);
+            if (insnTagMap.containsKey(i)) { // get tags
+                instructionTagMap.put(realInsn, insnTagMap.get(i));
+            }
 		}
 		return finalInsns;
 	}
@@ -296,7 +313,7 @@ public class StmtVisitor implements StmtSwitch {
 	}
 
 	private InsnWithOffset reverseIf(InsnWithOffset ifInsn) {
-		Opcode oldOpc = ifInsn.getOpcode();
+        Opcode oldOpc = ifInsn.getOpcode();
 		Opcode reversedOpc = oppositeIfs.get(oldOpc);
 		if (oldOpc.name.endsWith("z")) {
 			Insn21t oldIfz = (Insn21t) ifInsn;
@@ -323,50 +340,64 @@ public class StmtVisitor implements StmtSwitch {
 		return regAlloc.getRegCount();
 	}
 
+	@Override
 	public void defaultCase(Object o) {
 		// not-int and not-long aren't implemented because soot converts "~x" to "x ^ (-1)"
 		// fill-array-data isn't implemented since soot converts "new int[]{x, y}" to individual "array put" expressions for x and y
 		throw new Error("unknown Object (" + o.getClass() + ") as Stmt: " + o);
 	}
 	
+	@Override
 	public void caseBreakpointStmt(BreakpointStmt stmt) {
 		return; // there are no breakpoints in dex bytecode
 	}
 	
+	@Override
 	public void caseNopStmt(NopStmt stmt) {
-		addInsn(new Insn10x(Opcode.NOP));
+        addInsn(new Insn10x(Opcode.NOP), stmt);
 	}
 
+	@Override
 	public void caseRetStmt(RetStmt stmt) {
 		throw new Error("ret statements are deprecated!");
 	}
 	
+	@Override
 	public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
-		addInsn(buildMonitorInsn(stmt, Opcode.MONITOR_ENTER));
+        addInsn(buildMonitorInsn(stmt, Opcode.MONITOR_ENTER), stmt);
 	}
 	
+	@Override
 	public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
-		addInsn(buildMonitorInsn(stmt, Opcode.MONITOR_EXIT));
+        addInsn(buildMonitorInsn(stmt, Opcode.MONITOR_EXIT), stmt);
 	}
 	
 	private Insn buildMonitorInsn(MonitorStmt stmt, Opcode opc) {
 		Value lockValue = stmt.getOp();
+        constantV.setOrigStmt(stmt);
 		Register lockReg = regAlloc.asImmediate(lockValue, constantV);
 		return new Insn11x(opc, lockReg);
 	}
 	
+	@Override
 	public void caseThrowStmt(ThrowStmt stmt) {
 		Value exception = stmt.getOp();
+        constantV.setOrigStmt(stmt);
 		Register exceptionReg = regAlloc.asImmediate(exception, constantV);
-		addInsn(new Insn11x(Opcode.THROW, exceptionReg));
+        addInsn(new Insn11x(Opcode.THROW, exceptionReg), stmt);
 	}
 	
+	@Override
 	public void caseAssignStmt(AssignStmt stmt) {
+        constantV.setOrigStmt(stmt);
+        exprV.setOrigStmt(stmt);
 		Value lhs = stmt.getLeftOp();
 		if (lhs instanceof ConcreteRef) {
+		    regAlloc.setMultipleConstantsPossible(true); // for array refs (ex: a[2] = 3)
 			// special cases that lead to *put* opcodes
 			Value source = stmt.getRightOp();
-			addInsn(buildPutInsn((ConcreteRef) lhs, source));
+            addInsn(buildPutInsn((ConcreteRef) lhs, source), stmt);
+			regAlloc.setMultipleConstantsPossible(false); // for array refs
 			return;
 		}
 		// other cases, where lhs is a local
@@ -384,13 +415,13 @@ public class StmtVisitor implements StmtSwitch {
 				return;
 			}
 			Register sourceReg = regAlloc.asLocal(rhs);
-			addInsn(buildMoveInsn(lhsReg, sourceReg));
+            addInsn(buildMoveInsn(lhsReg, sourceReg), stmt);
 		} else if (rhs instanceof Constant) {
 			// move rhs constant into the lhs local
 			constantV.setDestination(lhsReg);
 			rhs.apply(constantV);
 		} else if (rhs instanceof ConcreteRef) {
-			addInsn(buildGetInsn((ConcreteRef) rhs, lhsReg));
+            addInsn(buildGetInsn((ConcreteRef) rhs, lhsReg), stmt);
 		} else {
 			// evaluate rhs expression, saving the result in the lhs local
 			exprV.setDestinationReg(lhsReg);
@@ -550,14 +581,18 @@ public class StmtVisitor implements StmtSwitch {
 		return new Insn11x(opc, destinationReg);
 	}
 	
+	@Override
 	public void caseInvokeStmt(InvokeStmt stmt) {
+        exprV.setOrigStmt(stmt);
 		stmt.getInvokeExpr().apply(exprV);
 	}
 	
+	@Override
 	public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
-		addInsn(new Insn10x(Opcode.RETURN_VOID));
+        addInsn(new Insn10x(Opcode.RETURN_VOID), stmt);
 	}
 	
+	@Override
 	public void caseReturnStmt(ReturnStmt stmt) {
 		Value returnValue = stmt.getOp();
 		Register returnReg = regAlloc.asImmediate(returnValue, constantV);
@@ -570,31 +605,33 @@ public class StmtVisitor implements StmtSwitch {
 		} else {
 			opc = Opcode.RETURN;
 		}
-		addInsn(new Insn11x(opc, returnReg));
+        addInsn(new Insn11x(opc, returnReg), stmt);
 	}
 
+	@Override
 	public void caseIdentityStmt(IdentityStmt stmt) {
 		Value lhs = stmt.getLeftOp();
 		Value rhs = stmt.getRightOp();
 		if (rhs instanceof CaughtExceptionRef) {
 			// save the caught exception with move-exception
 			Register localReg = regAlloc.asLocal(lhs);
-			addInsn(new Insn11x(Opcode.MOVE_EXCEPTION, localReg));
+            addInsn(new Insn11x(Opcode.MOVE_EXCEPTION, localReg), stmt);
 		} else if (rhs instanceof ThisRef || rhs instanceof ParameterRef) {
 			/* 
 			 * do not save the ThisRef or ParameterRef in a local, because it always has a parameter register already.
 			 * at least use the local for further reference in the statements
 			 */
 			Local localForThis = (Local) lhs;
-			regAlloc.asParameter(localForThis);
+			regAlloc.asParameter(belongingMethod, localForThis);
 		} else {
 			throw new Error("unknown Value as right-hand side of IdentityStmt: " + rhs);
 		}
 	}
 	
+	@Override
 	public void caseGotoStmt(GotoStmt stmt) {
 		Stmt target = (Stmt) stmt.getTarget();
-		addInsn(buildGotoInsn(target));
+        addInsn(buildGotoInsn(target), stmt);
 	}
 	
 	private Insn buildGotoInsn(Stmt target) {
@@ -603,35 +640,39 @@ public class StmtVisitor implements StmtSwitch {
 		return insn;
 	}
 	
+	@Override
 	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
+        exprV.setOrigStmt(stmt);
+        constantV.setOrigStmt(stmt);
 		// create payload that references the switch's targets
-		@SuppressWarnings("unchecked")
 		List<IntConstant> keyValues = stmt.getLookupValues();
 		int[] keys = new int[keyValues.size()];
 		for (int i = 0; i < keys.length; i++) {
 			keys[i] = keyValues.get(i).value;
 		}
-		@SuppressWarnings("unchecked")
-		List<Stmt> targets = stmt.getTargets();
+		List<Unit> targets = stmt.getTargets();
 		SparseSwitchPayload payload = new SparseSwitchPayload(keys, targets);
 		switchPayloads.add(payload);
 		// create sparse-switch instruction that references the payload
 		Value key = stmt.getKey();
 		Stmt defaultTarget = (Stmt) stmt.getDefaultTarget();
-		addInsn(buildSwitchInsn(Opcode.SPARSE_SWITCH, key, defaultTarget, payload));
+        addInsn(buildSwitchInsn(Opcode.SPARSE_SWITCH, key, defaultTarget, payload), stmt);
 	}
 
+	@Override
 	public void caseTableSwitchStmt(TableSwitchStmt stmt) {
+        exprV.setOrigStmt(stmt);
+        constantV.setOrigStmt(stmt);
 		// create payload that references the switch's targets
 		int firstKey = stmt.getLowIndex();
 		@SuppressWarnings("unchecked")
-		List<Stmt> targets = stmt.getTargets();
+		List<Unit> targets = stmt.getTargets();
 		PackedSwitchPayload payload = new PackedSwitchPayload(firstKey, targets);
 		switchPayloads.add(payload);
 		// create packed-switch instruction that references the payload
 		Value key = stmt.getKey();
 		Stmt defaultTarget = (Stmt) stmt.getDefaultTarget();
-		addInsn(buildSwitchInsn(Opcode.PACKED_SWITCH, key, defaultTarget, payload));
+        addInsn(buildSwitchInsn(Opcode.PACKED_SWITCH, key, defaultTarget, payload), stmt);
 	}
 	
 	private Insn buildSwitchInsn(Opcode opc, Value key, Stmt defaultTarget, SwitchPayload payload) {
@@ -639,13 +680,15 @@ public class StmtVisitor implements StmtSwitch {
 		Insn31t switchInsn = new Insn31t(opc, keyReg);
 		switchInsn.setOffset(payload);
 		payload.setSwitchInsn(switchInsn);
-		addInsn(switchInsn);
+        addInsn(switchInsn, defaultTarget);
 		// create instruction to jump to the default target, always follows the switch instruction
 		return buildGotoInsn(defaultTarget);
 	}
 	
+	@Override
 	public void caseIfStmt(IfStmt stmt) {
 		Stmt target = stmt.getTarget();
+        exprV.setOrigStmt(stmt);
 		exprV.setTargetForOffset(target);
 		stmt.getCondition().apply(exprV);
 	}

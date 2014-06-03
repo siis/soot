@@ -24,10 +24,9 @@
 
 package soot.dexpler.instructions;
 
-import org.jf.dexlib.Code.Instruction;
+import org.jf.dexlib2.iface.instruction.Instruction;
 
 import soot.dexpler.DexBody;
-import soot.dexpler.IDalvikTyper;
 import soot.jimple.Jimple;
 import soot.jimple.ReturnVoidStmt;
 
@@ -40,11 +39,8 @@ public class ReturnVoidInstruction extends DexlibAbstractInstruction {
     public void jimplify (DexBody body) {
         ReturnVoidStmt returnStmt = Jimple.v().newReturnVoidStmt();
         setUnit(returnStmt);
-        tagWithLineNumber(returnStmt);
+        addTags(returnStmt);
         body.add(returnStmt);
     }
 
-    @Override
-    public void getConstraint(IDalvikTyper dalvikTyper) {      
-    }
 }

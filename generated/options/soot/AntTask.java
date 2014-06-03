@@ -62,6 +62,8 @@ public class AntTask extends MatchingTask {
   
         private Path dump_cfg = null;
   
+        private Path plugin = null;
+  
         private Path include = null;
   
         private Path exclude = null;
@@ -81,6 +83,8 @@ public class AntTask extends MatchingTask {
         if( dump_body != null ) addPath("-dump-body", dump_body);
   
         if( dump_cfg != null ) addPath("-dump-cfg", dump_cfg);
+  
+        if( plugin != null ) addPath("-plugin", plugin);
   
         if( include != null ) addPath("-include", include);
   
@@ -150,6 +154,10 @@ public class AntTask extends MatchingTask {
   
         public void setwhole_shimple(boolean arg) {
             if(arg) addArg("-whole-shimple");
+        }
+  
+        public void seton_the_fly(boolean arg) {
+            if(arg) addArg("-on-the-fly");
         }
   
         public void setvalidate(boolean arg) {
@@ -339,6 +347,18 @@ public class AntTask extends MatchingTask {
   
         public void setgzip(boolean arg) {
             if(arg) addArg("-gzip");
+        }
+  
+        public void setplugin(Path arg) {
+            if(plugin == null )
+                plugin = new Path(getProject());
+            plugin = appendToPath(plugin, arg);
+        }
+
+        public Path createplugin() {
+            if(plugin == null )
+                plugin = new Path(getProject());
+            return plugin.createPath();
         }
   
         public void setoptimize(boolean arg) {

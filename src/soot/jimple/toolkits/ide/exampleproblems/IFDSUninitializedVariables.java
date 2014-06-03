@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 import soot.Local;
 import soot.NullType;
 import soot.Scene;
@@ -129,6 +128,10 @@ public class IFDSUninitializedVariables extends DefaultJimpleIFDSTabulationProbl
 
 					@Override
 					public Set<Local> computeTargets(final Local source) {
+						// Do not map parameters for <clinit> edges
+						if (destinationMethod.getName().equals("<clinit>"))
+							return Collections.emptySet();
+
 						for (Local localArgument : localArguments) {
 							if (source.equivTo(localArgument)) {
 								return Collections.<Local>singleton(destinationMethod.getActiveBody().getParameterLocal(args.indexOf(localArgument)));

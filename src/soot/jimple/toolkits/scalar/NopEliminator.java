@@ -42,7 +42,7 @@ public class NopEliminator extends BodyTransformer
         with respect to the statements.
     */
     
-    protected void internalTransform(Body b, String phaseName, Map options)
+    protected void internalTransform(Body b, String phaseName, Map<String, String> options)
     {
         JimpleBody body = (JimpleBody)b;
         
@@ -50,18 +50,17 @@ public class NopEliminator extends BodyTransformer
             G.v().out.println("[" + body.getMethod().getName() +
                 "] Removing nops...");
                 
-        Chain units = body.getUnits();
+        Chain<Unit> units = body.getUnits();
         
         // Just do one trivial pass.
         {
-            Iterator stmtIt = units.snapshotIterator();
+            Iterator<Unit> stmtIt = units.snapshotIterator();
             
             while(stmtIt.hasNext()) 
             {
-                Stmt s = (Stmt) stmtIt.next();
-                
-                if(s instanceof NopStmt)
-                    units.remove(s);
+                Unit u = stmtIt.next();
+                if(u instanceof NopStmt)
+                    units.remove(u);
             }
         }
     }

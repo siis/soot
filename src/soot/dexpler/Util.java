@@ -28,29 +28,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import polyglot.types.reflect.Field;
-
 import soot.ArrayType;
 import soot.Body;
 import soot.BooleanType;
 import soot.ByteType;
 import soot.CharType;
-import soot.Body;
 import soot.DoubleType;
 import soot.FloatType;
 import soot.IntType;
 import soot.Local;
 import soot.LongType;
-import soot.Modifier;
 import soot.RefType;
 import soot.Scene;
 import soot.ShortType;
-import soot.SootClass;
 import soot.SootField;
-import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
-import soot.PatchingChain;
 import soot.Value;
 import soot.VoidType;
 import soot.jimple.AssignStmt;
@@ -110,6 +103,7 @@ public class Util {
     }
     
     public static Type getType(String type) {
+        System.out.println("get type from '"+ type +"'");
       int idx = 0;
       int arraySize = 0;
       Type returnType = null;
@@ -259,9 +253,6 @@ public class Util {
             continue;
           FieldRef fr = ass.getFieldRef();
           SootField sf = fr.getField();
-          System.out.println("sootfield: "+ sf +" modifiers: "+ sf.getModifiers());
-          System.out.println("final: "+ Modifier.FINAL);
-          //System.out.println
           if (sf.isFinal())
             addConstantTag(sf, (Constant)r);
         }
@@ -269,8 +260,6 @@ public class Util {
     }
     
     private static void addConstantTag(SootField sf, Constant c) {
-      System.out.println("add constant tag: "); 
-      Type ft = sf.getType();
       if (c instanceof IntConstant){
         sf.addTag(new soot.tagkit.IntegerConstantValueTag(((IntConstant) c).value));
       } else if (c instanceof LongConstant){
@@ -285,5 +274,46 @@ public class Util {
         //throw new RuntimeException("Expecting static final field to have a constant value! For field: "+field+" of type: "+field.fieldInstance().constantValue().getClass());
       }   
 
+    }
+    
+    public static List<String> splitParameters(String parameters) {
+        List<String> pList = new ArrayList<String>();
+        
+        int idx = 0;
+        int arraySize = 0;
+        boolean object = false;
+        
+        String curr = "";
+        while( idx < parameters.length()) {
+          char c = parameters.charAt(idx);
+          curr += c;
+          switch( c ) {
+              // array
+            case '[':
+                break;
+              // end of object
+            case ';':
+                object = false;
+                pList.add(curr);
+                curr = "";
+                break;
+              // start of object
+            case 'L':
+                object = true;
+                break;
+           default:
+               if (object) {
+                // caracter part of object
+               } else { // primitive
+                   pList.add(curr);
+                   curr = "";
+               }
+               break;
+            
+          }
+          idx++;
+        }
+
+        return pList;
     }
 }

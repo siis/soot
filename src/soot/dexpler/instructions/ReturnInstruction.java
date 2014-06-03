@@ -24,13 +24,14 @@
 
 package soot.dexpler.instructions;
 
-import org.jf.dexlib.Code.Instruction;
-import org.jf.dexlib.Code.Format.Instruction11x;
+import org.jf.dexlib2.iface.instruction.Instruction;
+import org.jf.dexlib2.iface.instruction.formats.Instruction11x;
 
 import soot.Local;
-import soot.ValueBox;
+import soot.dexpler.Debug;
 import soot.dexpler.DexBody;
 import soot.dexpler.IDalvikTyper;
+import soot.dexpler.typing.DalvikTyper;
 import soot.jimple.Jimple;
 import soot.jimple.ReturnStmt;
 
@@ -47,15 +48,13 @@ public class ReturnInstruction extends DexlibAbstractInstruction {
         Local l = body.getRegisterLocal(returnInstruction.getRegisterA());
         returnStmt = Jimple.v().newReturnStmt(l);
         setUnit(returnStmt);
-        tagWithLineNumber(returnStmt);
+        addTags(returnStmt);
         body.add(returnStmt);
         this.body = body;
-		}
-    
-		public void getConstraint(IDalvikTyper dalvikTyper) {
-		  ValueBox box = returnStmt.getOpBox();
-				if (IDalvikTyper.ENABLE_DVKTYPER) {
-          dalvikTyper.setType(box, body.getBody().getMethod().getReturnType());
+		
+        if (IDalvikTyper.ENABLE_DVKTYPER) {
+			Debug.printDbg(IDalvikTyper.DEBUG, "constraint: "+ returnStmt);
+          DalvikTyper.v().setType(returnStmt.getOpBox(), body.getBody().getMethod().getReturnType(), true);
         }
     }
 }

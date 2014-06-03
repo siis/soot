@@ -216,6 +216,20 @@ specify the Whole Program Optimize option.</p>
       </long_desc>
     </boolopt>
                 <boolopt>
+			<name>On-the-fly Mode</name>
+			<alias>fly</alias>
+			<alias>on-the-fly</alias>
+			<default>false</default>
+			<short_desc>Run in on-the-fly mode</short_desc> 
+			<long_desc>
+<p>
+This enables whole-program mode but uses a less agressive class loading.
+By default, classes will be loaded without bodies unless otherwise requested.
+The cg pack is disabled in this mode. 
+</p>
+</long_desc>
+                </boolopt>
+    	<boolopt>
 			<name>Validate</name>
 			<alias>validate</alias>
 			<short_desc>Run internal validation on bodies</short_desc>
@@ -792,6 +806,19 @@ with GZip. It does not apply to class files output by Soot.
 	</section>
 	<section>
 		<name>Processing Options</name>
+	    <listopt>
+			<name>Plugin Configuration</name>
+			<alias>plugin</alias>
+			<set_arg_label>file</set_arg_label>
+			<short_desc>Load all plugins found in <use_arg_label/></short_desc>
+			<long_desc>
+<p>
+Loads the plugin configuration <use_arg_label/> and registers
+all plugins. Make sure that the option is specified before you
+try to pass options to the loaded plugins.</p>
+</long_desc>
+		</listopt>
+		
 		<phaseopt>
 			<name>Phase Options</name>
 			<alias>p</alias>
