@@ -43,12 +43,9 @@ import soot.Value;
 import soot.jimple.AssignStmt;
 import soot.jimple.CastExpr;
 import soot.jimple.InstanceFieldRef;
-import soot.jimple.InstanceInvokeExpr;
-import soot.jimple.InterfaceInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.spark.geom.dataRep.CgEdge;
-import soot.jimple.spark.geom.geomPA.Constants;
 import soot.jimple.spark.geom.geomPA.GeomPointsTo;
 import soot.jimple.spark.geom.geomPA.IVarAbstraction;
 import soot.jimple.spark.geom.utils.Histogram;
@@ -64,17 +61,17 @@ import soot.jimple.toolkits.callgraph.Edge;
 /**
  * We provide a set of methods to evaluate the quality of geometric points-to
  * analysis. The evaluation methods are:
- * 
+ *
  * 1. Count the basic points-to information, such as average points-to set size,
- * constraints evaluation graph size, etc; 
+ * constraints evaluation graph size, etc;
  * 2. Virtual function resolution
- * comparison; 
- * 3. Static casts checking; 
- * 4. All pairs alias analysis; 
+ * comparison;
+ * 3. Static casts checking;
+ * 4. All pairs alias analysis;
  * 5. Building heap graph (not used yet).
- * 
+ *
  * @author xiao
- * 
+ *
  */
 public class GeomEvaluator {
 
@@ -83,20 +80,20 @@ public class GeomEvaluator {
 	private EvalResults evalRes;
 	private boolean solved; // Used in the anonymous class visitor
 
-	public GeomEvaluator(GeomPointsTo gpts, PrintStream ps) 
+	public GeomEvaluator(GeomPointsTo gpts, PrintStream ps)
 	{
 		ptsProvider = gpts;
 		outputer = ps;
 		evalRes = new EvalResults();
 	}
-	
+
 	/**
 	 * Collecting basic statistical information for SPARK.
 	 */
 	public void profileSparkBasicMetrics()
 	{
 		int n_legal_var = 0;
-		
+
 		int[] limits = new int[] { 1, 5, 10, 25, 50, 75, 100 };
 		evalRes.pts_size_bar_spark = new Histogram(limits);
 
@@ -105,7 +102,7 @@ public class GeomEvaluator {
 			Node var = pn.getWrappedNode();
 			if (ptsProvider.isExceptionPointer(var))
 				continue;
-			
+
 			++n_legal_var;
 
 			int size = var.getP2Set().size();
@@ -114,26 +111,26 @@ public class GeomEvaluator {
 			if (size > evalRes.max_pts_spark)
 				evalRes.max_pts_spark = size;
 		}
-		
+
 		evalRes.avg_spark_pts = (double) evalRes.total_spark_pts / n_legal_var;
 	}
-	
+
 	/**
 	 * Summarize the geometric points-to analysis and report the basic metrics.
 	 */
-	public void profileGeomBasicMetrics(boolean testSpark) 
+	public void profileGeomBasicMetrics(boolean testSpark)
 	{
 		int n_legal_var = 0, n_alloc_dot_fields = 0;
-		
+
 		int[] limits = new int[] { 1, 5, 10, 25, 50, 75, 100 };
 		evalRes.pts_size_bar_geom = new Histogram(limits);
-		
+
 		if ( testSpark ) {
 			evalRes.total_spark_pts = 0;
 			evalRes.max_pts_spark = 0;
 			evalRes.pts_size_bar_spark = new Histogram(limits);
 		}
-		
+
 		// We first count the LOC
 		for (SootMethod sm : ptsProvider.getAllReachableMethods()) {
 			if (!sm.isConcrete())
@@ -144,27 +141,27 @@ public class GeomEvaluator {
 
 			evalRes.loc += sm.getActiveBody().getUnits().size();
 		}
-				
+
 		for (IVarAbstraction pn : ptsProvider.pointers) {
 			// We don't consider those un-processed pointers because their
 			// points-to information is equivalent to SPARK
 			if (!pn.hasPTResult())
 				continue;
-			
+
 			pn = pn.getRepresentative();
 			Node var = pn.getWrappedNode();
-			
+
 			if (ptsProvider.isExceptionPointer(var))
 				continue;
-			
+
 			if (var instanceof AllocDotField) {
 				++n_alloc_dot_fields;
 			}
 			++n_legal_var;
-			
+
 			// ...spark
 			int size;
-			
+
 			if ( testSpark ) {
 				size = var.getP2Set().size();
 				evalRes.pts_size_bar_spark.addNumber(size);
@@ -172,7 +169,7 @@ public class GeomEvaluator {
 				if (size > evalRes.max_pts_spark)
 					evalRes.max_pts_spark = size;
 			}
-			
+
 			// ...geom
 			size = pn.num_of_diff_objs();
 			evalRes.pts_size_bar_geom.addNumber(size);
@@ -184,7 +181,7 @@ public class GeomEvaluator {
 		evalRes.avg_geom_ins_pts = (double) evalRes.total_geom_ins_pts / n_legal_var;
 		if ( testSpark )
 			evalRes.avg_spark_pts = (double) evalRes.total_spark_pts / n_legal_var;
-		
+
 		outputer.println("");
 		outputer.println("----------Statistical Result of geomPTA <Data Format: geomPTA (SPARK)>----------");
 		outputer.printf("Lines of code (jimple): %.1fK\n", (double) evalRes.loc / 1000);
@@ -217,7 +214,7 @@ public class GeomEvaluator {
 	 * points-to result.
 	 */
 	private void test_1cfa_call_graph(LocalVarNode vn, SootMethod caller,
-			SootMethod callee_signature, Histogram ce_range) 
+			SootMethod callee_signature, Histogram ce_range)
 	{
 		long l, r;
 		IVarAbstraction pn = ptsProvider.findInternalNode(vn);
@@ -230,7 +227,7 @@ public class GeomEvaluator {
 				.getIDFromSootMethod(caller));
 
 		FastHierarchy hierarchy = Scene.v().getOrMakeFastHierarchy();
-		
+
 		for (Iterator<CgEdge> it = list.iterator(); it.hasNext();) {
 			CgEdge p = it.next();
 
@@ -263,11 +260,11 @@ public class GeomEvaluator {
 			ce_range.addNumber(tgts.size());
 		}
 	}
-	
+
 	/**
 	 * Report the virtual callsites resolution result for the user's code.
 	 */
-	public void checkCallGraph() 
+	public void checkCallGraph()
 	{
 		int[] limits = new int[] { 1, 2, 4, 8 };
 		evalRes.total_call_edges = new Histogram(limits);
@@ -278,19 +275,19 @@ public class GeomEvaluator {
 			Iterator<Edge> edges = cg.edgesOutOf(callsite);
 			if ( !edges.hasNext() ) continue;
 			evalRes.n_callsites++;
-			
+
 			// get an edge
 			Edge anyEdge = edges.next();
 			SootMethod src = anyEdge.src();
-			
+
 			if ( !ptsProvider.isReachableMethod(src) ||
 					!ptsProvider.isValidMethod(src) )
 				continue;
-			
+
 			// get the base pointer
 			CgEdge p = ptsProvider.getInternalEdgeFromSootEdge(anyEdge);
 			LocalVarNode vn = (LocalVarNode)p.base_var;
-			
+
 			// test the call graph
 			int edge_cnt = 1;
 			while ( edges.hasNext() ) {
@@ -299,14 +296,14 @@ public class GeomEvaluator {
 			}
 			evalRes.n_geom_call_edges += edge_cnt;
 			if ( edge_cnt == 1 ) ++evalRes.n_geom_solved_all;
-			
+
 			// test app method
 			if ( !src.isJavaLibraryMethod() ) {
 				InvokeExpr ie = callsite.getInvokeExpr();
-				
+
 				if ( edge_cnt == 1 ) {
 					++evalRes.n_geom_solved_app;
-					
+
 					if ( ptsProvider.getOpts().verbose() ) {
 						outputer.println();
 						outputer.println("<<<<<<<<<   Additional Solved Call   >>>>>>>>>>");
@@ -321,7 +318,7 @@ public class GeomEvaluator {
 					evalRes.total_call_edges.merge(call_edges);
 					call_edges = null;
 				}
-				
+
 				evalRes.n_geom_user_edges += edge_cnt;
 				evalRes.n_user_callsites++;
 			}
@@ -329,11 +326,11 @@ public class GeomEvaluator {
 
 		ptsProvider.ps.println();
 		ptsProvider.ps.println("--------> Virtual Callsites Evaluation <---------");
-		ptsProvider.ps.printf("Total virtual callsites (app code): %d (%d)\n", 
+		ptsProvider.ps.printf("Total virtual callsites (app code): %d (%d)\n",
 				evalRes.n_callsites, evalRes.n_user_callsites);
-		ptsProvider.ps.printf("Total virtual call edges (app code): %d (%d)\n", 
+		ptsProvider.ps.printf("Total virtual call edges (app code): %d (%d)\n",
 				evalRes.n_geom_call_edges, evalRes.n_geom_user_edges);
-		ptsProvider.ps.printf("Virtual callsites additionally solved by geomPTA compared to SPARK (app code) = %d (%d)\n", 
+		ptsProvider.ps.printf("Virtual callsites additionally solved by geomPTA compared to SPARK (app code) = %d (%d)\n",
 				evalRes.n_geom_solved_all, evalRes.n_geom_solved_app);
 		evalRes.total_call_edges.printResult(ptsProvider.ps,
 				"Testing of unsolved callsites on 1-CFA call graph: ");
@@ -345,7 +342,7 @@ public class GeomEvaluator {
 	/**
 	 * Count how many aliased base pointers appeared in all user's functions.
 	 */
-	public void checkAliasAnalysis() 
+	public void checkAliasAnalysis()
 	{
 		Set<IVarAbstraction> access_expr = new HashSet<IVarAbstraction>();
 		ArrayList<IVarAbstraction> al = new ArrayList<IVarAbstraction>();
@@ -386,10 +383,10 @@ public class GeomEvaluator {
 									.findLocalVarNode((Local) ifr.getBase());
 							if (vn == null)
 								continue;
-							
+
 							if ( ptsProvider.isExceptionPointer(vn) )
 								continue;
-							
+
 							IVarAbstraction pn = ptsProvider.findInternalNode(vn);
 							if ( pn == null ) continue;
 							pn = pn.getRepresentative();
@@ -403,7 +400,7 @@ public class GeomEvaluator {
 		access_expr.remove(null);
 		al.addAll(access_expr);
 		access_expr = null;
-		
+
 		// Next, we pair up all the pointers
 		Date begin = new Date();
 		int size = al.size();
@@ -424,7 +421,7 @@ public class GeomEvaluator {
 					evalRes.n_hi_alias++;
 			}
 		}
-		
+
 		evalRes.n_alias_pairs = size * (size - 1) / 2;
 		Date end = new Date();
 
@@ -445,9 +442,9 @@ public class GeomEvaluator {
 	/**
 	 * Count how many static casts can be determined safe.
 	 */
-	public void checkCastsSafety() 
+	public void checkCastsSafety()
 	{
-		
+
 
 		for (SootMethod sm : ptsProvider.getAllReachableMethods()) {
 			if (sm.isJavaLibraryMethod())
@@ -481,9 +478,9 @@ public class GeomEvaluator {
 
 						pn = pn.getRepresentative();
 						if ( !pn.hasPTResult() ) continue;
-						
+
 						evalRes.total_casts++;
-						final Type targetType = 
+						final Type targetType =
 								(RefLikeType) ((CastExpr) rhs).getCastType();
 
 						// We first use the geometric points-to result to
@@ -530,7 +527,7 @@ public class GeomEvaluator {
 	 * Estimate the size of the def-use graph for the heap memory. The heap
 	 * graph is estimated without context information.
 	 */
-	public void estimateHeapDefuseGraph() 
+	public void estimateHeapDefuseGraph()
 	{
 		final Map<IVarAbstraction, int[]> defUseCounterForGeom = new HashMap<IVarAbstraction, int[]>();
 		final Map<AllocDotField, int[]> defUseCounterForSpark = new HashMap<AllocDotField, int[]>();
@@ -669,21 +666,21 @@ class EvalResults
 	public double avg_geom_ins_pts = .0, avg_spark_pts = .0;
 	public int max_pts_geom = 0, max_pts_spark = 0;
 	public Histogram pts_size_bar_geom = null, pts_size_bar_spark = null;
-	
+
 	// Call graph metrics
 	public int n_callsites = 0, n_user_callsites = 0;
 	public int n_geom_call_edges = 0, n_geom_user_edges = 0;
 	public int n_geom_solved_all = 0, n_geom_solved_app = 0;
 	public Histogram total_call_edges = null;
-	
+
 	// Alias metrics
 	public long n_alias_pairs = 0;
 	public long n_hs_alias = 0, n_hi_alias = 0;
-	
+
 	// Static cast metrics
 	public int total_casts = 0;
 	public int geom_solved_casts = 0, spark_solved_casts = 0;
-	
+
 	// Heap def-use graph metrics
 	public long n_geom_du_pairs = 0, n_spark_du_pairs = 0;
 }
