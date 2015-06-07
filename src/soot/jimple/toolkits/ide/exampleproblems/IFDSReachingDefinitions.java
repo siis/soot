@@ -37,7 +37,6 @@ import soot.Local;
 import soot.NullType;
 import soot.Scene;
 import soot.SootMethod;
-import soot.Type;
 import soot.Unit;
 import soot.Value;
 import soot.jimple.DefinitionStmt;
@@ -54,7 +53,7 @@ public class IFDSReachingDefinitions extends DefaultJimpleIFDSTabulationProblem<
 	public IFDSReachingDefinitions(InterproceduralCFG<Unit, SootMethod> icfg) {
 		super(icfg);
 	}
-	
+
 	@Override
 	public FlowFunctions<Unit, Pair<Value, Set<DefinitionStmt>>, SootMethod> createFlowFunctionsFactory() {
 		return new FlowFunctions<Unit, Pair<Value, Set<DefinitionStmt>>, SootMethod>() {
@@ -150,7 +149,7 @@ public class IFDSReachingDefinitions extends DefaultJimpleIFDSTabulationProblem<
 			public FlowFunction<Pair<Value, Set<DefinitionStmt>>> getCallToReturnFlowFunction(Unit callSite, Unit returnSite) {
 				if (!(callSite instanceof DefinitionStmt))
 					return Identity.v();
-				
+
 				final DefinitionStmt definitionStmt = (DefinitionStmt) callSite;
 				return new FlowFunction<Pair<Value, Set<DefinitionStmt>>>() {
 

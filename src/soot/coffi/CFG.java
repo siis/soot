@@ -4358,8 +4358,8 @@ public class CFG {
         		 stmt = Jimple.v().newInvokeStmt(rvalue);
 
         	 break;
-         }
-
+         }  	 
+ 
          case ByteCode.INVOKEVIRTUAL:
          {
             Instruction_Invokevirtual iv = (Instruction_Invokevirtual)ins;
