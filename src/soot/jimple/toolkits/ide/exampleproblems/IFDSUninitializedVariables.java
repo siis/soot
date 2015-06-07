@@ -27,6 +27,7 @@ import heros.flowfunc.Kill;
 import heros.flowfunc.KillAll;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -48,8 +49,6 @@ import soot.jimple.Stmt;
 import soot.jimple.ThrowStmt;
 import soot.jimple.internal.JimpleLocal;
 import soot.jimple.toolkits.ide.DefaultJimpleIFDSTabulationProblem;
-import soot.toolkits.scalar.Pair;
-import soot.util.Chain;
 
 public class IFDSUninitializedVariables extends DefaultJimpleIFDSTabulationProblem<Local,InterproceduralCFG<Unit, SootMethod>> {
 
@@ -129,7 +128,8 @@ public class IFDSUninitializedVariables extends DefaultJimpleIFDSTabulationProbl
 					@Override
 					public Set<Local> computeTargets(final Local source) {
 						// Do not map parameters for <clinit> edges
-						if (destinationMethod.getName().equals("<clinit>"))
+						if (destinationMethod.getName().equals("<clinit>")
+								|| destinationMethod.getSubSignature().equals("void run()"))
 							return Collections.emptySet();
 
 						for (Local localArgument : localArguments) {
@@ -140,7 +140,7 @@ public class IFDSUninitializedVariables extends DefaultJimpleIFDSTabulationProbl
 
 						if (source == zeroValue()) {
 							//gen all locals that are not parameter locals 
-							Chain<Local> locals = destinationMethod.getActiveBody().getLocals();
+							Collection<Local> locals = destinationMethod.getActiveBody().getLocals();
 							LinkedHashSet<Local> uninitializedLocals = new LinkedHashSet<Local>(locals);
 							for(int i=0;i<destinationMethod.getParameterCount();i++) {								
 								uninitializedLocals.remove(destinationMethod.getActiveBody().getParameterLocal(i));

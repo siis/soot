@@ -122,12 +122,19 @@ public class SmartLocalDefs implements LocalDefs {
 
 		answer = new HashMap<Cons, List<Unit>>();
 		for (Unit u : graph) {
+//			if (graph.getBody().getMethod().getSignature().equals("<com.google.ads.a.j: java.lang.String a(java.util.Map,android.app.Activity)>"))
+//				System.out.println(u);
 			for (ValueBox vb : u.getUseBoxes()) {
 				Value v = vb.getValue();
 				if (v instanceof Local) {
 					Cons key = new Cons(u, v);
-					if ( !answer.containsKey(key) ) {					
-						List<Unit> lst = asList(defsOf((Local) v), analysis.getFlowBefore(u));					
+//					if (graph.getBody().getMethod().getSignature().equals("<com.google.ads.a.j: java.lang.String a(java.util.Map,android.app.Activity)>")) {
+//						System.out.println(key.hashCode() + " " + key.car().hashCode() + " " + key.cdr().hashCode());
+//					}
+					if ( !answer.containsKey(key) ) {
+						List<Unit> lst = asList(defsOf((Local) v), analysis.getFlowBefore(u));
+//						if (graph.getBody().getMethod().getSignature().equals("<com.google.ads.a.j: java.lang.String a(java.util.Map,android.app.Activity)>"))
+//							System.out.println("Adding " + lst);
 						answer.put(key, lst);
 					}
 				}
@@ -236,6 +243,10 @@ public class SmartLocalDefs implements LocalDefs {
 	}
 
 	public List<Unit> getDefsOfAt(Local l, Unit s) {
+//		Cons key = new Cons(s, l);
+//		if (graph.getBody().getMethod().getSignature().equals("<com.google.ads.a.j: java.lang.String a(java.util.Map,android.app.Activity)>")) {
+//			System.out.println(key.hashCode() + " " + key.car().hashCode() + " " + key.cdr().hashCode());
+//		}
 		return answer.get(new Cons(s, l));
 	}
 

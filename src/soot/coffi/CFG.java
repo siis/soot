@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -52,7 +52,7 @@ public class CFG {
      */
     BasicBlock cfg;
 
-    Chain units;
+    Chain<Unit> units;
     JimpleBody listBody;
 
     Map<Instruction, Stmt> instructionToFirstStmt;
@@ -69,7 +69,7 @@ public class CFG {
      * @param m the method in question.
      * @see method_info
      */
-    public CFG(method_info m) 
+    public CFG(method_info m)
     {
 	this.method = m;
 
@@ -81,7 +81,7 @@ public class CFG {
 	//	printExceptionTable();
 
     eliminateJsrRets();
-    
+
 	//	printInstructions();
 	//	printExceptionTable();
 
@@ -101,13 +101,13 @@ public class CFG {
 
 	// calculate complexity metrics
     if (soot.jbco.Main.metrics) complexity();
-    
-    /*	
+
+    /*
 	if (m.code_attr != null)
 	{
 	    for (int i=0; i<m.code_attr.attributes.length; i++)
 	    {
-		if (m.code_attr.attributes[i] 
+		if (m.code_attr.attributes[i]
 		    instanceof LineNumberTable_attribute)
 		{
 		    G.v().out.print(m.code_attr.attributes[i]);
@@ -118,15 +118,15 @@ public class CFG {
     }
 
     public static HashMap<SootMethod, int[]> methodsToVEM = new HashMap<SootMethod, int[]>();
-    private void complexity() 
+    private void complexity()
     {
       // ignore all non-app classes
       if (!method.jmethod.getDeclaringClass().isApplicationClass()) return;
-      
+
       BasicBlock b = this.cfg;
       HashMap<BasicBlock, Integer> block2exc = new HashMap<BasicBlock, Integer>();
       int tmp, nodes = 0, edges = 0, highest = 0;
-      
+
       while (b != null) {
         tmp = 0;
         for (exception_table_entry element : method.code_attr.exception_table) {
@@ -139,13 +139,13 @@ public class CFG {
         block2exc.put(b, new Integer(tmp));
         b = b.next;
       }
-      
+
       b = this.cfg;
       while ( b!= null )
       {
         nodes++;
         tmp = b.succ.size() + block2exc.get(b).intValue();
-        
+
         // exceptions are not counted in succs and preds so we need to do so manually
         int deg = b.pred.size() + tmp + (b.beginException ? 1 : 0);
         if (deg > highest)
@@ -159,7 +159,7 @@ public class CFG {
     // Constructs the actual control flow graph. Assumes the hash table
     // currently associates leaders with BasicBlocks, this function
     // builds the next[] and prev[] pointer arrays.
-    private void buildBBCFG() 
+    private void buildBBCFG()
     {
 	Object branches[];
 	Code_attribute ca = method.locate_code_attribute();
@@ -178,7 +178,7 @@ public class CFG {
 		t2bb.put(tail, cfg);
 		insn = tail.next;
 		blast = cfg;
-	    }	
+	    }
 
 	    while (insn != null)
 	    {
@@ -194,11 +194,11 @@ public class CFG {
 
 	BasicBlock block = cfg;
 
-	while (block != null) 
+	while (block != null)
 	{
 	    Instruction insn = block.tail;
 
-	    if (insn.branches) 
+	    if (insn.branches)
 	    {
 		if (insn instanceof Instruction_Athrow)
 		{
@@ -206,26 +206,26 @@ public class CFG {
 		    // subset of the exception_table.
 		    HashSet<Instruction> ethandlers = new HashSet<Instruction>();
 
-		    // not quite a subset---could also be that control 
+		    // not quite a subset---could also be that control
 		    // exits this method, so start icount at 1
-		    for (int i=0; i<ca.exception_table_length; i++) 
+		    for (int i=0; i<ca.exception_table_length; i++)
 		    {
 			exception_table_entry etentry =
 			    ca.exception_table[i];
 
-			if (insn.label >= etentry.start_inst.label 
-			    && (etentry.end_inst==null 
-				|| insn.label < etentry.end_inst.label)) 
+			if (insn.label >= etentry.start_inst.label
+			    && (etentry.end_inst==null
+				|| insn.label < etentry.end_inst.label))
 			{
 			    ethandlers.add(etentry.handler_inst);
 			}
 		    }
 
 		    branches = ethandlers.toArray();
-		} 
+		}
 		else
 		{
-		    branches = insn.branchpoints(insn.next);          
+		    branches = insn.branchpoints(insn.next);
 		}
 
 		if (branches != null)
@@ -235,14 +235,14 @@ public class CFG {
 		    for (Object element : branches) {
 			if ( element!=null ) {
 			    BasicBlock bb = h2bb.get(element);
-                 
+
 			    if (bb == null)
-			    {                 
+			    {
 				G.v().out.println("Warning: "
 					       +"target of a branch is null");
 				G.v().out.println ( insn );
 			    }
-			    else 
+			    else
 			    {
 				block.succ.addElement(bb);
 				bb.pred.addElement(block);
@@ -250,9 +250,9 @@ public class CFG {
 			}
 		    }
 		}
-	    } 
-	    else 
-	    if (block.next!=null) 
+	    }
+	    else
+	    if (block.next!=null)
 	    { // BB ended not with a branch, so just go to next
 		block.succ.addElement(block.next);
 		block.next.pred.addElement(block);
@@ -262,7 +262,7 @@ public class CFG {
 
 	// One final step, run through exception handlers and mark which
 	// basic blocks begin their code
-	for (int i=0; i<ca.exception_table_length; i++) 
+	for (int i=0; i<ca.exception_table_length; i++)
 	{
 	    BasicBlock bb = h2bb.get(
 					 ca.exception_table[i].handler_inst);
@@ -271,7 +271,7 @@ public class CFG {
 		G.v().out.println("Warning: No basic block found for" +
 				   " start of exception handler code.");
 	    }
-	    else 
+	    else
 	    {
 		bb.beginException = true;
 		ca.exception_table[i].b = bb;
@@ -283,7 +283,7 @@ public class CFG {
      * basic block, terminates it with a null, and returns the next
      * instruction after.
      */
-    private static Instruction buildBasicBlock(Instruction head) 
+    private static Instruction buildBasicBlock(Instruction head)
     {
 	Instruction insn, next;
 	insn = head;
@@ -292,8 +292,8 @@ public class CFG {
 	if (next == null)
 	    return insn;
 
-	do 
-	{	    
+	do
+	{
 	    if (insn.branches || next.labelled)
 		break;
 	    else
@@ -309,10 +309,10 @@ public class CFG {
     /* We only handle simple cases. */
     Map<Instruction, Instruction> jsr2astore = new HashMap<Instruction, Instruction>();
     Map<Instruction, Instruction> astore2ret = new HashMap<Instruction, Instruction>();
-    
+
     LinkedList<Instruction> jsrorder = new LinkedList<Instruction>();
 
-    /* Eliminate subroutines ( JSR/RET instructions ) by inlining the 
+    /* Eliminate subroutines ( JSR/RET instructions ) by inlining the
        routine bodies. */
     private boolean eliminateJsrRets()
     {
@@ -380,7 +380,7 @@ public class CFG {
 		    // skip it
 		    insn = insn.next;
 		    continue;
-		}    
+		}
 
 		Instruction astore = ((Instruction_branch)insn).target;
 		if (! (astore instanceof Interface_Astore))
@@ -388,7 +388,7 @@ public class CFG {
 		    unusual = true;
 		    break;
 		}
-		
+
 		Instruction ret = findMatchingRet(astore, insn, innerJsrs);
 
 		/*
@@ -403,9 +403,9 @@ public class CFG {
 		jsr2astore.put(insn, astore);
 		astore2ret.put(astore, ret);
 	    }
- 
+
 	    insn = insn.next;
-	   
+
 	} while (insn != end.next);
 
 	if (unusual)
@@ -413,16 +413,16 @@ public class CFG {
 	    G.v().out.println("Sorry, I cannot handle this method.");
 	    return false;
 	}
-	
+
 	return true;
     }
 
-    private Instruction findMatchingRet(Instruction astore, 
+    private Instruction findMatchingRet(Instruction astore,
 					Instruction jsr,
 					HashSet<Instruction>     innerJsrs)
     {
 	int astorenum = ((Interface_Astore)astore).getLocalNumber();
-	
+
 	Instruction insn = astore.next;
 	while (insn != null)
 	{
@@ -465,13 +465,13 @@ public class CFG {
 
 	while (!jsrorder.isEmpty())
 	{
-	    Instruction jsr = jsrorder.removeFirst();	    
+	    Instruction jsr = jsrorder.removeFirst();
 	    Instruction astore = jsr2astore.get(jsr);
 
 	    Instruction ret = astore2ret.get(astore);
 
-	    // make a copy of the code, append to the last instruction.     
-	    Instruction newhead = makeCopyOf(astore, ret, jsr.next);	
+	    // make a copy of the code, append to the last instruction.
+	    Instruction newhead = makeCopyOf(astore, ret, jsr.next);
 
 	    // jsr is replaced by goto newhead
 	    // astore has been removed
@@ -486,7 +486,7 @@ public class CFG {
 	    togo.prev.next = togo;
 	    togo.next.prev = togo;
 
-	    replacedInsns.put(jsr, togo); 
+	    replacedInsns.put(jsr, togo);
 
 	    // just quick hack
 	    if (ret != null) {
@@ -497,7 +497,7 @@ public class CFG {
 	return newblocks;
     }
 
-    /* make a copy of code between from and to exclusively, 
+    /* make a copy of code between from and to exclusively,
      * fixup targets of branch instructions in the code.
      */
     private Instruction makeCopyOf(Instruction astore,
@@ -515,9 +515,9 @@ public class CFG {
 	int curlabel = this.lastInstruction.label;
 
 	// mapping from original instructions to new instructions.
-	HashMap<Instruction, Instruction> insnmap = new HashMap<Instruction, Instruction>(); 
+	HashMap<Instruction, Instruction> insnmap = new HashMap<Instruction, Instruction>();
 	Instruction insn = astore.next;
-	
+
 	while (insn != ret && insn != null)
 	{
 	    try {
@@ -533,7 +533,7 @@ public class CFG {
 	    {
 		G.v().out.println("Error !");
 	    }
-	    insn = insn.next;   
+	    insn = insn.next;
 	}
 
 	// replace ret by a goto
@@ -547,11 +547,11 @@ public class CFG {
 
 	this.lastInstruction = last;
 
-	// The ret instruction is removed, 
+	// The ret instruction is removed,
 	insnmap.put(astore, headbefore.next);
 	insnmap.put(ret, togo);
 
-	// fixup targets in new instruction (only in the scope of 
+	// fixup targets in new instruction (only in the scope of
 	//  new instructions).
 	// do not forget set target labelled as TRUE
 	insn = headbefore.next;
@@ -565,14 +565,14 @@ public class CFG {
 		{
 		    ((Instruction_branch)insn).target = newtgt;
 		    newtgt.labelled = true;
-		} 
+		}
 	    }
 	    else
 	    if (insn instanceof Instruction_Lookupswitch)
 	    {
-		Instruction_Lookupswitch switchinsn = 
+		Instruction_Lookupswitch switchinsn =
 		    (Instruction_Lookupswitch)insn;
-		
+
 		Instruction newdefault = insnmap.get(switchinsn.default_inst);
 		if (newdefault != null)
 		{
@@ -593,9 +593,9 @@ public class CFG {
 	    else
 	    if (insn instanceof Instruction_Tableswitch)
 	    {
-		Instruction_Tableswitch switchinsn = 
+		Instruction_Tableswitch switchinsn =
 		    (Instruction_Tableswitch)insn;
-		
+
 		Instruction newdefault = insnmap.get(switchinsn.default_inst);
 		if (newdefault != null)
 		{
@@ -616,9 +616,9 @@ public class CFG {
 
 	    insn = insn.next;
 	}
-	
-	// do we need to copy a new exception table entry? 
-	// new exception table has new exception range, 
+
+	// do we need to copy a new exception table entry?
+	// new exception table has new exception range,
 	// and the new exception handler.
 	{
 	    Code_attribute ca = method.locate_code_attribute();
@@ -628,7 +628,7 @@ public class CFG {
 	    int orig_start_of_subr = astore.next.originalIndex; // inclusive
 	    int orig_end_of_subr = ret.originalIndex; // again, inclusive
 
-	    for (int i=0; i<ca.exception_table_length; i++) 
+	    for (int i=0; i<ca.exception_table_length; i++)
 	    {
 		exception_table_entry etentry =
 		    ca.exception_table[i];
@@ -638,7 +638,7 @@ public class CFG {
 		if ( orig_start_of_trap < orig_end_of_subr &&
 		     orig_end_of_trap > orig_start_of_subr) {
 		    // At least a portion of the cloned subroutine is trapped.
-		    exception_table_entry newone = 
+		    exception_table_entry newone =
 			new exception_table_entry();
 		    if (orig_start_of_trap <= orig_start_of_subr) {
 			newone.start_inst = headbefore.next;
@@ -646,7 +646,7 @@ public class CFG {
 		    	Instruction ins = insnmap.get(etentry.start_inst);
 		    	if(ins!=null)
 		    		newone.start_inst = insnmap.get(etentry.start_inst);
-		    	else 
+		    	else
 		    		newone.start_inst = etentry.start_inst;
 		    }
 		    if (orig_end_of_trap > orig_end_of_subr) {
@@ -686,11 +686,11 @@ public class CFG {
 		{
 		    newtable[j] = newentries.get(i);
 		}
-		
+
 		ca.exception_table = newtable;
 	    }
 	}
-	
+
 	return headbefore.next;
     }
 
@@ -717,20 +717,20 @@ public class CFG {
 	    else
 	    if (insn instanceof Instruction_Lookupswitch)
 	    {
-		Instruction_Lookupswitch switchinsn = 
+		Instruction_Lookupswitch switchinsn =
 		    (Instruction_Lookupswitch)insn;
-		
-		Instruction newdefault = 
+
+		Instruction newdefault =
 		    replacedInsns.get(switchinsn.default_inst);
 		if (newdefault != null)
 		{
 		    switchinsn.default_inst = newdefault;
 		    newdefault.labelled = true;
 		}
-		
+
 		for (int i=0; i<switchinsn.npairs; i++)
 		{
-		    Instruction newtgt = 
+		    Instruction newtgt =
 			replacedInsns.get(switchinsn.match_insts[i]);
 		    if (newtgt != null)
 		    {
@@ -742,9 +742,9 @@ public class CFG {
 	    else
 	    if (insn instanceof Instruction_Tableswitch)
 	    {
-		Instruction_Tableswitch switchinsn = 
+		Instruction_Tableswitch switchinsn =
 		    (Instruction_Tableswitch)insn;
-		
+
 		Instruction newdefault = replacedInsns.get(switchinsn.default_inst);
 		if (newdefault != null)
 		{
@@ -754,7 +754,7 @@ public class CFG {
 
 		for (int i=0; i<=switchinsn.high-switchinsn.low; i++)
 		{
-		    Instruction newtgt = 
+		    Instruction newtgt =
 			replacedInsns.get(switchinsn.jump_insts[i]);
 		    if (newtgt != null)
 		    {
@@ -763,13 +763,13 @@ public class CFG {
 		    }
 		}
 	    }
-	    
+
 	    insn = insn.next;
 	}
     }
 
 
-    private void adjustExceptionTable() 
+    private void adjustExceptionTable()
     {
 	Code_attribute codeAttribute = method.locate_code_attribute();
 
@@ -779,13 +779,13 @@ public class CFG {
 
 	    Instruction oldinsn = entry.start_inst;
 	    Instruction newinsn = replacedInsns.get(oldinsn);
-	    if (newinsn != null) 
+	    if (newinsn != null)
 		entry.start_inst = newinsn;
 
 	    oldinsn = entry.end_inst;
 	    if (entry.end_inst != null)
 	    {
-		newinsn = replacedInsns.get(oldinsn);	    
+		newinsn = replacedInsns.get(oldinsn);
 		if (newinsn != null)
 		    entry.end_inst = newinsn;
 	    }
@@ -812,7 +812,7 @@ public class CFG {
 		LineNumberTable_attribute lntattr =
 		    (LineNumberTable_attribute)element;
 		for (line_number_table_entry element0 : lntattr.line_number_table) {
-		    Instruction oldinst = 
+		    Instruction oldinst =
 			element0.start_inst;
 		    Instruction newinst =
 			replacedInsns.get(oldinst);
@@ -822,7 +822,7 @@ public class CFG {
 	    }
 	}
     }
-    
+
    /** Reconstructs the instruction stream by appending the Instruction
     * lists associated with each basic block.
     * <p>
@@ -830,7 +830,7 @@ public class CFG {
     * they will no longer end with <i>null</i> after this.
     * @return the head of the list of instructions.
     */
-    public Instruction reconstructInstructions() 
+    public Instruction reconstructInstructions()
     {
 	if (cfg != null)
 	    return cfg.head;
@@ -843,7 +843,7 @@ public class CFG {
     * @param constant_pool constant pool of ClassFile.
     * @param this_class constant pool index of the CONSTANT_Class_info object for
     * this' class.
-    * @param bootstrap_methods_attribute 
+    * @param bootstrap_methods_attribute
     * @return <i>true</i> if all ok, <i>false</i> if there was an error.
     * @see Stmt
     */
@@ -851,7 +851,7 @@ public class CFG {
    {
         this.bootstrap_methods_attribute = bootstrap_methods_attribute;
 
-        Chain units = listBody.getUnits();
+        Chain<Unit> units = listBody.getUnits();
 
         this.listBody = listBody;
         this.units = units;
@@ -860,13 +860,13 @@ public class CFG {
 
         jmethod = listBody.getMethod();
         cm = Scene.v();
-        
+
         //TypeArray.setClassManager(cm);
         //TypeStack.setClassManager(cm);
 
-        Set initialLocals = new ArraySet();
+        Set<Local> initialLocals = new ArraySet<Local>();
 
-        List parameterTypes = jmethod.getParameterTypes();
+        List<Type> parameterTypes = jmethod.getParameterTypes();
 
         // Initialize nameToLocal which is an index*Type->Local map, which is used
         // to determine local in bytecode references.
@@ -876,7 +876,7 @@ public class CFG {
             LocalVariableTypeTable_attribute lt = ca.findLocalVariableTypeTable();
 
             Util.v().bodySetup(la,lt,constant_pool);
-            
+
             Type thisType = RefType.v(jmethod.getDeclaringClass().getName());
             boolean isStatic = Modifier.isStatic(jmethod.getModifiers());
 
@@ -888,20 +888,20 @@ public class CFG {
                 {
                     Local local = Util.v().getLocalForParameter(listBody, currentLocalIndex);
                     currentLocalIndex++;
-                    
+
                     units.add(Jimple.v().newIdentityStmt(local, Jimple.v().newThisRef(jmethod.getDeclaringClass().getType())));
                 }
             }
 
             // Initialize parameters
             {
-                Iterator typeIt = parameterTypes.iterator();
+                Iterator<Type> typeIt = parameterTypes.iterator();
                 int argCount = 0;
 
                 while(typeIt.hasNext())
                 {
                     Local local = Util.v().getLocalForParameter(listBody, currentLocalIndex);
-                    Type type = (Type) typeIt.next();
+                    Type type = typeIt.next();
                     initialLocals.add(local);
 
                     units.add(Jimple.v().newIdentityStmt(local, Jimple.v().newParameterRef(type, argCount)));
@@ -935,13 +935,13 @@ public class CFG {
 	{
 	    Instruction insn = block.head;
 	    while (insn != block.tail)
-	    {		
+	    {
 		Instruction[] succs = new Instruction[1];
 		succs[0] = insn.next;
 		insn.succs = succs;
 		insn = insn.next;
-	    }   
- 
+	    }
+
 	    {
 		// The successors are the ones from the basic block.
 		Vector<BasicBlock> bsucc = block.succ;
@@ -949,12 +949,12 @@ public class CFG {
 		Instruction[] succs = new Instruction[size];
 
 		for(int i = 0; i<size; i++)
-		    succs[i] = bsucc.elementAt(i).head;		    
-		insn.succs = succs;			      
-	    } 
+		    succs[i] = bsucc.elementAt(i).head;
+		insn.succs = succs;
+	    }
 
 	    block = block.next;
-	}	
+	}
     }
 
     /** Main.v() entry point for converting list of Instructions to Jimple statements;
@@ -971,14 +971,14 @@ public class CFG {
     void jimplify(cp_info constant_pool[],int this_class)
     {
         Code_attribute codeAttribute = method.locate_code_attribute();
-        Set<Instruction> handlerInstructions = new ArraySet();
+        Set<Instruction> handlerInstructions = new ArraySet<Instruction>();
 
         Map<Instruction, SootClass> handlerInstructionToException = new HashMap<Instruction, SootClass>();
         Map<Instruction, TypeStack> instructionToTypeStack;
         Map<Instruction, TypeStack> instructionToPostTypeStack;
 
         {
-            // build graph in 
+            // build graph in
 	    buildInsnCFGfromBBCFG();
 
 	    // Put in successors due to exception handlers
@@ -1021,7 +1021,7 @@ public class CFG {
                     Instruction ins = startIns;
 
                     for(;;)
-                    {                  
+                    {
                         Instruction[] succs = ins.succs;
 			Instruction[] newsuccs = new Instruction[succs.length+1];
 
@@ -1031,7 +1031,7 @@ public class CFG {
        			ins.succs = newsuccs;
 
                         ins = ins.next;
-                        if (ins == endIns || ins == null)                         
+                        if (ins == endIns || ins == null)
                             break;
 		    }
                 }
@@ -1039,20 +1039,20 @@ public class CFG {
         }
 
         Set<Instruction> reachableInstructions = new HashSet<Instruction>();
-        
+
         // Mark all the reachable instructions
         {
             LinkedList<Instruction> instructionsToVisit = new LinkedList<Instruction>();
-            
+
             reachableInstructions.add(firstInstruction);
             instructionsToVisit.addLast(firstInstruction);
-            
+
             while( !instructionsToVisit.isEmpty())
             {
                 Instruction ins = instructionsToVisit.removeFirst();
 
 		Instruction[] succs = ins.succs;
-	       
+
 		for (Instruction succ : succs) {
 		    if(!reachableInstructions.contains(succ))
 		    {
@@ -1062,7 +1062,7 @@ public class CFG {
                 }
             }
         }
-            
+
         /*
         // Check to see if any instruction is unmarked.
         {
@@ -1084,7 +1084,7 @@ public class CFG {
             }
         }
         */
-        
+
         // Perform the flow analysis, and build up instructionToTypeStack and instructionToLocalArray
         {
             instructionToTypeStack = new HashMap<Instruction, TypeStack>();
@@ -1146,7 +1146,7 @@ public class CFG {
                         }
                         else {
                             // G.v().out.println("considering successor: " + s);
-                        
+
 							TypeStack newTypeStack,
                                 oldTypeStack = instructionToTypeStack.get(s);
 
@@ -1239,7 +1239,7 @@ public class CFG {
                             instructionToPostTypeStack.get(ins), constant_pool,
                             statementsForIns, b);
                     else
-                        statementsForIns.add(Jimple.v().newNopStmt()); 
+                        statementsForIns.add(Jimple.v().newNopStmt());
 
                     if(!statementsForIns.isEmpty())
                     {
@@ -1257,7 +1257,7 @@ public class CFG {
 			break;
 
                     ins = ins.next;
-                } 
+                }
 
                 b = b.next;
             }
@@ -1287,19 +1287,19 @@ public class CFG {
                 b = b.next;
             }
         }
-        */ 
+        */
 
         // Insert beginCatch/endCatch statements for exception handling
         {
             Map<Stmt, Stmt> targetToHandler = new HashMap<Stmt, Stmt>();
-            
+
 	    for(int i = 0; i < codeAttribute.exception_table_length; i++)
 	    {
-		Instruction startIns = 
+		Instruction startIns =
 		    codeAttribute.exception_table[i].start_inst;
-		Instruction endIns = 
+		Instruction endIns =
 		    codeAttribute.exception_table[i].end_inst;
-		Instruction targetIns = 
+		Instruction targetIns =
 		    codeAttribute.exception_table[i].handler_inst;
 
 		if(!instructionToFirstStmt.containsKey(startIns) ||
@@ -1318,14 +1318,14 @@ public class CFG {
 
 		// Determine exception to catch
 		{
-		    int catchType = 
+		    int catchType =
 			codeAttribute.exception_table[i].catch_type;
 		    if(catchType != 0)
                     {
 			CONSTANT_Class_info classinfo = (CONSTANT_Class_info)
 			    constant_pool[catchType];
 
-			String name = ((CONSTANT_Utf8_info) 
+			String name = ((CONSTANT_Utf8_info)
 				       (constant_pool[classinfo.name_index])).convert();
 			name = name.replace('/', '.');
 			exception = cm.getSootClass(name);
@@ -1338,22 +1338,22 @@ public class CFG {
 
 		// Insert assignment of exception
 		{
-		    Stmt firstTargetStmt = 
+		    Stmt firstTargetStmt =
 			instructionToFirstStmt.get(targetIns);
-                        
+
 		    if(targetToHandler.containsKey(firstTargetStmt))
-			newTarget = 
+			newTarget =
 			    targetToHandler.get(firstTargetStmt);
 		    else
                     {
-			Local local = 
+			Local local =
 			    Util.v().getLocalCreatingIfNecessary(listBody, "$stack0",UnknownType.v());
-			
+
 			newTarget = Jimple.v().newIdentityStmt(local, Jimple.v().newCaughtExceptionRef());
 
 			// changed to account for catch blocks which are also part of normal control flow
-            //units.insertBefore(newTarget, firstTargetStmt);			
-            ((PatchingChain)units).insertBeforeNoRedirect(newTarget, firstTargetStmt);
+            //units.insertBefore(newTarget, firstTargetStmt);
+            ((PatchingChain<Unit>)units).insertBeforeNoRedirect(newTarget, firstTargetStmt);
 
 			targetToHandler.put(firstTargetStmt, newTarget);
             if (units.getFirst()!=newTarget) {
@@ -1372,7 +1372,7 @@ public class CFG {
 			// A kludge which isn't really correct, but
 			// gets us closer to correctness (until we
 			// clean up the rest of Soot to properly
-			// represent Traps which extend to the end 
+			// represent Traps which extend to the end
 			// of a method): if the protected code extends
 			// to the end of the method, use the last Stmt
 			// as the endUnit of the Trap, even though
@@ -1381,8 +1381,8 @@ public class CFG {
 			afterEndStmt = (Stmt) units.getLast();
 		    } else {
 			afterEndStmt = instructionToLastStmt.get(endIns);
-			IdentityStmt catchStart = 
-			    (IdentityStmt) targetToHandler.get(afterEndStmt); 
+			IdentityStmt catchStart =
+			    (IdentityStmt) targetToHandler.get(afterEndStmt);
 			                    // (Cast to IdentityStmt as an assertion check.)
 			if (catchStart != null) {
 			    // The protected region extends to the beginning of an
@@ -1396,9 +1396,9 @@ public class CFG {
 			}
 		    }
 
-		    Trap trap = Jimple.v().newTrap(exception, 
-						   firstStmt, 
-						   afterEndStmt, 
+		    Trap trap = Jimple.v().newTrap(exception,
+						   firstStmt,
+						   afterEndStmt,
 						   newTarget);
 		    listBody.getTraps().add(trap);
 		}
@@ -1452,11 +1452,11 @@ public class CFG {
 	    {
 		Stmt stmt = startstmts.get(i);
 		Tag tag = stmtstags.get(stmt);
-		
+
 		stmt.addTag(tag);
-		
+
 		stmt = (Stmt)units.getSuccOf(stmt);
-		while (stmt != null 
+		while (stmt != null
 		       && !stmtstags.containsKey(stmt))
 		{
 		    stmt.addTag(tag);
@@ -2276,7 +2276,7 @@ public class CFG {
                  typeStack = smartPush(typeStack, returnType);
              break;
           }
-         
+
          case ByteCode.INVOKEVIRTUAL:
          {
             Instruction_Invokevirtual iv = (Instruction_Invokevirtual)ins;
@@ -2482,7 +2482,7 @@ public class CFG {
 
         return Util.v().jimpleReturnTypeOfMethodDescriptor(methodDescriptor);
     }
-    
+
     private Type jimpleReturnTypeOfMethodRef(Scene cm,
         cp_info[] constant_pool, int index)
     {
@@ -2552,12 +2552,12 @@ public class CFG {
                 switch (typeIndicator){
                     case 'I': baseType = IntType.v(); break;
                     case 'C': baseType = CharType.v(); break;
-                    case 'F': baseType = FloatType.v(); break;          
-                    case 'D': baseType = DoubleType.v(); break;          
-                    case 'B': baseType = ByteType.v(); break;          
-                    case 'S': baseType = ShortType.v(); break;          
-                    case 'Z': baseType = BooleanType.v(); break;          
-                    case 'J': baseType = LongType.v(); break;          
+                    case 'F': baseType = FloatType.v(); break;
+                    case 'D': baseType = DoubleType.v(); break;
+                    case 'B': baseType = ByteType.v(); break;
+                    case 'S': baseType = ShortType.v(); break;
+                    case 'Z': baseType = BooleanType.v(); break;
+                    case 'J': baseType = LongType.v(); break;
                     case 'L': baseType = RefType.v(
                                       name.substring(dim+1, name.length()-1));
                               break;
@@ -2670,7 +2670,7 @@ public class CFG {
 	while (!bbq.isEmpty()) {
 	    try {
 		b = bbq.pull();
-	    } catch(NoSuchElementException e) 
+	    } catch(NoSuchElementException e)
 	    { break; }
 
 	    s = b.getTailJStmt();
@@ -2685,18 +2685,18 @@ public class CFG {
                 }
                 else
                 {
-                    // Goto derived from a jsr bytecode		    
+                    // Goto derived from a jsr bytecode
 		    /*
                     if((BasicBlock)(b.succ.firstElement())==b.next)
                         ((GotoStmt)s).setTarget(((BasicBlock) b.succ.elementAt(1)).getHeadJStmt());
                     else
-                        ((GotoStmt)s).setTarget(((BasicBlock) b.succ.firstElement()).getHeadJStmt());	
+                        ((GotoStmt)s).setTarget(((BasicBlock) b.succ.firstElement()).getHeadJStmt());
 		    */
 		    G.v().out.println("Error :");
 		    for (int i=0; i<b.statements.size(); i++)
 			G.v().out.println(b.statements.get(i));
-		    
-		    throw new RuntimeException(b +" has "+b.succ.size()+" successors.");		    
+
+		    throw new RuntimeException(b +" has "+b.succ.size()+" successors.");
                 }
             }
             else if (s instanceof IfStmt)
@@ -2763,13 +2763,13 @@ public class CFG {
      * @param c code attribute of this method.
      * @see CFG#jimplify
     */
-    void jimpleTargetFixup() 
+    void jimpleTargetFixup()
     {
 	BasicBlock b;
 	BBQ bbq = new BBQ();
 
 	Code_attribute c = method.locate_code_attribute();
-	if (c==null) 
+	if (c==null)
 	    return;
 
 	// Reset all the dones to true
@@ -2789,14 +2789,14 @@ public class CFG {
 	processTargetFixup(bbq);
 
 	// then the exceptions
-	if (bbq.isEmpty()) 
+	if (bbq.isEmpty())
 	{
 	    int i;
-	    for (i=0;i<c.exception_table_length;i++) 
+	    for (i=0;i<c.exception_table_length;i++)
 	    {
 		b = c.exception_table[i].b;
 		// if block hasn't yet been processed...
-		if (b!=null && b.done) 
+		if (b!=null && b.done)
 		{
 		    bbq.push(b);
 		    processTargetFixup(bbq);
@@ -2882,7 +2882,7 @@ public class CFG {
         String className = ((CONSTANT_Utf8_info) (constant_pool[((CONSTANT_Class_info)c).name_index])).convert();
 
 
-        rvalue = ClassConstant.v(className); 
+        rvalue = ClassConstant.v(className);
         stmt = Jimple.v().newAssignStmt(Util.v().getLocalForStackOp(listBody, postTypeStack, postTypeStack.topIndex()), rvalue);
       }
       else {
@@ -2911,7 +2911,7 @@ public class CFG {
       Stmt stmt = null;
 
       int x = ((ins.code))&0xff;
-      
+
       switch(x)
       {
          case ByteCode.BIPUSH:
@@ -3091,7 +3091,7 @@ public class CFG {
          }
 
          case ByteCode.ISTORE:
-         {  
+         {
             Local local =
                 Util.v().getLocalForIndex(listBody,
                 ((Instruction_bytevar)ins).arg_b, ins);
@@ -3101,7 +3101,7 @@ public class CFG {
          }
 
          case ByteCode.FSTORE:
-         {  
+         {
             Local local =
                 Util.v().getLocalForIndex(listBody,
                 ((Instruction_bytevar)ins).arg_b, ins);
@@ -3111,7 +3111,7 @@ public class CFG {
          }
 
          case ByteCode.ASTORE:
-         {  
+         {
             Local local =
                 Util.v().getLocalForIndex(listBody,
                 ((Instruction_bytevar)ins).arg_b, ins);
@@ -3121,7 +3121,7 @@ public class CFG {
          }
 
          case ByteCode.LSTORE:
-         {  
+         {
             Local local =
                 Util.v().getLocalForIndex(listBody,
                 ((Instruction_bytevar)ins).arg_b, ins);
@@ -3131,7 +3131,7 @@ public class CFG {
          }
 
          case ByteCode.DSTORE:
-         {  
+         {
             Local local =
                 Util.v().getLocalForIndex(listBody,
                 ((Instruction_bytevar)ins).arg_b, ins);
@@ -3429,7 +3429,7 @@ public class CFG {
                 stmt = null;
             }
             break;
-            
+
         case ByteCode.DUP2_X1:
             if(typeSize(typeStack.get(typeStack.topIndex() - 1)) == 2)
             {
@@ -3443,11 +3443,11 @@ public class CFG {
 
                 stmt = Jimple.v().newAssignStmt(Util.v().getLocalForStackOp(listBody, postTypeStack,
                     postTypeStack.topIndex() - 2), l3);
-                
+
                 statements.add(stmt);
 
                 stmt = Jimple.v().newAssignStmt(Util.v().getLocalForStackOp(listBody, postTypeStack,
-                    postTypeStack.topIndex() - 4), 
+                    postTypeStack.topIndex() - 4),
                     Util.v().getLocalForStackOp(listBody, postTypeStack, postTypeStack.topIndex() - 1));
 
                 statements.add(stmt);
@@ -4047,6 +4047,13 @@ public class CFG {
          case ByteCode.GOTO_W:
             stmt = Jimple.v().newGotoStmt(new FutureStmt());
             break;
+
+         case ByteCode.JSR:
+         case ByteCode.JSR_W:
+         {
+        	 System.err.println("Warning: Found JSR instruction.");
+        	 break;
+         }
 /*
          case ByteCode.JSR:
          case ByteCode.JSR_W:
@@ -4105,18 +4112,20 @@ public class CFG {
             int lowIndex = ((Instruction_Tableswitch)ins).low,
                 highIndex = ((Instruction_Tableswitch)ins).high;
 
+            int npairs = highIndex - lowIndex + 1;
+
             stmt = Jimple.v().newTableSwitchStmt(
                     Util.v().getLocalForStackOp(listBody, typeStack, typeStack.topIndex()),
                     lowIndex,
                     highIndex,
-                    Arrays.asList(new FutureStmt[highIndex - lowIndex + 1]),
+                    Arrays.asList(new FutureStmt[npairs]),
                     new FutureStmt());
             break;
          }
 
          case ByteCode.LOOKUPSWITCH:
          {
-            List matches = new ArrayList();
+            List<IntConstant> matches = new ArrayList<IntConstant>();
             int npairs = ((Instruction_Lookupswitch)ins).npairs;
 
             for (int j = 0; j < npairs; j++)
@@ -4149,7 +4158,7 @@ public class CFG {
                     convert();
 
             Type fieldType = Util.v().jimpleTypeOfFieldDescriptor(fieldDescriptor);
-                
+
             SootClass bclass = cm.getSootClass(className);
 
             SootFieldRef fieldRef = Scene.v().makeFieldRef(bclass, fieldName, fieldType, false);
@@ -4188,7 +4197,7 @@ public class CFG {
 
             SootClass bclass = cm.getSootClass(className);
 
-            
+
             Type fieldType = Util.v().jimpleTypeOfFieldDescriptor(fieldDescriptor);
             SootFieldRef fieldRef = Scene.v().makeFieldRef(bclass, fieldName, fieldType, false);
 
@@ -4222,7 +4231,7 @@ public class CFG {
                 convert();
 
             Type fieldType = Util.v().jimpleTypeOfFieldDescriptor(fieldDescriptor);
-            
+
             SootClass bclass = cm.getSootClass(className);
             SootFieldRef fieldRef = Scene.v().makeFieldRef(bclass, fieldName, fieldType, true);
 
@@ -4254,7 +4263,7 @@ public class CFG {
                 convert();
 
             Type fieldType = Util.v().jimpleTypeOfFieldDescriptor(fieldDescriptor);
-            
+
             SootClass bclass = cm.getSootClass(className);
             SootFieldRef fieldRef = Scene.v().makeFieldRef(bclass, fieldName, fieldType, true);
 
@@ -4270,9 +4279,9 @@ public class CFG {
             Instruction_Invokedynamic iv = (Instruction_Invokedynamic)ins;
    	      	CONSTANT_InvokeDynamic_info iv_info = (CONSTANT_InvokeDynamic_info) constant_pool[iv.invoke_dynamic_index];
             args = cp_info.countParams(constant_pool,iv_info.name_and_type_index);
-             
+
 			SootMethodRef bootstrapMethodRef;
-			List bootstrapArgs = new LinkedList();
+			List<Value> bootstrapArgs = new LinkedList<Value>();
 			{
 				short[] bootstrapMethodTable = bootstrap_methods_attribute.method_handles;
 				short methodSigIndex = bootstrapMethodTable[iv_info.bootstrap_method_index];
@@ -4290,26 +4299,26 @@ public class CFG {
 					      bootstrapArgs.add(val);
 					}
 				}
-			}			 
-			 
+			}
+
         	 SootMethodRef methodRef = null;
 
         	 CONSTANT_NameAndType_info nameAndTypeInfo = (CONSTANT_NameAndType_info) constant_pool[iv_info.name_and_type_index];
-        	 
+
         	 String methodName = ((CONSTANT_Utf8_info) (constant_pool[nameAndTypeInfo.name_index])).convert();
         	 String methodDescriptor = ((CONSTANT_Utf8_info) (constant_pool[nameAndTypeInfo.descriptor_index])).
         	 convert();
 
         	 SootClass bclass = cm.getSootClass(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME);
-        	 
-        	 List parameterTypes;
+
+        	 List<Type> parameterTypes;
         	 Type returnType;
 
         	 // Generate parameters & returnType & parameterTypes
         	 {
         		 Type[] types = Util.v().jimpleTypesOfFieldOrMethodDescriptor(methodDescriptor);
 
-        		 parameterTypes = new ArrayList();
+        		 parameterTypes = new ArrayList<Type>();
 
         		 for(int k = 0; k < types.length - 1; k++)
         		 {
@@ -4348,8 +4357,8 @@ public class CFG {
         		 stmt = Jimple.v().newInvokeStmt(rvalue);
 
         	 break;
-         }  	 
- 
+         }
+
          case ByteCode.INVOKEVIRTUAL:
          {
             Instruction_Invokevirtual iv = (Instruction_Invokevirtual)ins;
@@ -4614,13 +4623,13 @@ public class CFG {
 
 		SootClass bclass = cm.getSootClass(className);
 
-		List parameterTypes;
+		List<Type> parameterTypes;
 		Type returnType;
 		// Generate parameters & returnType & parameterTypes
 		{
 		    Type[] types = Util.v().jimpleTypesOfFieldOrMethodDescriptor(methodDescriptor);
 
-		    parameterTypes = new ArrayList();
+		    parameterTypes = new ArrayList<Type> ();
 
 		    for(int k = 0; k < types.length - 1; k++)
 		    {

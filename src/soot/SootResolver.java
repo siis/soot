@@ -183,7 +183,7 @@ public class SootResolver
     }
     
     private void addToResolveWorklist(SootClass sc, int desiredLevel) {
-        if( sc.resolvingLevel() >= desiredLevel ) return;
+    	if( sc.resolvingLevel() >= desiredLevel ) return;
         worklist[desiredLevel].add(sc);
     }
 
@@ -335,6 +335,11 @@ public class SootResolver
 	}
 	
 	private class SootClassNotFoundException extends RuntimeException {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1563461446590293827L;
+
 		private SootClassNotFoundException(String s) {
 			super(s);
 		}		
