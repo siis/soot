@@ -39,7 +39,7 @@ public class TrapSplitter extends BodyTransformer {
 		// If we have less then two traps, there's nothing to do here
 		if (b.getTraps().size() < 2)
 			return;
-
+		
 		// Look for overlapping traps
 		TrapOverlap to;
 		while ((to = getNextOverlap(b)) != null) {
@@ -70,14 +70,47 @@ public class TrapSplitter extends BodyTransformer {
 					firstEndUnit = b.getUnits().getSuccOf(firstEndUnit);
 
 				if (firstEndUnit == to.t1.getEndUnit()) {
-					Trap newTrap = Jimple.v().newTrap(to.t2.getException(), to.t1.getBeginUnit(), firstEndUnit, to.t2.getHandlerUnit());
-					safeAddTrap(b, newTrap);
+					if (to.t1.getException() != to.t2.getException()) {
+						Trap newTrap = Jimple.v().newTrap(to.t2.getException(), to.t1.getBeginUnit(), firstEndUnit, to.t2.getHandlerUnit());
+						safeAddTrap(b, newTrap);
+					} else if (to.t1.getHandlerUnit() != to.t2.getHandlerUnit()) {
+						// Traps t1 and t2 catch the same exception, but have different handlers
+						//
+						// The JVM specification (2.10 Exceptions) says:
+						// "At run time, when an exception is thrown, the Java
+						// Virtual Machine searches the exception handlers of the current method in the order
+						// that they appear in the corresponding exception handler table in the class file,
+						// starting from the beginning of that table. Note that the Java Virtual Machine does
+						// not enforce nesting of or any ordering of the exception table entries of a method.
+						// The exception handling semantics of the Java programming language are implemented
+						// only through cooperation with the compiler (3.12)."
+						//
+						// 3.12
+						// "The nesting of catch clauses is represented only in the exception table. The Java
+						// Virtual Machine does not enforce nesting of or any ordering of the exception table
+						// entries (2.10). However, because try-catch constructs are structured, a compiler
+						// can always order the entries of the exception handler table such that, for any thrown
+						// exception and any program counter value in that method, the first exception handler
+						// that matches the thrown exception corresponds to the innermost matching catch clause."
+						//
+						// t1 is first, so it stays the same.
+						// t2 is reduced
+						Trap newTrap = Jimple.v().newTrap(to.t1.getException(), to.t1.getBeginUnit(), firstEndUnit, to.t1.getHandlerUnit());
+						safeAddTrap(b, newTrap);
+					}
 					to.t2.setBeginUnit(firstEndUnit);
 				}
 				else if (firstEndUnit == to.t2.getEndUnit()) {
-					Trap newTrap2 = Jimple.v().newTrap(to.t1.getException(), to.t1.getBeginUnit(), firstEndUnit, to.t1.getHandlerUnit());
-					safeAddTrap(b, newTrap2);
-					to.t1.setBeginUnit(firstEndUnit);
+					if (to.t1.getException() != to.t2.getException()) {
+						Trap newTrap2 = Jimple.v().newTrap(to.t1.getException(), to.t1.getBeginUnit(), firstEndUnit, to.t1.getHandlerUnit());
+						safeAddTrap(b, newTrap2);
+						to.t1.setBeginUnit(firstEndUnit);
+					} else if (to.t1.getHandlerUnit() != to.t2.getHandlerUnit()) {
+						// If t2 ends first, t2 is useless.
+						b.getTraps().remove(to.t2);
+					} else {
+						to.t1.setBeginUnit(firstEndUnit);
+					}
 				}
 			}
 		}
@@ -89,8 +122,9 @@ public class TrapSplitter extends BodyTransformer {
 	 * @param newTrap The trap to add
 	 */
 	private void safeAddTrap(Body b, Trap newTrap) {
+		// Do not create any empty traps
 		if (newTrap.getBeginUnit() != newTrap.getEndUnit())
-		b.getTraps().add(newTrap);		
+			b.getTraps().add(newTrap);
 	}
 	/**
 	 * Gets two arbitrary overlapping traps in the given method body
@@ -103,7 +137,7 @@ public class TrapSplitter extends BodyTransformer {
 			// statement of another trap
 			for (Unit splitUnit = t1.getBeginUnit(); splitUnit != t1.getEndUnit(); splitUnit = b.getUnits().getSuccOf(splitUnit)) {
 				for (Trap t2 : b.getTraps())
-					if (t1 != t2 && t1.getEndUnit() != t2.getEndUnit() && t2.getBeginUnit() == splitUnit) {
+					if (t1 != t2 && (t1.getEndUnit() != t2.getEndUnit() || t1.getException() == t2.getException()) && t2.getBeginUnit() == splitUnit) {
 						return new TrapOverlap(t1, t2, t2.getBeginUnit());
 					}
 				}

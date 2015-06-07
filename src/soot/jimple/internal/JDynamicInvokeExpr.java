@@ -32,8 +32,9 @@
 package soot.jimple.internal;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+
+import org.objectweb.asm.Opcodes;
 
 import soot.RefType;
 import soot.SootClass;
@@ -57,10 +58,11 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr  implements DynamicIn
 {
 	protected SootMethodRef bsmRef;
 	protected ValueBox[] bsmArgBoxes;
+	protected int tag;
 	
-    public JDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List<? extends Value> bootstrapArgs, SootMethodRef methodRef, List<? extends Value> methodArgs)
+    public JDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List<? extends Value> bootstrapArgs, SootMethodRef methodRef, int tag, List<? extends Value> methodArgs)
     {
-    	super(new ValueBox[methodArgs.size()]);
+    	super(methodRef, new ValueBox[methodArgs.size()]);
     	
 		if(!methodRef.getSignature().startsWith("<"+SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME+": "))
     		throw new IllegalArgumentException("Receiver type of JDynamicInvokeExpr must be "+SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME+"!");
@@ -70,8 +72,8 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr  implements DynamicIn
 		
 		
     	this.bsmRef = bootstrapMethodRef;
-        this.methodRef = methodRef;
         this.bsmArgBoxes = new ValueBox[bootstrapArgs.size()];
+        this.tag = tag;
 
         for(int i = 0; i < bootstrapArgs.size(); i++)
         {
@@ -81,6 +83,13 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr  implements DynamicIn
         {
         	this.argBoxes[i] = Jimple.v().newImmediateBox( methodArgs.get(i));	
         }
+    }
+    
+    public JDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List<? extends Value> bootstrapArgs, SootMethodRef methodRef, List<? extends Value> methodArgs){
+    	/*
+    	 * Here the static-handle is chosen as default value, because this works for Java. 
+    	 */
+    	this(bootstrapMethodRef, bootstrapArgs, methodRef, Opcodes.H_INVOKESTATIC, methodArgs);
     }
     
     public int getBootstrapArgCount()
@@ -106,7 +115,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr  implements DynamicIn
             clonedArgs.add(i, getArg(i));
         }
         
-        return new JDynamicInvokeExpr(bsmRef, clonedBsmArgs, methodRef, clonedArgs);
+        return new JDynamicInvokeExpr(bsmRef, clonedBsmArgs, methodRef, tag, clonedArgs);
     }
     
     public boolean equivTo(Object o)
@@ -232,7 +241,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr  implements DynamicIn
     		bsmArgs.add(argBox.getValue());
     	}
     	
-    	Unit u = Baf.v().newDynamicInvokeInst(bsmRef, bsmArgs, methodRef);
+    	Unit u = Baf.v().newDynamicInvokeInst(bsmRef, bsmArgs, methodRef, tag);
     	u.addAllTagsOf(context.getCurrentUnit());
     	out.add(u);
     }
@@ -249,4 +258,9 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr  implements DynamicIn
 
         return l;
     }
+
+	@Override
+	public int getHandleTag() {
+		return tag;
+	}
 }

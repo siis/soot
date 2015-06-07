@@ -72,8 +72,6 @@ Composite Annotation_OptionsChild = Annotation_OptionsCreate(getPageContainer())
 
 Composite Miscellaneous_OptionsChild = Miscellaneous_OptionsCreate(getPageContainer());
 
-Composite Dex_Specific_OptionsChild = Dex_Specific_OptionsCreate(getPageContainer());
-
 Composite jbChild = jbCreate(getPageContainer());
 
 Composite jjChild = jjCreate(getPageContainer());
@@ -201,6 +199,8 @@ Composite cgPaddle_Output_OptionsChild = cgPaddle_Output_OptionsCreate(getPageCo
 Composite wjtpwjtp_mhpChild = wjtpwjtp_mhpCreate(getPageContainer());
 
 Composite wjtpwjtp_tnChild = wjtpwjtp_tnCreate(getPageContainer());
+
+Composite wjtpwjtp_rdcChild = wjtpwjtp_rdcCreate(getPageContainer());
 
 Composite wjopwjop_smbChild = wjopwjop_smbCreate(getPageContainer());
 
@@ -1060,6 +1060,14 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 		getwjtpwjtp_tnprint_debug_widget().getButton().addSelectionListener(this);
 		
 		
+		makeNewEnableGroup("wjtp", "wjtp.rdc");
+		
+		
+		addToEnableGroup("wjtp", "wjtp.rdc", getwjtpwjtp_rdcenabled_widget(), "enabled");
+		
+		getwjtpwjtp_rdcenabled_widget().getButton().addSelectionListener(this);
+		
+		
 		makeNewEnableGroup("wjop");
 		
 		
@@ -1871,6 +1879,26 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 		String nextListToken;
 	
 		
+		boolRes = getGeneral_Optionscoffi_widget().getButton().getSelection();
+		
+		
+		defBoolRes = false;
+		
+
+		if (boolRes != defBoolRes) {
+			getConfig().put(getGeneral_Optionscoffi_widget().getAlias(), new Boolean(boolRes));
+		}
+		
+		boolRes = getGeneral_Optionsasm_backend_widget().getButton().getSelection();
+		
+		
+		defBoolRes = false;
+		
+
+		if (boolRes != defBoolRes) {
+			getConfig().put(getGeneral_Optionsasm_backend_widget().getAlias(), new Boolean(boolRes));
+		}
+		
 		boolRes = getGeneral_Optionshelp_widget().getButton().getSelection();
 		
 		
@@ -2215,6 +2243,16 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 			getConfig().put(getOutput_Optionsgzip_widget().getAlias(), new Boolean(boolRes));
 		}
 		
+		boolRes = getOutput_Optionsforce_overwrite_widget().getButton().getSelection();
+		
+		
+		defBoolRes = false;
+		
+
+		if (boolRes != defBoolRes) {
+			getConfig().put(getOutput_Optionsforce_overwrite_widget().getAlias(), new Boolean(boolRes));
+		}
+		
 		stringRes = getOutput_Optionsoutput_dir_widget().getText().getText();
 		
 		defStringRes = "./sootOutput";
@@ -2250,6 +2288,14 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 
 		if (!stringRes.equals(defStringRes)) {
 			getConfig().put(getOutput_Optionsoutput_format_widget().getAlias(), stringRes);
+		}
+		 
+		stringRes = getOutput_Optionsjava_version_widget().getSelectedAlias();
+
+		
+
+		if (!stringRes.equals(defStringRes)) {
+			getConfig().put(getOutput_Optionsjava_version_widget().getAlias(), stringRes);
 		}
 		
 		boolRes = getProcessing_Optionsoptimize_widget().getButton().getSelection();
@@ -2604,7 +2650,7 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 		boolRes = getjbjb_uceremove_unreachable_traps_widget().getButton().getSelection();
 		
 		
-		defBoolRes = false;
+		defBoolRes = true;
 		
 
 		if (boolRes != defBoolRes) {
@@ -3896,6 +3942,25 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 
 		if (!stringRes.equals(defStringRes)) {
 			getConfig().put(getwjtpwjtp_tnlocking_scheme_widget().getAlias(), stringRes);
+		}
+		
+		boolRes = getwjtpwjtp_rdcenabled_widget().getButton().getSelection();
+		
+		
+		defBoolRes = false;
+		
+
+		if (boolRes != defBoolRes) {
+			getConfig().put(getwjtpwjtp_rdcenabled_widget().getAlias(), new Boolean(boolRes));
+		}
+		
+		stringRes = getwjtpwjtp_rdcfixed_class_names_widget().getText().getText();
+		
+		defStringRes = "";
+		
+
+	        if ( (!(stringRes.equals(defStringRes))) && (stringRes != null) && (stringRes.length() != 0)) {
+			getConfig().put(getwjtpwjtp_rdcfixed_class_names_widget().getAlias(), stringRes);
 		}
 		
 		boolRes = getwjopenabled_widget().getButton().getSelection();
@@ -5764,6 +5829,16 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 			subSectParent = wjtp_wjtp_tn_branch;
 			
 			
+			SootOption wjtp_wjtp_rdc_branch = new SootOption("Rename duplicated classes", "wjtpwjtp_rdc");
+			subParent.addChild(wjtp_wjtp_rdc_branch);
+
+
+			
+
+			
+			subSectParent = wjtp_wjtp_rdc_branch;
+			
+			
 			//Whole-Jimple Optimization Pack
 			SootOption wjop_branch = new SootOption("Whole-Jimple Optimization Pack", "wjop");
 			parent.addChild(wjop_branch);
@@ -6431,6 +6506,26 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 
 		
 		
+	private BooleanOptionWidget General_Optionscoffi_widget;
+	
+	private void setGeneral_Optionscoffi_widget(BooleanOptionWidget widget) {
+		General_Optionscoffi_widget = widget;
+	}
+	
+	public BooleanOptionWidget getGeneral_Optionscoffi_widget() {
+		return General_Optionscoffi_widget;
+	}	
+	
+	private BooleanOptionWidget General_Optionsasm_backend_widget;
+	
+	private void setGeneral_Optionsasm_backend_widget(BooleanOptionWidget widget) {
+		General_Optionsasm_backend_widget = widget;
+	}
+	
+	public BooleanOptionWidget getGeneral_Optionsasm_backend_widget() {
+		return General_Optionsasm_backend_widget;
+	}	
+	
 	private BooleanOptionWidget General_Optionshelp_widget;
 	
 	private void setGeneral_Optionshelp_widget(BooleanOptionWidget widget) {
@@ -6795,6 +6890,16 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 		return Output_Optionsgzip_widget;
 	}	
 	
+	private BooleanOptionWidget Output_Optionsforce_overwrite_widget;
+	
+	private void setOutput_Optionsforce_overwrite_widget(BooleanOptionWidget widget) {
+		Output_Optionsforce_overwrite_widget = widget;
+	}
+	
+	public BooleanOptionWidget getOutput_Optionsforce_overwrite_widget() {
+		return Output_Optionsforce_overwrite_widget;
+	}	
+	
 
 	private ListOptionWidget Output_Optionsdump_body_widget;
 	
@@ -6840,6 +6945,18 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 	
 	public MultiOptionWidget getOutput_Optionsoutput_format_widget() {
 		return Output_Optionsoutput_format_widget;
+	}	
+	
+	
+	
+	private MultiOptionWidget Output_Optionsjava_version_widget;
+	
+	private void setOutput_Optionsjava_version_widget(MultiOptionWidget widget) {
+		Output_Optionsjava_version_widget = widget;
+	}
+	
+	public MultiOptionWidget getOutput_Optionsjava_version_widget() {
+		return Output_Optionsjava_version_widget;
 	}	
 	
 	
@@ -8565,6 +8682,28 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 	}	
 	
 	
+	private BooleanOptionWidget wjtpwjtp_rdcenabled_widget;
+	
+	private void setwjtpwjtp_rdcenabled_widget(BooleanOptionWidget widget) {
+		wjtpwjtp_rdcenabled_widget = widget;
+	}
+	
+	public BooleanOptionWidget getwjtpwjtp_rdcenabled_widget() {
+		return wjtpwjtp_rdcenabled_widget;
+	}	
+	
+	
+	private StringOptionWidget wjtpwjtp_rdcfixed_class_names_widget;
+	
+	private void setwjtpwjtp_rdcfixed_class_names_widget(StringOptionWidget widget) {
+		wjtpwjtp_rdcfixed_class_names_widget = widget;
+	}
+	
+	public StringOptionWidget getwjtpwjtp_rdcfixed_class_names_widget() {
+		return wjtpwjtp_rdcfixed_class_names_widget;
+	}
+	
+	
 	private BooleanOptionWidget wjopenabled_widget;
 	
 	private void setwjopenabled_widget(BooleanOptionWidget widget) {
@@ -10036,6 +10175,38 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 		
 		
 		
+		defKey = ""+" "+""+" "+"coffi";
+		defKey = defKey.trim();
+
+		if (isInDefList(defKey)) {
+			defaultBool = getBoolDef(defKey);	
+		}
+		else {
+			
+			defaultBool = false;
+			
+		}
+
+		setGeneral_Optionscoffi_widget(new BooleanOptionWidget(editGroupGeneral_Options, SWT.NONE, new OptionData("Coffi Frontend", "", "","coffi", "\n", defaultBool)));
+		
+		
+		
+		defKey = ""+" "+""+" "+"asm-backend";
+		defKey = defKey.trim();
+
+		if (isInDefList(defKey)) {
+			defaultBool = getBoolDef(defKey);	
+		}
+		else {
+			
+			defaultBool = false;
+			
+		}
+
+		setGeneral_Optionsasm_backend_widget(new BooleanOptionWidget(editGroupGeneral_Options, SWT.NONE, new OptionData("ASM Backend", "", "","asm-backend", "\n", defaultBool)));
+		
+		
+		
 		defKey = ""+" "+""+" "+"h";
 		defKey = defKey.trim();
 
@@ -10682,6 +10853,22 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 		
 		
 		
+		defKey = ""+" "+""+" "+"force-overwrite";
+		defKey = defKey.trim();
+
+		if (isInDefList(defKey)) {
+			defaultBool = getBoolDef(defKey);	
+		}
+		else {
+			
+			defaultBool = false;
+			
+		}
+
+		setOutput_Optionsforce_overwrite_widget(new BooleanOptionWidget(editGroupOutput_Options, SWT.NONE, new OptionData("Force Overwrite Output Files", "", "","force-overwrite", "\n	 If this option is set to true, the output files will be \noverwritten 	 if they already exist and no further warning \nwill be issued. 		", defaultBool)));
+		
+		
+		
 		data = new OptionData [] {
 		
 		new OptionData("Jimple File",
@@ -10740,7 +10927,13 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 		
 		new OptionData("Dalvik Executable File",
 		"dex",
-		"\nProduce Dalvik Virtual Machine files. If input was an Android \n			Package (APK), a new APK is generated with it's classes.dex \nreplaced. If 			no input APK is found, only a classes.dex is \ngenerated.",
+		"\nProduce Dalvik Virtual Machine files. If input was an Android \nPackage (APK), a new APK is generated with it's classes.dex \nreplaced. If no input APK is found, only a classes.dex is \ngenerated.",
+		
+		false),
+		
+		new OptionData("Dalvik Executable File",
+		"force-dex",
+		"\nProduce Dalvik Virtual Machine files. This option always creates \na stand-alone DEX file, even if the input was read from an \nAndroid Package (APK). ",
 		
 		false),
 		
@@ -10774,6 +10967,12 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 		
 		false),
 		
+		new OptionData("ASM File",
+		"a",
+		"\nProduce .asm files as textual bytecode representation generated \nwith the ASM back end. ",
+		
+		false),
+		
 		};
 		
 										
@@ -10786,6 +10985,78 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 			defaultString = getStringDef(defKey);
 		
 			getOutput_Optionsoutput_format_widget().setDef(defaultString);
+		}
+		
+		
+		
+		data = new OptionData [] {
+		
+		new OptionData("Default behavior",
+		"default",
+		"\nLet Soot determine Java version of generated bytecode. ",
+		
+		false),
+		
+		new OptionData("Java 1.1",
+		"1.1",
+		"\nForce Java 1.1 as output version. ",
+		
+		false),
+		
+		new OptionData("Java 1.2",
+		"1.2",
+		"\nForce Java 1.2 as output version. ",
+		
+		false),
+		
+		new OptionData("Java 1.3",
+		"1.3",
+		"\nForce Java 1.3 as output version. ",
+		
+		false),
+		
+		new OptionData("Java 1.4",
+		"1.4",
+		"\nForce Java 1.4 as output version. ",
+		
+		false),
+		
+		new OptionData("Java 1.5",
+		"1.5",
+		"\nForce Java 1.5 as output version. ",
+		
+		false),
+		
+		new OptionData("Java 1.6",
+		"1.6",
+		"\nForce Java 1.6 as output version. ",
+		
+		false),
+		
+		new OptionData("Java 1.7",
+		"1.7",
+		"\nForce Java 1.7 as output version. ",
+		
+		false),
+		
+		new OptionData("Java 1.8",
+		"1.8",
+		"\nForce Java 1.8 as output version. ",
+		
+		false),
+		
+		};
+		
+										
+		setOutput_Optionsjava_version_widget(new MultiOptionWidget(editGroupOutput_Options, SWT.NONE, data, new OptionData("Java version", "", "","java-version", "\nForce Java version of bytecode generated by Soot. This option \ncan only be set on output-format class and asm-backend set, or \non output-format asm")));
+		
+		defKey = ""+" "+""+" "+"java-version";
+		defKey = defKey.trim();
+		
+		if (isInDefList(defKey)) {
+			defaultString = getStringDef(defKey);
+		
+			getOutput_Optionsjava_version_widget().setDef(defaultString);
 		}
 		
 		
@@ -11862,7 +12133,7 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 		}
 		else {
 			
-			defaultBool = false;
+			defaultBool = true;
 			
 		}
 
@@ -15577,6 +15848,67 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 
 		
 		return editGroupwjtpwjtp_tn;
+	}
+
+
+
+	private Composite wjtpwjtp_rdcCreate(Composite parent) {
+		String defKey;
+		String defaultString;
+		boolean defaultBool = false;
+	    String defaultArray;
+       
+		Group editGroupwjtpwjtp_rdc = new Group(parent, SWT.NONE);
+		GridLayout layout = new GridLayout();
+		editGroupwjtpwjtp_rdc.setLayout(layout);
+	
+	 	editGroupwjtpwjtp_rdc.setText("Rename duplicated classes");
+	 	
+		editGroupwjtpwjtp_rdc.setData("id", "wjtpwjtp_rdc");
+		
+		String descwjtpwjtp_rdc = "Rename duplicated classes when the file system is not case sensitive";	
+		if (descwjtpwjtp_rdc.length() > 0) {
+			Label descLabelwjtpwjtp_rdc = new Label(editGroupwjtpwjtp_rdc, SWT.WRAP);
+			descLabelwjtpwjtp_rdc.setText(descwjtpwjtp_rdc);
+		}
+		OptionData [] data;	
+		
+		
+		
+		
+		defKey = "p"+" "+"wjtp.rdc"+" "+"enabled";
+		defKey = defKey.trim();
+
+		if (isInDefList(defKey)) {
+			defaultBool = getBoolDef(defKey);	
+		}
+		else {
+			
+			defaultBool = false;
+			
+		}
+
+		setwjtpwjtp_rdcenabled_widget(new BooleanOptionWidget(editGroupwjtpwjtp_rdc, SWT.NONE, new OptionData("Enabled", "p", "wjtp.rdc","enabled", "\n", defaultBool)));
+		
+		
+		
+		defKey = "p"+" "+"wjtp.rdc"+" "+"fcn";
+		defKey = defKey.trim();
+		
+		if (isInDefList(defKey)) {
+			defaultString = getStringDef(defKey);	
+		}
+		else {
+			
+			defaultString = "";
+			
+		}
+
+		setwjtpwjtp_rdcfixed_class_names_widget(new StringOptionWidget(editGroupwjtpwjtp_rdc, SWT.NONE, new OptionData("FixedClassNames",  "p", "wjtp.rdc","fcn", "\n							Use this parameter to set some class names unchangable \neven they are duplicated. 							The fixed class name list \ncannot contain duplicated class names. 							Using '-' to split \nmultiple class names (e.g., fcn:a.b.c-a.b.d). 						", defaultString)));
+		
+
+		
+		return editGroupwjtpwjtp_rdc;
 	}
 
 
@@ -20037,6 +20369,22 @@ Composite dbdb_force_recompileChild = dbdb_force_recompileCreate(getPageContaine
 		}
 
 		setMiscellaneous_Optionssubtract_gc_widget(new BooleanOptionWidget(editGroupMiscellaneous_Options, SWT.NONE, new OptionData("Subtract Garbage Collection Time", "", "","subtract-gc", "\nAttempt to subtract time spent in garbage collection from the \nreports of times required for transformations. ", defaultBool)));
+		
+		
+		
+		defKey = ""+" "+""+" "+"no-writeout-body-releasing";
+		defKey = defKey.trim();
+
+		if (isInDefList(defKey)) {
+			defaultBool = getBoolDef(defKey);	
+		}
+		else {
+			
+			defaultBool = false;
+			
+		}
+
+		setMiscellaneous_Optionsno_writeout_body_releasing_widget(new BooleanOptionWidget(editGroupMiscellaneous_Options, SWT.NONE, new OptionData("No body releasing after writeout", "", "","no-writeout-body-releasing", "\nBy default soot releases the method bodies of all reachable \nclasses after the final writeout. This option deactivates this \nbehaviour. This flag should not affect end users at all. ", defaultBool)));
 		
 		
 

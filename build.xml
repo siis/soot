@@ -33,11 +33,15 @@
            		<pathelement location="${jasmin.jar}"/>
            		<pathelement location="${heros.jar}"/>
            		<pathelement location="${axmlprinter2.jar}"/>
+           		<pathelement location="${asm.jar}"/>
+				<pathelement location="${commons-lang.jar}"/>
+        
+				<pathelement location="${slf4j-api.jar}"/>
+           		<pathelement location="${slf4j-simple.jar}"/>
+           		
            		<pathelement location="${dexlib2.jar}"/>
            		<pathelement location="${dexlib-utils.jar}"/>
-           		<pathelement location="${slf4j-api.jar}"/>
-           		<pathelement location="${slf4j-simple.jar}"/>
-        	</classpath>
+			</classpath>
             <src path="src"/>
             <src path="generated/singletons"/>
             <src path="generated/sablecc"/>
@@ -76,7 +80,13 @@
             in="${basedir}/src/soot/options/soot_options.xml"
             out="${basedir}/eclipse/ca.mcgill.sable.soot/src/ca/mcgill/sable/soot/ui/PhaseOptionsDialog.java"
         />
-    </target>
+        <xslt
+            style="${basedir}/src/soot/options/soot_options.xsl"
+            in="${basedir}/src/soot/options/soot_options.xml"
+            out="${basedir}/doc/soot_options.htm"
+        />
+        <copy file="${basedir}/src/soot/options/soot_options.css" todir="${basedir}/doc" />
+	</target>
 
     <target name="copypeephole" depends="sablecc,settings">
         <copy file="src/soot/baf/toolkits/base/peephole.dat" tofile="classes/soot/baf/toolkits/base/peephole.dat"/>
@@ -113,16 +123,17 @@
         <javadoc
             classpath="classes:${polyglot.jar}:${jasmin.jar}:${heros.jar}"
             sourcepath="src:generated/singletons:generated/sablecc:generated/options"
-            destdir="doc"
+			destdir="javadoc"
             maxmemory="400m"
             link="${javaapi.url}"
             windowtitle="Soot API"
-            verbose="true"
             use="true"
+            useexternalfile="true"
         >
             <fileset dir="src" includes="**/*.java"/>
         </javadoc>
-    </target>
+		<jar basedir="javadoc" destfile="${release.loc}/sootjavadoc-${soot.version}.jar" />
+	</target>
 
     <target name="clean">
         <delete quiet="true">
@@ -193,30 +204,67 @@
     <target name="buildtests" depends="compile,settings">
         <mkdir dir="testclasses"/>
         <javac
+        	source="1.6"
+        	target="1.6"
             srcdir="tests"
             destdir="testclasses"
-            classpath="classes:${polyglot.jar}:${jasmin.jar}:${junit.jar}:${hamcrest.jar}"
-            debug="true"
-            />
+            debug="true">
+        	<classpath>
+        		<pathelement location="classes"/>
+        		<pathelement location="${polyglot.jar}"/>
+        		<pathelement location="${jasmin.jar}"/>
+           		<pathelement location="${asm.jar}"/>
+        		<pathelement location="${junit.jar}"/>
+        		<pathelement location="${hamcrest.jar}"/>
+        		<pathelement location="${mockito.jar}"/>
+        		<pathelement location="${powermock-mockito.jar}"/>
+        	</classpath>
+        </javac>
     </target>
 
     <target name="runtests" depends="buildtests,settings">
-        <junit printsummary="yes">
+	<mkdir dir="reports" />
+        <junit printsummary="yes" fork="true">
             <classpath>
                 <pathelement location="testclasses"/>
                 <pathelement location="classes"/>
                 <pathelement location="${polyglot.jar}"/>
                 <pathelement location="${jasmin.jar}"/>
-                <pathelement location="${junit.jar}"/>
+           		<pathelement location="${axmlprinter2.jar}"/>
+                <pathelement location="${dexlib2.jar}"/>
+                <pathelement location="${dexlib-utils.jar}"/>
+                <pathelement location="${heros.jar}"/>
+           		<pathelement location="${asm.jar}"/>
+        		<pathelement location="${javassist.jar}"/>
+           		<pathelement location="${xmlprinter.jar}"/>
+        		<pathelement location="${commons-lang.jar}"/>
+        				
+           		<pathelement location="${slf4j-api.jar}"/>
+           		<pathelement location="${slf4j-simple.jar}"/>
+        		
+        		<pathelement location="${junit.jar}"/>
                 <pathelement location="${hamcrest.jar}"/>
-            </classpath>
-
-            <formatter type="plain"/>
-            <batchtest>
-                <fileset dir="testclasses" includes="**/Test*.class"/>
-                <fileset dir="testclasses" includes="**/*Test.class"/>
+        		<pathelement location="${mockito.jar}"/>
+        		<pathelement location="${powermock-mockito.jar}"/>
+        	</classpath>
+			
+			<jvmarg value="-ea" />
+            
+            <formatter type="xml" usefile="true" />
+            <batchtest todir="reports">
+                <fileset dir="testclasses" includes="**/Test*.class" excludes="**/Abstract*.class" />
+                <fileset dir="testclasses" includes="**/*Test.class" excludes="**/Abstract*.class" />
             </batchtest>
         </junit>
+    </target>
+
+    <target name="reporttests" depends="runtests">
+        <junitreport tofile="TESTS-TestSuites.xml" todir="reports">
+            <fileset dir="reports">
+                <include name="TEST-*.xml" />
+            </fileset>
+            <report format="frames" todir="reports" />
+        </junitreport>
     </target>
 
     <target name="release" depends="barebones,javadoc,settings">
@@ -291,20 +339,7 @@
         </jar>
         
     </target>
-	
-	<target name="doc" depends="compile,settings">
-		<javadoc
-			sourcepath="src"
-			destdir="javadoc"
-			author="true"
-			version="true"
-			use="true"
-			windowtitle="Soot Documentation">
-		</javadoc>
 		
-		<jar basedir="javadoc" destfile="${release.loc}/sootjavadoc-${soot.version}.jar" />
-	</target>
-	
 	<target name="fulljar" depends="classesjar">
     	<mkdir dir="META-INF"/>
 
@@ -314,7 +349,6 @@
         </manifest>
 		
         <jar destfile="${release.loc}/soot-${soot.version}.jar" manifest="META-INF/MANIFEST.MF">
-        	
             <zipfileset src="${release.loc}/sootclasses-${soot.version}.jar"/>
             <zipfileset src="${jasmin.jar}"/>
             <zipfileset src="${heros.jar}"/>
@@ -323,8 +357,20 @@
             <zipfileset src="${xmlprinter.jar}"/>
             <zipfileset src="${dexlib2.jar}"/>
             <zipfileset src="${dexlib-utils.jar}"/>
-		</jar>
+            <zipfileset src="${asm.jar}"/>
+			<zipfileset src="${commons-lang.jar}"/>
+        </jar>
 		<delete dir="META-INF"/>
     </target>
+    
+	<target name="sourcejar">
+        <jar destfile="${release.loc}/sootsources-${soot.version}.jar">
+            <fileset dir="src"/>
+            <fileset dir="generated/singletons"/>
+            <fileset dir="generated/sablecc"/>
+            <fileset dir="generated/jastadd"/>
+            <fileset dir="generated/options"/>
+        </jar>
+	</target>
     
 </project>

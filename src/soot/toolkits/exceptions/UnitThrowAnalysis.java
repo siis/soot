@@ -145,6 +145,7 @@ import soot.jimple.LengthExpr;
 import soot.jimple.LongConstant;
 import soot.jimple.LookupSwitchStmt;
 import soot.jimple.LtExpr;
+import soot.jimple.MethodHandle;
 import soot.jimple.MulExpr;
 import soot.jimple.NeExpr;
 import soot.jimple.NegExpr;
@@ -176,7 +177,6 @@ import soot.jimple.XorExpr;
 import soot.options.Options;
 import soot.shimple.PhiExpr;
 import soot.shimple.ShimpleValueSwitch;
-
 import soot.toolkits.exceptions.ThrowableSet;
 
 /**
@@ -782,6 +782,9 @@ public class UnitThrowAnalysis extends AbstractThrowAnalysis {
 	}
 
 	public void caseClassConstant(ClassConstant c) {
+	}
+	
+	public void caseMethodHandle(MethodHandle handle) {
 	}
 
 

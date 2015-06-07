@@ -49,22 +49,21 @@ import soot.util.Switch;
 public class GDynamicInvokeExpr extends AbstractInvokeExpr implements DynamicInvokeExpr 
 {
 	protected ValueBox[] bsmArgBoxes;
-	private SootMethodRef methodRef;
 	private SootMethodRef bsmRef;
 
+	protected int tag;
 
-	public GDynamicInvokeExpr(SootMethodRef bootStrapMethodRef, List<Value> bootstrapArgs, SootMethodRef methodRef, List args)
+	public GDynamicInvokeExpr(SootMethodRef bootStrapMethodRef, List<Value> bootstrapArgs, SootMethodRef methodRef, int tag, List args)
     {
-		super(new ValueBox[args.size()]);
+		super(methodRef, new ValueBox[args.size()]);
 		this.bsmRef = bootStrapMethodRef;
-		this.methodRef = methodRef; 		
-		
+		this.tag = tag;
         for(int i = 0; i < args.size(); i++)
             this.argBoxes[i] = Grimp.v().newExprBox((Value) args.get(i));
         for(int i = 0; i < bootstrapArgs.size(); i++)
         	this.bsmArgBoxes[i] = Grimp.v().newExprBox((Value) bootstrapArgs.get(i));	
     }    
-    
+	
 	public Object clone() 
     {
         ArrayList clonedArgs = new ArrayList(getArgCount());
@@ -78,10 +77,10 @@ public class GDynamicInvokeExpr extends AbstractInvokeExpr implements DynamicInv
             clonedBsmArgs.add(i, getBootstrapArg(i));
         }
 
-        return new  GDynamicInvokeExpr(bsmRef, clonedBsmArgs, methodRef, clonedArgs);
+        return new  GDynamicInvokeExpr(bsmRef, clonedBsmArgs, methodRef, tag, clonedArgs);
     }
 	
-	private Value getBootstrapArg(int i) {
+	public Value getBootstrapArg(int i) {
 		return bsmArgBoxes[i].getValue();
 	}
 
@@ -191,4 +190,9 @@ public class GDynamicInvokeExpr extends AbstractInvokeExpr implements DynamicInv
 
 	        up.literal(")");
 	    }
+
+		@Override
+		public int getHandleTag() {
+			return tag;
+		}
 }

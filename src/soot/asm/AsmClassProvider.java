@@ -1,5 +1,5 @@
 /* Soot - a J*va Optimization Framework
- * Copyright (C) 2000 Patrice Pominville
+ * Copyright (C) 1997-2014 Raja Vallee-Rai and others
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,39 +16,23 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+package soot.asm;
 
-/*
- * Modified by the Sable Research Group and others 1997-1999.  
- * See the 'credits' file distributed with Soot for the complete list of
- * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
+import soot.ClassProvider;
+import soot.ClassSource;
+import soot.SourceLocator;
+
+/**
+ * Objectweb ASM class provider.
+ * 
+ * @author Aaloan Miftah
  */
+public class AsmClassProvider implements ClassProvider {
 
-
-package soot.util;
-
-/** Provides utility methods for debugging, including assertions. */
-public class Debug
-{
-    private Debug()
-    {
-    }
-
-    /** Asserts that condition is true; otherwise, abort. */
-    /*
-    public static void assert(boolean condition, String message)
-    {
-        if (!condition)
-            {
-                G.v().out.println("Assert [" + message + "] fired at:");
-                G.v().out.println(getStackTrace());
-                System.exit(1);
-        
-            }
-    }
-    */
+	public ClassSource find(String cls) {
+		String clsFile = cls.replace('.', '/') + ".class";
+		SourceLocator.FoundFile file =
+				SourceLocator.v().lookupInClassPath(clsFile);
+		return file == null ? null : new AsmClassSource(cls, file.inputStream());
+	}
 }
-
-
-
-
-

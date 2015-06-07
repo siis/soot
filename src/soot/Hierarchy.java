@@ -25,9 +25,20 @@
 
 package soot;
 
-import soot.jimple.*;
-import soot.util.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.ConcurrentModificationException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+
+import soot.jimple.SpecialInvokeExpr;
+import soot.util.ArraySet;
+import soot.util.Chain;
 
 /** Represents the class hierarchy.  It is closely linked to a Scene,
  * and must be recreated if the Scene changes. 
@@ -135,7 +146,7 @@ public class Hierarchy
                 classesIt = allClasses.iterator();
                 while (classesIt.hasNext())
                 {
-                    SootClass c = (SootClass)classesIt.next();
+                    SootClass c = classesIt.next();
                     if( c.resolvingLevel() < SootClass.HIERARCHY ) continue;
                     if (c.isInterface())
                     {
@@ -158,7 +169,7 @@ public class Hierarchy
             classesIt = allClasses.iterator();
             while (classesIt.hasNext())
             {
-                SootClass c = (SootClass)classesIt.next();
+                SootClass c = classesIt.next();
                 if( c.resolvingLevel() < SootClass.HIERARCHY ) continue;
 
                 if (c.isInterface())
@@ -209,15 +220,12 @@ public class Hierarchy
 
         // If already cached, return the value.
         if (classToSubclasses.get(c) != null)
-            return classToSubclasses.get(c);
-
+            return classToSubclasses.get(c);        
+        
         // Otherwise, build up the hashmap.
         List<SootClass> l = new ArrayList<SootClass>();
 
-        ListIterator<SootClass> it = classToDirSubclasses.get(c).listIterator();
-        while (it.hasNext())
-        {
-            SootClass cls = it.next();
+        for (SootClass cls : classToDirSubclasses.get(c)) {
             if( cls.resolvingLevel() < SootClass.HIERARCHY ) continue;
             l.addAll(getSubclassesOfIncluding(cls));
         }
@@ -291,7 +299,7 @@ public class Hierarchy
         ListIterator<SootClass> it = interfaceToDirSubinterfaces.get(c).listIterator();
         while (it.hasNext())
         {
-            l.addAll(getSubinterfacesOfIncluding((SootClass)it.next()));
+            l.addAll(getSubinterfacesOfIncluding(it.next()));
         }
         
         interfaceToSubinterfaces.put(c, Collections.unmodifiableList(l));
@@ -332,7 +340,7 @@ public class Hierarchy
         ListIterator<SootClass> it = interfaceToDirSuperinterfaces.get(c).listIterator();
         while (it.hasNext())
         {
-            l.addAll(getSuperinterfacesOfIncluding((SootClass)it.next()));
+            l.addAll(getSuperinterfacesOfIncluding(it.next()));
         }
         
         interfaceToSuperinterfaces.put(c, Collections.unmodifiableList(l));
@@ -429,15 +437,10 @@ public class Hierarchy
             throw new RuntimeException("interface needed; got "+i);
 
         checkState();
-
-        Iterator<SootClass> it = getSubinterfacesOfIncluding(i).iterator();
+        
         ArraySet<SootClass> set = new ArraySet<SootClass>();
-
-        while (it.hasNext())
-        {
-            SootClass c = it.next();
-
-            set.addAll(getDirectImplementersOf(c));
+        for (SootClass c : getSubinterfacesOfIncluding(i)) {
+        	set.addAll(getDirectImplementersOf(c));
         }
 
         ArrayList<SootClass> l = new ArrayList<SootClass>();
@@ -446,20 +449,44 @@ public class Hierarchy
         return Collections.unmodifiableList(l);
     }
 
-    /** Returns true if child is a subclass of possibleParent. */
+    /**
+     * Returns true if child is a subclass of possibleParent. If one of the
+     * known parent classes is phantom, we conservatively assume that the
+     * current class might be a child.
+     */
     public boolean isClassSubclassOf(SootClass child, SootClass possibleParent)
     {
         child.checkLevel(SootClass.HIERARCHY);
         possibleParent.checkLevel(SootClass.HIERARCHY);
-        return getSuperclassesOf(child).contains(possibleParent);
+        List<SootClass> parentClasses = getSuperclassesOf(child);
+        if (parentClasses.contains(possibleParent))
+        	return true;
+        
+        for (SootClass sc : parentClasses)
+        	if (sc.isPhantom())
+        		return true;
+        
+        return false;
     }
 
-    /** Returns true if child is, or is a subclass of, possibleParent. */
+    /**
+     * Returns true if child is, or is a subclass of, possibleParent. If one of
+     * the known parent classes is phantom, we conservatively assume that the
+     * current class might be a child.
+     */
     public boolean isClassSubclassOfIncluding(SootClass child, SootClass possibleParent)
     {
         child.checkLevel(SootClass.HIERARCHY);
         possibleParent.checkLevel(SootClass.HIERARCHY);
-        return getSuperclassesOfIncluding(child).contains(possibleParent);
+        List<SootClass> parentClasses = getSuperclassesOfIncluding(child);
+        if (parentClasses.contains(possibleParent))
+        	return true;
+        
+        for (SootClass sc : parentClasses)
+        	if (sc.isPhantom())
+        		return true;
+        
+        return false;
     }
 
     /** Returns true if child is a direct subclass of possibleParent. */
@@ -529,10 +556,30 @@ public class Hierarchy
 
     // Questions about method invocation.
 
-    /** Returns true if the method m is visible from code in the class from. */
-    public boolean isVisible( SootClass from, SootMethod m ) {
+    /** Checks whether check is a visible class in view of the from class.
+     *  It assumes that protected and private classes do not exit.
+     *  If they exist and check is either protected or private,
+     *  the check will return false. */
+    public boolean isVisible( SootClass from, SootClass check) {
+    	if (check.isPublic())
+    		return true;
+    	
+    	if( check.isProtected() || check.isPrivate())
+    		return false;
+    		
+    	//package visibility
+    	return from.getJavaPackageName().equals(
+                check.getJavaPackageName() );
+    }
+    
+    /** Returns true if the classmember m is visible from code in the class from. */
+    public boolean isVisible( SootClass from, ClassMember m ) {
         from.checkLevel(SootClass.HIERARCHY);
         m.getDeclaringClass().checkLevel(SootClass.HIERARCHY);
+        
+        if (!isVisible(from, m.getDeclaringClass()))
+        	return false;
+        
         if( m.isPublic() ) return true;
         if( m.isPrivate() ) {
             return from.equals( m.getDeclaringClass() );
@@ -545,6 +592,7 @@ public class Hierarchy
                 m.getDeclaringClass().getJavaPackageName() );
             //|| isClassSubclassOfIncluding( from, m.getDeclaringClass() );
     }
+
 
 	/**
 	 * Given an object of actual type C (o = new C()), returns the method which
@@ -562,8 +610,9 @@ public class Hierarchy
 		String methodSig = m.getSubSignature();
 
 		for (SootClass c : getSuperclassesOfIncluding(concreteType)) {
-			if (c.declaresMethod(methodSig) && isVisible(c, m)) {
-				return c.getMethod(methodSig);
+			SootMethod sm = c.getMethodUnsafe(methodSig); 
+			if (sm != null && isVisible(c, m)) {
+				return sm;
 			}
 		}
 		throw new RuntimeException(

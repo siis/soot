@@ -104,6 +104,8 @@ public class ExprVisitor implements ExprSwitch {
 		this.stmtV = stmtV;
 		this.constantV = constantV;
 		this.regAlloc = regAlloc;
+
+		regAlloc.resetImmediateConstantsPool();
 	}
 	
 	public void setDestinationReg(Register destinationReg) {
@@ -138,8 +140,11 @@ public class ExprVisitor implements ExprSwitch {
             stmtV.addInsn(buildInvokeInsn("INVOKE_DIRECT", method, arguments), origStmt);
 		} else if (isCallToSuper(sie)) {
             stmtV.addInsn(buildInvokeInsn("INVOKE_SUPER", method, arguments), origStmt);
-		} else
-			throw new Error("unknown SpecialInvokeExpr (no call to constructor, super or private method): " + sie);
+		} else {
+			// This should normally never happen, but if we have such a
+			// broken call (happens in malware for instance), we fix it.
+            stmtV.addInsn(buildInvokeInsn("INVOKE_VIRTUAL", method, arguments), origStmt);
+		}
 	}
 
 	private Insn buildInvokeInsn(String invokeOpcode, BuilderMethodReference method,
@@ -149,7 +154,8 @@ public class ExprVisitor implements ExprSwitch {
 		if (regCountForArguments <= 5) {
 			Register[] paddedArray = pad35cRegs(argumentRegs);
 			Opcode opc = Opcode.valueOf(invokeOpcode);
-			invokeInsn = new Insn35c(opc, regCountForArguments, paddedArray[0], paddedArray[1], paddedArray[2], paddedArray[3], paddedArray[4], method);
+			invokeInsn = new Insn35c(opc, regCountForArguments, paddedArray[0],
+					paddedArray[1], paddedArray[2], paddedArray[3], paddedArray[4], method);
 		} else if (regCountForArguments <= 255) {
 			Opcode opc = Opcode.valueOf(invokeOpcode + "_RANGE");
 			invokeInsn = new Insn3rc(opc, argumentRegs, (short) regCountForArguments, method);
@@ -202,25 +208,21 @@ public class ExprVisitor implements ExprSwitch {
 	
 	private List<Register> getInvokeArgumentRegs(InvokeExpr ie) {
 		constantV.setOrigStmt(origStmt);
-	    regAlloc.setMultipleConstantsPossible(true);
 		List<Register> argumentRegs = new ArrayList<Register>();
 		for (Value arg : ie.getArgs()) {
 			Register currentReg = regAlloc.asImmediate(arg, constantV);
 			argumentRegs.add(currentReg);
 		}
-		regAlloc.setMultipleConstantsPossible(false);
 		return argumentRegs;
 	}
 
 	private List<Register> getInstanceInvokeArgumentRegs(InstanceInvokeExpr iie) {
 		constantV.setOrigStmt(origStmt);
-	    regAlloc.setMultipleConstantsPossible(true);
 		List<Register> argumentRegs = getInvokeArgumentRegs(iie);
 		// always add reference to callee as first parameter (instance != static)
 		Value callee = iie.getBase();
 		Register calleeRegister = regAlloc.asLocal(callee);
 		argumentRegs.add(0, calleeRegister);
-		regAlloc.setMultipleConstantsPossible(false);
 		return argumentRegs;
 	}
 
@@ -492,7 +494,10 @@ public class ExprVisitor implements ExprSwitch {
 	@Override
 	public void caseLengthExpr(LengthExpr le) {
 		Value array = le.getOp();
-		Register arrayReg = regAlloc.asLocal(array);
+		constantV.setOrigStmt(origStmt);
+		// In buggy code, the parameter could be a NullConstant.
+		// This is why we use .asImmediate() and not .asLocal()
+		Register arrayReg = regAlloc.asImmediate(array, constantV);
         stmtV.addInsn(new Insn12x(Opcode.ARRAY_LENGTH, destinationReg, arrayReg), origStmt);
 	}
 	
@@ -519,9 +524,14 @@ public class ExprVisitor implements ExprSwitch {
 	
 	@Override
 	public void caseInstanceOfExpr(InstanceOfExpr ioe) {
-		Value referenceToCheck = ioe.getOp();
-		Register referenceToCheckReg = regAlloc.asLocal(referenceToCheck);
-		BuilderReference checkType = DexPrinter.toTypeReference(ioe.getCheckType(), stmtV.getBelongingFile());
+		final Value referenceToCheck = ioe.getOp();
+		
+		// There are some strange apps that use constants here
+		constantV.setOrigStmt(origStmt);
+		Register referenceToCheckReg = regAlloc.asImmediate(referenceToCheck, constantV);
+		
+		BuilderReference checkType = DexPrinter.toTypeReference(ioe.getCheckType(),
+				stmtV.getBelongingFile());
         stmtV.addInsn(new Insn22c(Opcode.INSTANCE_OF, destinationReg, referenceToCheckReg,
                 checkType), origStmt);
 	}
@@ -678,13 +688,11 @@ public class ExprVisitor implements ExprSwitch {
 				(arrayType, stmtV.getBelongingFile());
 		// get the dimension size registers
 		List<Register> dimensionSizeRegs = new ArrayList<Register>();
-		regAlloc.setMultipleConstantsPossible(true); // in case there are multiple integer constants
 		for (int i = 0; i < dimensions; i++) {
 			Value currentDimensionSize = nmae.getSize(i);
 			Register currentReg = regAlloc.asImmediate(currentDimensionSize, constantV);
 			dimensionSizeRegs.add(currentReg);
 		}
-		regAlloc.setMultipleConstantsPossible(false); // in case there are multiple integer constants
 		// create filled-new-array instruction, depending on the dimension sizes
 		if (dimensions <= 5) {
 			Register[] paddedRegs = pad35cRegs(dimensionSizeRegs);

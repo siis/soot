@@ -49,16 +49,25 @@ public class SootToDexUtils {
 	}
 	
 	public static String getDexTypeDescriptor(Type sootType) {
+		final String typeDesc;
 		if (sootType instanceof RefType) {
-			return getDexClassName(((RefType) sootType).getClassName());
+			typeDesc = getDexClassName(((RefType) sootType).getClassName());
 		} else if (sootType instanceof ArrayType) {
-			return getDexArrayTypeDescriptor((ArrayType) sootType);
+			typeDesc = getDexArrayTypeDescriptor((ArrayType) sootType);
 		} else {
-			return sootToDexTypeDescriptor.get(sootType.getClass());
+			typeDesc = sootToDexTypeDescriptor.get(sootType.getClass());
 		}
+		
+		if (typeDesc == null || typeDesc.isEmpty())
+			throw new RuntimeException("Could not create type descriptor for class "
+					+ sootType);
+		return typeDesc;
 	}
 	
 	public static String getDexClassName(String dottedClassName) {
+		if (dottedClassName == null || dottedClassName.isEmpty())
+			throw new RuntimeException("Empty class name detected");
+		
 		String slashedName = dottedClassName.replace('.', '/');
 		if (slashedName.startsWith("L") && slashedName.endsWith(";"))
 			return slashedName;
@@ -68,7 +77,7 @@ public class SootToDexUtils {
 	public static int getDexAccessFlags(SootMethod m) {
 		int dexAccessFlags = m.getModifiers();
 		// dex constructor flag is not included in the Soot modifiers, so add it if necessary
-		if (m.isConstructor()) {
+		if (m.isConstructor() || m.getName().equals(SootMethod.staticInitializerName)) {
 			dexAccessFlags |= Modifier.CONSTRUCTOR;
 		}
 		// add declared_synchronized for dex if synchronized
@@ -92,12 +101,13 @@ public class SootToDexUtils {
 		return getDexTypeDescriptor(baseType);
 	}
 	
-	public static String getDexArrayTypeDescriptor(ArrayType sootArray) {
+	private static String getDexArrayTypeDescriptor(ArrayType sootArray) {
 		if (sootArray.numDimensions > 255) {
 			throw new RuntimeException("dex does not support more than 255 dimensions! " + sootArray + " has " + sootArray.numDimensions);
 		}
 		String baseTypeDescriptor = getDexTypeDescriptor(sootArray.baseType);
-		StringBuilder sb = new StringBuilder(sootArray.numDimensions);
+		StringBuilder sb = new StringBuilder(sootArray.numDimensions
+				+ baseTypeDescriptor.length());
 		for (int i = 0; i < sootArray.numDimensions; i++) {
 			sb.append('[');
 		}

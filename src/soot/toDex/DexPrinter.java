@@ -30,6 +30,7 @@ import org.jf.dexlib2.iface.MethodParameter;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.reference.FieldReference;
 import org.jf.dexlib2.iface.reference.MethodReference;
+import org.jf.dexlib2.iface.reference.StringReference;
 import org.jf.dexlib2.iface.value.EncodedValue;
 import org.jf.dexlib2.immutable.ImmutableAnnotation;
 import org.jf.dexlib2.immutable.ImmutableAnnotationElement;
@@ -70,6 +71,7 @@ import soot.CharType;
 import soot.CompilationDeathException;
 import soot.G;
 import soot.IntType;
+import soot.Local;
 import soot.PackManager;
 import soot.ShortType;
 import soot.SootClass;
@@ -90,6 +92,7 @@ import soot.tagkit.AnnotationArrayElem;
 import soot.tagkit.AnnotationBooleanElem;
 import soot.tagkit.AnnotationClassElem;
 import soot.tagkit.AnnotationConstants;
+import soot.tagkit.AnnotationDefaultTag;
 import soot.tagkit.AnnotationDoubleElem;
 import soot.tagkit.AnnotationElem;
 import soot.tagkit.AnnotationEnumElem;
@@ -135,8 +138,6 @@ public class DexPrinter {
 	
 	private File originalApk;
 	
-//	private static DexAnnotation dexAnnotation;
-	
 	public DexPrinter() {
 		dexFile = DexBuilder.makeDexBuilder(19);
 		//dexAnnotation = new DexAnnotation(dexFile);
@@ -151,7 +152,7 @@ public class DexPrinter {
 			String outputFileName = outputDir + File.separatorChar + originalApk.getName();
 		
 			File outputFile = new File(outputFileName);
-			if(outputFile.exists()) {
+			if(outputFile.exists() && !Options.v().force_overwrite()) {
 				throw new CompilationDeathException("Output file "+outputFile+" exists. Not overwriting.");
 			} 
 			outputApk = new ZipOutputStream(new FileOutputStream(outputFile));
@@ -206,6 +207,7 @@ public class DexPrinter {
 				destination.write(buffer, 0, bytesRead);
 				bytesRead = zipEntryInput.read(buffer);
 			}
+			zipEntryInput.close();
 		}
 	}
 
@@ -290,9 +292,13 @@ public class DexPrinter {
         }
         case 'e': {
             AnnotationEnumElem e = (AnnotationEnumElem)elem;
+            
             String classT = SootToDexUtils.getDexClassName(e.getTypeName());
+            String fieldT = classT;
+            
             FieldReference fref = dexFile.internFieldReference(new ImmutableFieldReference
-            		(classT, e.getConstantName(), e.getTypeName()));
+            		(classT, e.getConstantName(), fieldT));
+            
             return new ImmutableEnumEncodedValue(fref);
         }
         case 'c': {
@@ -312,19 +318,22 @@ public class DexPrinter {
         	AnnotationAnnotationElem e = (AnnotationAnnotationElem)elem;
         	
         	Set<String> alreadyWritten = new HashSet<String>();
-            List<AnnotationElement> elements = new ArrayList<AnnotationElement>();
-            for (AnnotationElem ae : e.getValue().getElems()) {
-            	if (!alreadyWritten.add(ae.getName()))
-            		throw new RuntimeException("Duplicate annotation attribute: " + ae.getName());
-            	
-            	AnnotationElement element = new ImmutableAnnotationElement(ae.getName(),
-            			buildEncodedValueForAnnotation(ae));
-            	elements.add(element);
+            List<AnnotationElement> elements = null;
+            if (!e.getValue().getElems().isEmpty()) {
+            	elements = new ArrayList<AnnotationElement>();
+	            for (AnnotationElem ae : e.getValue().getElems()) {
+	            	if (!alreadyWritten.add(ae.getName()))
+	            		throw new RuntimeException("Duplicate annotation attribute: " + ae.getName());
+	            	
+	            	AnnotationElement element = new ImmutableAnnotationElement(ae.getName(),
+	            			buildEncodedValueForAnnotation(ae));
+	            	elements.add(element);
+	            }
             }
 			
             return new ImmutableAnnotationEncodedValue
             		(SootToDexUtils.getDexClassName(e.getValue().getType()),
-            		elements.isEmpty() ? null : elements);
+            		elements);
         }
         case 'f': { // field (Dalvik specific?)
             AnnotationStringElem e = (AnnotationStringElem)elem;
@@ -332,9 +341,15 @@ public class DexPrinter {
             String fSig = e.getValue();
             String[] sp = fSig.split(" ");
             String classString = SootToDexUtils.getDexClassName(sp[0].split(":")[0]);
-            String typeString = sp[1];
-            String fieldName = sp[2];
+            if (classString.isEmpty())
+            	throw new RuntimeException("Empty class name in annotation");
 
+            String typeString = sp[1];
+            if (typeString.isEmpty())
+            	throw new RuntimeException("Empty type string in annotation");
+            
+            String fieldName = sp[2];
+            
             FieldReference fref = dexFile.internFieldReference(new ImmutableFieldReference
             		(classString, fieldName, typeString));
             return new ImmutableFieldEncodedValue(fref);
@@ -344,15 +359,22 @@ public class DexPrinter {
             
             String[] sp = e.getValue().split(" ");
             String classString = SootToDexUtils.getDexClassName(sp[0].split(":")[0]);
+            if (classString.isEmpty())
+            	throw new RuntimeException("Empty class name in annotation");
+
             String returnType = sp[1];
             String[] sp2 = sp[2].split("\\(");
             String methodNameString = sp2[0];
+            
             String parameters = sp2[1].replaceAll("\\)", "");
-            List<String> paramTypeList = new ArrayList<String>();
-            if (parameters.length() > 0)
-                for (String p: parameters.split(",")) {
-                    paramTypeList.add(p);
-                }
+            List<String> paramTypeList = null;
+            if (!parameters.isEmpty()) {
+            	paramTypeList = new ArrayList<String>();
+	            if (parameters.length() > 0)
+	                for (String p: parameters.split(",")) {
+	                    paramTypeList.add(p);
+	                }
+            }
             
             MethodReference mref = dexFile.internMethodReference(new ImmutableMethodReference
             		(classString, methodNameString, paramTypeList, returnType));
@@ -413,7 +435,7 @@ public class DexPrinter {
     
     private void addAsClassDefItem(SootClass c) {
         // add source file tag if any
-        String sourceFile = "";
+        String sourceFile = null;
         if (c.hasTag("SourceFileTag")) {
             SourceFileTag sft = (SourceFileTag) c.getTag("SourceFileTag");
             sourceFile = sft.getSourceFile();
@@ -422,39 +444,46 @@ public class DexPrinter {
         String classType = SootToDexUtils.getDexTypeDescriptor(c.getType());
         int accessFlags = c.getModifiers();
         String superClass = c.hasSuperclass() ?
-        		SootToDexUtils.getDexTypeDescriptor(c.getSuperclass().getType()) : "";
-        List<String> interfaces = new ArrayList<String>();
-        for (SootClass ifc : c.getInterfaces())
-        	interfaces.add(SootToDexUtils.getDexTypeDescriptor(ifc.getType()));
-
-        List<BuilderField> fields = new ArrayList<BuilderField>();
-        for (SootField f : c.getFields()) {       	
-        	// Look for a static initializer
-            EncodedValue staticInit = null;
-            for (Tag t : f.getTags()) {
-                if (t instanceof ConstantValueTag) {
-                    if (staticInit != null) {
-                        G.v().out.println("warning: more than one constant tag for field: " + f + ": "
-                                + t);
-                    } else {
-                        staticInit = makeConstantItem(f, t);
-                    }
-                }
-            }
-            if (staticInit == null)
-            	staticInit = BuilderEncodedValues.defaultValueForType
-            			(SootToDexUtils.getDexTypeDescriptor(f.getType()));
-            
-            // Build field annotations
-            Set<Annotation> fieldAnnotations = buildFieldAnnotations(f);
-            
-        	BuilderField field = dexFile.internField(classType,
-        			f.getName(),
-        			SootToDexUtils.getDexTypeDescriptor(f.getType()),
-        			f.getModifiers(),
-        			staticInit,
-        			fieldAnnotations);
-        	fields.add(field);
+        		SootToDexUtils.getDexTypeDescriptor(c.getSuperclass().getType()) : null;
+        
+        List<String> interfaces = null;
+        if (!c.getInterfaces().isEmpty()) {
+        	interfaces = new ArrayList<String>();
+            for (SootClass ifc : c.getInterfaces())
+            	interfaces.add(SootToDexUtils.getDexTypeDescriptor(ifc.getType()));
+        }
+        
+        List<BuilderField> fields = null;
+        if (!c.getFields().isEmpty()) {
+        	fields = new ArrayList<BuilderField>();
+	        for (SootField f : c.getFields()) {       	
+	        	// Look for a static initializer
+	            EncodedValue staticInit = null;
+	            for (Tag t : f.getTags()) {
+	                if (t instanceof ConstantValueTag) {
+	                    if (staticInit != null) {
+	                        G.v().out.println("warning: more than one constant tag for field: " + f + ": "
+	                                + t);
+	                    } else {
+	                        staticInit = makeConstantItem(f, t);
+	                    }
+	                }
+	            }
+	            if (staticInit == null)
+	            	staticInit = BuilderEncodedValues.defaultValueForType
+	            			(SootToDexUtils.getDexTypeDescriptor(f.getType()));
+	            
+	            // Build field annotations
+	            Set<Annotation> fieldAnnotations = buildFieldAnnotations(f);
+	            
+	        	BuilderField field = dexFile.internField(classType,
+	        			f.getName(),
+	        			SootToDexUtils.getDexTypeDescriptor(f.getType()),
+	        			f.getModifiers(),
+	        			staticInit,
+	        			fieldAnnotations);
+	        	fields.add(field);
+	        }
         }
         	
         dexFile.internClassDef(classType,
@@ -471,20 +500,46 @@ public class DexPrinter {
     	Set<String> skipList = new HashSet<String>();
     	Set<Annotation> annotations = buildCommonAnnotations(c, skipList);
     	
-    	// handle enclosing method tags
-        if (c.hasTag("EnclosingMethodTag")){
+       	// Classes can have either EnclosingMethod or EnclosingClass tags. Soot
+    	// sets the outer class for both "normal" and anonymous inner classes,
+    	// so we test for enclosing methods first. 
+        if (c.hasTag("EnclosingMethodTag")) {
         	EnclosingMethodTag eMethTag = (EnclosingMethodTag)c.getTag("EnclosingMethodTag");
         	Annotation enclosingMethodItem = buildEnclosingMethodTag(eMethTag, skipList);
         	if (enclosingMethodItem != null)
         	  annotations.add(enclosingMethodItem);
         }
-    	
-    	// handle inner classes
-        if (c.hasTag("InnerClassAttribute")){
-        	InnerClassAttribute icTag = (InnerClassAttribute)c.getTag("InnerClassAttribute");
-        	List<Annotation> innerClassItem = buildInnerClassAttribute(icTag, skipList);
-        	if (innerClassItem != null)
-        	  annotations.addAll(innerClassItem);
+        else if (c.hasOuterClass()) {
+   			if (skipList.add("Ldalvik/annotation/EnclosingClass;")) {
+		    	// EnclosingClass annotation
+		    	ImmutableAnnotationElement enclosingElement = new ImmutableAnnotationElement
+		    			("value", new ImmutableTypeEncodedValue
+		    					(SootToDexUtils.getDexClassName(c.getOuterClass().getName())));
+		    	annotations.add(new ImmutableAnnotation(AnnotationVisibility.SYSTEM,
+		    			"Ldalvik/annotation/EnclosingClass;",
+		    			Collections.singleton(enclosingElement)));
+       		}
+       	}
+        
+        // If we have an outer class, we also pick up the InnerClass annotations
+        // from there. Note that Java and Soot associate InnerClass annotations
+        // with the respective outer classes, while Dalvik puts them on the
+        // respective inner classes.
+        if (c.hasOuterClass()) {
+        	InnerClassAttribute icTag = (InnerClassAttribute) c.getOuterClass().getTag("InnerClassAttribute");
+        	if (icTag != null) {
+	        	List<Annotation> innerClassItem = buildInnerClassAttribute(c, icTag, skipList);
+	        	if (innerClassItem != null)
+	        	  annotations.addAll(innerClassItem);
+        	}
+        }
+        
+    	// Write the MemberClasses tag
+    	InnerClassAttribute icTag = (InnerClassAttribute) c.getTag("InnerClassAttribute");
+    	if (icTag != null) {
+        	List<Annotation> memberClassesItem = buildMemberClassesAttribute(c, icTag, skipList);
+        	if (memberClassesItem != null)
+        	  annotations.addAll(memberClassesItem);
         }
         
         for (Tag t : c.getTags()) {
@@ -494,6 +549,34 @@ public class DexPrinter {
             	annotations.addAll(visibilityItems);
             }
     	}
+        
+
+        //Write default-annotation tags
+		List<AnnotationElem> defaults = new ArrayList<AnnotationElem>();
+        for (SootMethod method : c.getMethods()) {
+        	AnnotationDefaultTag tag = (AnnotationDefaultTag) method.getTag("AnnotationDefaultTag");
+        	if (tag != null) {
+        		tag.getDefaultVal().setName(method.getName());
+        		defaults.add(tag.getDefaultVal());
+        	}
+        }
+        if (defaults.size() > 0) {
+        	VisibilityAnnotationTag defaultAnnotationTag = new VisibilityAnnotationTag(AnnotationConstants.RUNTIME_INVISIBLE);
+        	AnnotationTag a = new AnnotationTag("Ldalvik/annotation/AnnotationDefault;");
+        	defaultAnnotationTag.addAnnotation(a);
+
+        	AnnotationTag at = new AnnotationTag(SootToDexUtils.getDexClassName(c.getName()));
+        	AnnotationAnnotationElem ae = new AnnotationAnnotationElem(at, '@', "value");
+        	a.addElem(ae);
+
+        	
+        	for (AnnotationElem aelem : defaults)
+        		at.addElem(aelem);
+        	
+            List<ImmutableAnnotation> visibilityItems = buildVisibilityAnnotationTag
+            		(defaultAnnotationTag, skipList);
+        	annotations.addAll(visibilityItems);
+        }
 		
     	return annotations;
     }
@@ -528,15 +611,16 @@ public class DexPrinter {
     	return annotations;
     }
 
-    private Set<Annotation> buildMethodParameterAnnotations(SootMethod m) {
+    private Set<Annotation> buildMethodParameterAnnotations(SootMethod m,
+    		final int paramIdx) {
     	Set<String> skipList = new HashSet<String>();
     	Set<Annotation> annotations = buildCommonAnnotations(m, skipList);
     	
     	for (Tag t : m.getTags()) {
-            if (t.getName().equals("VisibilityParameterAnnotationTag")){
+            if (t.getName().equals("VisibilityParameterAnnotationTag")) {
                 VisibilityParameterAnnotationTag vat = (VisibilityParameterAnnotationTag)t;
                 List<ImmutableAnnotation> visibilityItems = buildVisibilityParameterAnnotationTag
-                		(vat, skipList);
+                		(vat, skipList, paramIdx);
             	annotations.addAll(visibilityItems);
             }
     	}
@@ -560,17 +644,24 @@ public class DexPrinter {
         // handle signature tag
         if (host.hasTag("SignatureTag") && !skipList.contains("Ldalvik/annotation/Signature;")) {
             SignatureTag tag = (SignatureTag) host.getTag("SignatureTag");
-            Set<ImmutableAnnotationElement> elements = new HashSet<ImmutableAnnotationElement>();
+            List<String> splitSignature = SootToDexUtils.splitSignature(tag.getSignature());
+
+            Set<ImmutableAnnotationElement> elements = null;
+            if (splitSignature != null && splitSignature.size() > 0) {
+            	elements = new HashSet<ImmutableAnnotationElement>();
             
-            List<ImmutableEncodedValue> valueList = new ArrayList<ImmutableEncodedValue>();
-            for (String s : SootToDexUtils.splitSignature(tag.getSignature())) {
-            	ImmutableStringEncodedValue val = new ImmutableStringEncodedValue(s);
-                valueList.add(val);
+	            List<ImmutableEncodedValue> valueList = new ArrayList<ImmutableEncodedValue>();
+	            for (String s : splitSignature) {
+	            	ImmutableStringEncodedValue val = new ImmutableStringEncodedValue(s);
+	                valueList.add(val);
+	            }
+	            ImmutableArrayEncodedValue valueValue = new ImmutableArrayEncodedValue(valueList);
+	            ImmutableAnnotationElement valueElement = new ImmutableAnnotationElement
+	            		("value", valueValue);
+	            elements.add(valueElement);
             }
-            ImmutableArrayEncodedValue valueValue = new ImmutableArrayEncodedValue(valueList);
-            ImmutableAnnotationElement valueElement = new ImmutableAnnotationElement
-            		("value", valueValue);
-            elements.add(valueElement);
+            else
+            	G.v().out.println("Signature annotation without value detected");
             
             ImmutableAnnotation ann = new ImmutableAnnotation
             		(AnnotationVisibility.SYSTEM,
@@ -595,51 +686,61 @@ public class DexPrinter {
             	continue;
             
             Set<String> alreadyWritten = new HashSet<String>();
-            List<AnnotationElement> elements = new ArrayList<AnnotationElement>();
-            for (AnnotationElem ae : at.getElems()) {
-            	if (ae.getName() == null || ae.getName().isEmpty())
-            		throw new RuntimeException("Null or empty annotation name encountered");
-            	if (!alreadyWritten.add(ae.getName()))
-            		throw new RuntimeException("Duplicate annotation attribute: " + ae.getName());
-            	
-                EncodedValue value = buildEncodedValueForAnnotation(ae);
-                ImmutableAnnotationElement element = new ImmutableAnnotationElement
-                		(ae.getName(), value);
-                elements.add(element);
+            List<AnnotationElement> elements = null;
+            if (!at.getElems().isEmpty()) {
+            	elements = new ArrayList<AnnotationElement>();
+	            for (AnnotationElem ae : at.getElems()) {
+	            	if (ae.getName() == null || ae.getName().isEmpty())
+	            		throw new RuntimeException("Null or empty annotation name encountered");
+	            	if (!alreadyWritten.add(ae.getName()))
+	            		throw new RuntimeException("Duplicate annotation attribute: " + ae.getName());
+	            	
+	                EncodedValue value = buildEncodedValueForAnnotation(ae);
+	                ImmutableAnnotationElement element = new ImmutableAnnotationElement
+	                		(ae.getName(), value);
+	                elements.add(element);
+	            }
             }
             
             String typeName = SootToDexUtils.getDexClassName(at.getType());
             ImmutableAnnotation ann = new ImmutableAnnotation(getVisibility(t.getVisibility()),
-            		typeName, elements.isEmpty() ? null : elements);
+            		typeName, elements);
             annotations.add(ann);
         }
         return annotations;
 	}
 
     private List<ImmutableAnnotation> buildVisibilityParameterAnnotationTag
-			(VisibilityParameterAnnotationTag t, Set<String> skipList) {
+    		(VisibilityParameterAnnotationTag t, Set<String> skipList,
+    				int paramIdx) {
 		if (t.getVisibilityAnnotations() == null)
     		return Collections.emptyList();
-    	
+		
+        int paramTagIdx = 0;
     	List<ImmutableAnnotation> annotations = new ArrayList<ImmutableAnnotation>();
         for (VisibilityAnnotationTag vat : t.getVisibilityAnnotations()) {
-        	if (vat.getAnnotations() != null)
+        	if (paramTagIdx == paramIdx
+        			&& vat != null
+        			&& vat.getAnnotations() != null)
 	        	for (AnnotationTag at : vat.getAnnotations()) {
 		            String type = at.getType();
 		            if (!skipList.add(type))
 		            	continue;
 		            
 		            Set<String> alreadyWritten = new HashSet<String>();
-		            List<AnnotationElement> elements = new ArrayList<AnnotationElement>();
-		            for (AnnotationElem ae : at.getElems()) {
-		            	if (ae.getName() == null || ae.getName().isEmpty())
-		            		throw new RuntimeException("Null or empty annotation name encountered");
-		            	if (!alreadyWritten.add(ae.getName()))
-		            		throw new RuntimeException("Duplicate annotation attribute: " + ae.getName());
-
-		            	EncodedValue value = buildEncodedValueForAnnotation(ae);
-		                ImmutableAnnotationElement element = new ImmutableAnnotationElement(ae.getName(), value);
-		                elements.add(element);
+		            List<AnnotationElement> elements = null;
+		            if (!at.getElems().isEmpty()) {
+		            	elements = new ArrayList<AnnotationElement>();
+			            for (AnnotationElem ae : at.getElems()) {
+			            	if (ae.getName() == null || ae.getName().isEmpty())
+			            		throw new RuntimeException("Null or empty annotation name encountered");
+			            	if (!alreadyWritten.add(ae.getName()))
+			            		throw new RuntimeException("Duplicate annotation attribute: " + ae.getName());
+	
+			            	EncodedValue value = buildEncodedValueForAnnotation(ae);
+			                ImmutableAnnotationElement element = new ImmutableAnnotationElement(ae.getName(), value);
+			                elements.add(element);
+			            }
 		            }
 		            
 		            ImmutableAnnotation ann = new ImmutableAnnotation(getVisibility(vat.getVisibility()),
@@ -647,6 +748,7 @@ public class DexPrinter {
 		            		elements);
 		            annotations.add(ann);
 	        	}
+        	paramTagIdx++;
         }
         return annotations;
     }
@@ -682,12 +784,40 @@ public class DexPrinter {
     			Collections.singleton(methodElement));
     }
 
-    private List<Annotation> buildInnerClassAttribute(InnerClassAttribute t, Set<String> skipList) {
-    	List<Annotation> anns = new ArrayList<Annotation>();
+    private List<Annotation> buildInnerClassAttribute(SootClass parentClass,
+    		InnerClassAttribute t, Set<String> skipList) {
+    	if (t.getSpecs() == null)
+    		return null;
     	
+    	List<Annotation> anns = null;
     	for (Tag t2 : t.getSpecs()) {
     		InnerClassTag icTag = (InnerClassTag) t2;
     		
+        	// In Dalvik, both the EnclosingMethod/EnclosingClass tag and the
+        	// InnerClass tag are written to the inner class which is different
+        	// to Java. We thus check whether this tag actually points to our
+    		// outer class.
+    		String outerClass = getOuterClassNameFromTag(icTag);
+			String innerClass = icTag.getInnerClass().replaceAll("/", ".");
+						
+			// Only write the InnerClass tag to the inner class itself, not
+			// the other one. If the outer class points to our parent, but
+			// this is simply the wrong inner class, we also continue with the
+			// next tag.
+    		if (!parentClass.hasOuterClass()
+    				|| !innerClass.equals(parentClass.getName()))
+    			continue;
+    		
+    		// If the outer class points to the very same class, we null it
+    		if (parentClass.getName().equals(outerClass)
+    				&& icTag.getOuterClass() == null)
+    			outerClass = null;
+    		
+    		// Do not write garbage. Never.
+    		if (parentClass.getName().equals(outerClass))
+    			continue;
+    		
+    		// This is an actual inner class. Write the annotation
         	if (skipList.add("Ldalvik/annotation/InnerClass;")) {
 	    		// InnerClass annotation
 	        	List<AnnotationElement> elements = new ArrayList<AnnotationElement>();
@@ -696,28 +826,80 @@ public class DexPrinter {
 		    			("accessFlags", new ImmutableIntEncodedValue(icTag.getAccessFlags()));
 		    	elements.add(flagsElement);
 		    	
+		    	ImmutableEncodedValue nameValue;
+		    	if (icTag.getShortName() != null && !icTag.getShortName().isEmpty())
+		    		nameValue = new ImmutableStringEncodedValue(icTag.getShortName());
+		    	else
+		    		nameValue = ImmutableNullEncodedValue.INSTANCE;
+		    	
 		    	ImmutableAnnotationElement nameElement = new ImmutableAnnotationElement
-		    			("name", new ImmutableStringEncodedValue(icTag.getShortName()));
-		    	elements.add(nameElement);
-
+			    		("name", nameValue);
+			    elements.add(nameElement);
+		    	
+		    	if (anns == null) anns = new ArrayList<Annotation>();
 		    	anns.add(new ImmutableAnnotation(AnnotationVisibility.SYSTEM,
 		    			"Ldalvik/annotation/InnerClass;",
 		    			elements));
         	}
-	    	
-        	if (skipList.add("Ldalvik/annotation/EnclosingClass;")) {
-		    	// EnclosingClass annotation
-		    	ImmutableAnnotationElement enclosingElement = new ImmutableAnnotationElement
-		    			("value", new ImmutableTypeEncodedValue
-		    					(SootToDexUtils.getDexClassName(icTag.getOuterClass())));
-		    	anns.add(new ImmutableAnnotation(AnnotationVisibility.SYSTEM,
-		    			"Ldalvik/annotation/EnclosingClass;",
-		    			Collections.singleton(enclosingElement)));
-        	}
     	}
+    	    	
     	return anns;
     }
 
+	private String getOuterClassNameFromTag(InnerClassTag icTag) {
+		String outerClass;
+		if (icTag.getOuterClass() == null) { // anonymous inner classes
+			outerClass = icTag.getInnerClass().replaceAll("\\$[0-9,a-z,A-Z]*$", "").replaceAll("/", ".");
+		} else {
+			outerClass = icTag.getOuterClass().replaceAll("/", ".");
+		}
+		
+		return outerClass;
+	}
+
+    private List<Annotation> buildMemberClassesAttribute(SootClass parentClass,
+    		InnerClassAttribute t, Set<String> skipList) {
+    	List<Annotation> anns = null;
+    	Set<String> memberClasses = null;
+    	
+    	// Collect the inner classes
+    	for (Tag t2 : t.getSpecs()) {
+    		InnerClassTag icTag = (InnerClassTag) t2;
+    		String outerClass = getOuterClassNameFromTag(icTag);
+			
+			// Only classes with names are member classes
+			if (icTag.getOuterClass() != null
+					&& parentClass.getName().equals(outerClass)) {
+				if (memberClasses == null)
+					memberClasses = new HashSet<String>();
+				memberClasses.add(SootToDexUtils.getDexClassName(icTag.getInnerClass()));
+			}
+    	}
+    	
+    	// Write the member classes
+    	if (memberClasses != null
+    			&& !memberClasses.isEmpty()
+    			&& skipList.add("Ldalvik/annotation/MemberClasses;")) {
+        	List<EncodedValue> classes = new ArrayList<EncodedValue>();
+	    	for (String memberClass : memberClasses) {
+	    		ImmutableTypeEncodedValue classValue = new ImmutableTypeEncodedValue(memberClass);
+	    		classes.add(classValue);
+	    	}
+	    	
+    		ImmutableArrayEncodedValue classesValue =
+    				new ImmutableArrayEncodedValue(classes);
+    		ImmutableAnnotationElement element =
+    				new ImmutableAnnotationElement("value", classesValue);
+	    	ImmutableAnnotation memberAnnotation =
+    				new ImmutableAnnotation(AnnotationVisibility.SYSTEM,
+    						"Ldalvik/annotation/MemberClasses;",
+    						Collections.singletonList(element));
+	    	if (anns == null) anns = new ArrayList<Annotation>();
+	    	anns.add(memberAnnotation);
+    	}
+    	return anns;
+    }
+    
     /**
      * Converts Jimple visibility to Dexlib visibility
      * 
@@ -736,10 +918,17 @@ public class DexPrinter {
     }
     
 	private Collection<BuilderMethod> toMethods(SootClass clazz) {
+		if (clazz.getMethods().isEmpty())
+			return null;
+		
         String classType = SootToDexUtils.getDexTypeDescriptor(clazz.getType());
-
         List<BuilderMethod> methods = new ArrayList<BuilderMethod>();
         for (SootMethod sm : clazz.getMethods()) {
+            if (sm.isPhantom()) {
+                // Do not print method bodies for inherited methods
+                continue;
+            }
+            
         	MethodImplementation impl = toMethodImplementation(sm);
         	
         	List<String> parameterNames = null;
@@ -747,14 +936,17 @@ public class DexPrinter {
         		parameterNames = ((ParamNamesTag) sm.getTag("ParamNamesTag")).getNames();
         	
         	int paramIdx = 0;
-        	List<MethodParameter> parameters = new ArrayList<MethodParameter>();
-        	for (Type tp : sm.getParameterTypes()) {
-        		String paramType = SootToDexUtils.getDexTypeDescriptor(tp);
-        		parameters.add(new ImmutableMethodParameter(paramType,
-        				buildMethodParameterAnnotations(sm),
-        				sm.isConcrete() && parameterNames != null ?
-        						parameterNames.get(paramIdx) : null));
-        		paramIdx++;
+        	List<MethodParameter> parameters = null;
+        	if (sm.getParameterCount() > 0) {
+        		parameters = new ArrayList<MethodParameter>();
+	        	for (Type tp : sm.getParameterTypes()) {
+	        		String paramType = SootToDexUtils.getDexTypeDescriptor(tp);
+	        		parameters.add(new ImmutableMethodParameter(paramType,
+	        				buildMethodParameterAnnotations(sm, paramIdx),
+	        				sm.isConcrete() && parameterNames != null ?
+	        						parameterNames.get(paramIdx) : null));
+	        		paramIdx++;
+	        	}
         	}
         	
             String returnType = SootToDexUtils.getDexTypeDescriptor(sm.getReturnType());
@@ -820,7 +1012,13 @@ public class DexPrinter {
 		// We cannot place this upon the developer since it is only required
 		// for Dalvik, but not for other targets.
 		SynchronizedMethodTransformer.v().transform(activeBody);
-
+		
+		// Tries may not start or end at units which have no corresponding Dalvik
+		// instructions such as IdentityStmts. We reduce the traps to start at the
+		// first "real" instruction. We could also use a TrapTigthener, but that
+		// would be too expensive for what we need here.
+		FastDexTrapTightener.v().transform(activeBody);
+		
 		// Split the tries since Dalvik does not supported nested try/catch blocks
 		TrapSplitter.v().transform(activeBody);
 
@@ -835,6 +1033,7 @@ public class DexPrinter {
 		StmtVisitor stmtV = new StmtVisitor(m, dexFile);
 		
 		toInstructions(units, stmtV);
+		
 		int registerCount = stmtV.getRegisterCount();
 		if (inWords > registerCount) {
 			/*
@@ -849,9 +1048,22 @@ public class DexPrinter {
 		
 		MethodImplementationBuilder builder = new MethodImplementationBuilder(registerCount);
 		LabelAssigner labelAssinger = new LabelAssigner(builder);
-		List<BuilderInstruction> instructions = stmtV.getRealInsns(labelAssinger);
+		List<BuilderInstruction> instructions = stmtV.getRealInsns(labelAssinger); 
 		
 		Map<Instruction, Stmt> instructionStmtMap = stmtV.getInstructionStmtMap();
+		Map<Local, Integer> seenRegisters = new HashMap<Local, Integer>();
+		Map<Instruction, LocalRegisterAssignmentInformation> instructionRegisterMap = stmtV.getInstructionRegisterMap();
+
+		for (LocalRegisterAssignmentInformation assignment : stmtV.getParameterInstructionsList()) {
+			//The "this" local gets added automatically, so we do not need to add it explicitly
+			//(at least not if it exists with exactly this name)
+			if (assignment.getLocal().getName().equals("this"))
+				continue;
+			addRegisterAssignmentDebugInfo(assignment, seenRegisters, builder);
+		}
+    	
+    	 
+    	
         for (BuilderInstruction ins : instructions) {
             Stmt origStmt = instructionStmtMap.get(ins);
             
@@ -893,8 +1105,17 @@ public class DexPrinter {
             }
             
             builder.addInstruction(ins);
+            LocalRegisterAssignmentInformation registerAssignmentTag = instructionRegisterMap.get(ins);
+            if (registerAssignmentTag != null)
+            {
+				//Add start local debugging information: Register -> Local assignment
+        		addRegisterAssignmentDebugInfo(registerAssignmentTag, seenRegisters, builder);
+            }
 		}
 		
+		
+		for (int registersLeft : seenRegisters.values())
+				builder.addEndLocal(registersLeft);
 		toTries(activeBody.getTraps(), stmtV, builder, labelAssinger);
         
         // Make sure that all labels have been placed by now
@@ -903,6 +1124,26 @@ public class DexPrinter {
         		throw new RuntimeException("Label not placed: " + lbl);
         
         return builder.getMethodImplementation();
+	}
+
+	private void addRegisterAssignmentDebugInfo(
+			LocalRegisterAssignmentInformation registerAssignment, Map<Local, Integer> seenRegisters, MethodImplementationBuilder builder) {
+		Local local = registerAssignment.getLocal();
+		String dexLocalType = SootToDexUtils.getDexTypeDescriptor(local.getType());
+		StringReference localName = dexFile.internStringReference(local.getName());
+		Register reg = registerAssignment.getRegister();
+		int register = reg.getNumber();
+		
+		Integer beforeRegister = seenRegisters.get(local);
+		if (beforeRegister != null)
+		{
+			if (beforeRegister == register)
+				//No change
+				return;
+			builder.addEndLocal(beforeRegister);
+		}
+		builder.addStartLocal(register, localName, dexFile.internTypeReference(dexLocalType), dexFile.internStringReference(""));
+		seenRegisters.put(local, register);
 	}
 
 	private void toInstructions(Collection<Unit> units, StmtVisitor stmtV) {
@@ -985,7 +1226,6 @@ public class DexPrinter {
 					(exceptionType, labelAssigner.getLabel((Stmt) t.getHandlerUnit()).getCodeAddress());
 			
 			List<ExceptionHandler> newHandlers = new ArrayList<ExceptionHandler>();
-			newHandlers.add(exceptionHandler);
 			
 			CodeRange range = new CodeRange(startCodeAddress, endCodeAddress);
 			
@@ -1000,7 +1240,6 @@ public class DexPrinter {
 					List<ExceptionHandler> oldHandlers = codeRangesToTryItem.get(r);
 					if (oldHandlers != null)
 						newHandlers.addAll(oldHandlers);
-					newHandlers.add(exceptionHandler);
 					break;
 				}
 				// Check whether the other range is contained in this range. In this case,
@@ -1014,7 +1253,6 @@ public class DexPrinter {
 					List<ExceptionHandler> oldHandlers = codeRangesToTryItem.get(range);
 					if (oldHandlers != null)
 						newHandlers.addAll(oldHandlers);
-					newHandlers.add(exceptionHandler);
 					
 					// remove the old range, the new one will be added anyway and contain
 					// the merged handlers
@@ -1023,6 +1261,8 @@ public class DexPrinter {
 				}
 			}
 			
+			if (!newHandlers.contains(exceptionHandler))
+				newHandlers.add(exceptionHandler);
 			codeRangesToTryItem.put(range, newHandlers);
 		}
 		for (CodeRange range : codeRangesToTryItem.keySet())
@@ -1037,6 +1277,7 @@ public class DexPrinter {
 	public void add(SootClass c) {
 		if (c.isPhantom())
 			return;
+				
 		addAsClassDefItem(c);
 		// save original APK for this class, needed to copy all the other files inside
 		Map<String, File> dexClassIndex = SourceLocator.v().dexClassIndex();
@@ -1056,7 +1297,8 @@ public class DexPrinter {
 	public void print() {
 		String outputDir = SourceLocator.v().getOutputDir();
 		try {
-			if (originalApk != null) {
+			if (originalApk != null
+					&& Options.v().output_format() != Options.output_format_force_dex) {
 				printApk(outputDir, originalApk);
 			} else {
 				String fileName = outputDir + File.separatorChar + CLASSES_DEX;

@@ -27,275 +27,289 @@
 
 package soot.toolkits.scalar;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 
 /**
  *   Reference implementation for a BoundedFlowSet. Items are stored in an Array.  
  */
-public class ArrayPackedSet extends AbstractBoundedFlowSet
+public class ArrayPackedSet<T> extends AbstractBoundedFlowSet<T>
 {
-    ObjectIntMapper map;
-    int[] bits;
+    ObjectIntMapper<T> map;
+    BitSet bits;
 
-    public ArrayPackedSet(FlowUniverse universe) {
-        this(new ObjectIntMapper(universe));
+    public ArrayPackedSet(FlowUniverse<T> universe) {
+        this(new ObjectIntMapper<T>(universe));
     }
 
-    ArrayPackedSet(ObjectIntMapper map)
+    ArrayPackedSet(ObjectIntMapper<T> map)
     {
-        //int size = universe.getSize();
-
-        //int numWords = size / 32 + (((size % 32) != 0) ? 1 : 0);
-
-        this(map, new int[map.size() / 32 + (((map.size() % 32) != 0) ? 1 : 0)]);
+        this(map, new BitSet());
     }
     
-    ArrayPackedSet(ObjectIntMapper map, int[] bits)
+    ArrayPackedSet(ObjectIntMapper<T> map, BitSet bits)
     {
         this.map = map;
-        this.bits = bits.clone();
+        this.bits = bits;
     }
 
     /** Returns true if flowSet is the same type of flow set as this. */
-    private boolean sameType(Object flowSet)
+    @SuppressWarnings("rawtypes")
+	private boolean sameType(Object flowSet)
     {
         return (flowSet instanceof ArrayPackedSet &&
                 ((ArrayPackedSet)flowSet).map == map);
     }
 
-    public ArrayPackedSet clone()
+    public ArrayPackedSet<T> clone()
     {
-        return new ArrayPackedSet(map, bits);
+        return new ArrayPackedSet<T>(map, (BitSet) bits.clone());
     }
 
-    public Object emptySet()
+    public FlowSet<T> emptySet()
     {
-        return new ArrayPackedSet(map);
+        return new ArrayPackedSet<T>(map);
     }
 
     public int size()
     {
-        int count = 0;
-
-        for (int word : bits) {
-            for(int j = 0; j < 32; j++)
-                if((word & (1 << j)) != 0)
-                    count++;
-        }
-
-        return count;
+        return bits.cardinality();
     }
 
     public boolean isEmpty()
     {
-        for (int element : bits)
-			if(element != 0)
-                return false;
-
-        return true;
+        return bits.isEmpty();
     }
 
 
     public void clear()
     {
-        for(int i = 0; i < bits.length; i++)
-            bits[i] = 0;
+        bits.clear();
     }
 
 
-    public List toList(int low, int high)
+    public List<T> toList(int lowInclusive, int highInclusive)
     {
-        List elements = new ArrayList();
+    	int highExclusive = highInclusive + 1;
 
-        int startWord = low / 32,
-            startBit = low % 32;
+    	if (lowInclusive < 0)
+    		throw new IllegalArgumentException();
+    	
+    	if (lowInclusive > highInclusive)
+    		throw new IllegalArgumentException();
+    	
+    	if (lowInclusive == highInclusive)
+    		return bits.get(lowInclusive) 
+    			? Collections.singletonList(map.getObject(lowInclusive)) 
+    			: Collections.<T>emptyList() 
+    			;
+    	
+    	int i = bits.nextSetBit(lowInclusive);
+    	if (i < 0 || i >= highExclusive)
+    		return Collections.emptyList();
+    	
+		List<T> elements = new LinkedList<T>();                		
+		for (;;) {
+			int endOfRun = Math.min(highExclusive, bits.nextClearBit(i+1));
+			do { elements.add(map.getObject(i++)); }
+			while (i < endOfRun);
+			if (i >= highExclusive)
+				return elements;
+			i = bits.nextSetBit(i+1);
+			if (i < 0 || i >= highExclusive)
+				return elements;
+		}
+    }
+    
 
-        int endWord = high / 32,
-            endBit = high % 32;
-
-        if(low > high)
-            return elements;
-
-        // Do the first word
-        {
-            int word = bits[startWord];
-
-            int offset = startWord * 32;
-            int lastBit = (startWord != endWord) ? 32 : (endBit + 1);
-
-            for(int j = startBit; j < lastBit; j++)
-            {
-                if((word & (1 << j)) != 0)
-                    elements.add(map.getObject(offset + j));
-            }
-        }
-
-        // Do the in between ones
-            if(startWord != endWord && startWord + 1 != endWord)
-            {
-                for(int i = startWord + 1; i < endWord; i++)
-                {
-                    int word = bits[i];
-                    int offset = i * 32;
-
-                    for(int j = 0; j < 32; j++)
-                    {
-                        if((word & (1 << j)) != 0)
-                            elements.add(map.getObject(offset + j));
-                    }
-                }
-            }
-
-        // Do the last one
-            if(startWord != endWord)
-            {
-                int word = bits[endWord];
-                int offset = endWord * 32;
-                int lastBit = endBit + 1;
-
-                for(int j = 0; j < lastBit; j++)
-                {
-                    if((word & (1 << j)) != 0)
-                        elements.add(map.getObject(offset + j));
-                }
-            }
+    public List<T> toList()
+    {
+    	int i = bits.nextSetBit(0);
+    	if (i == -1)
+    		return Collections.emptyList();
+    	
+	List<T> elements = new ArrayList<T>(bits.cardinality());
+	for (; i >= 0; i = bits.nextSetBit(i+1)) {
+		int endOfRun = bits.nextClearBit(i+1);
+		do { elements.add(map.getObject(i++)); }
+		while (i < endOfRun);
+	}
 
         return elements;
     }
 
-
-    public List toList()
+    public void add(T obj)
     {
-        List elements = new ArrayList();
-
-        for(int i = 0; i < bits.length; i++)
-        {
-            int word = bits[i];
-            int offset = i * 32;
-
-            for(int j = 0; j < 32; j++)
-                if((word & (1 << j)) != 0)
-                    elements.add(map.getObject(offset + j));
-        }
-
-        return elements;
+        bits.set(map.getInt(obj));
     }
 
-    public void add(Object obj)
-    {
-        int bitNum = map.getInt(obj);
-
-        bits[bitNum / 32] |= 1 << (bitNum % 32);
-    }
-
-    public void complement(FlowSet destFlow)
+    public void complement(FlowSet<T> destFlow)
     {
       if (sameType(destFlow)) {
-        ArrayPackedSet dest = (ArrayPackedSet) destFlow;
+        ArrayPackedSet<T> dest = (ArrayPackedSet<T>) destFlow;
 
-        for(int i = 0; i < bits.length; i++)
-            dest.bits[i] = ~(this.bits[i]);
-            
-        // Clear the bits which are outside of this universe
-            if(bits.length >= 1)
-            {
-                int lastValidBitCount = map.size() % 32;
-                
-                if(lastValidBitCount != 0)
-                    dest.bits[bits.length - 1] &= ~(0xFFFFFFFF << lastValidBitCount);  
-            }
+        if (this != dest) {
+	        dest.bits.clear();
+	        dest.bits.or(this.bits);
+        }   
+        dest.bits.flip(0, dest.bits.size());
       } else
         super.complement(destFlow);
     }
 
-    public void remove(Object obj)
+    public void remove(T obj)
     {
-        int bitNum = map.getInt(obj);
-
-        bits[bitNum / 32] &= ~(1 << (bitNum % 32));
+    	bits.clear(map.getInt(obj));
     }
-
-    public void union(FlowSet otherFlow, FlowSet destFlow)
+    
+	@Override
+	public boolean isSubSet(FlowSet<T> other) {
+		if (other == this)
+			return true;
+		if (sameType(other)) {
+	          ArrayPackedSet<T> o = (ArrayPackedSet<T>) other;
+	          
+	          BitSet tmp = (BitSet) o.bits.clone();
+	          tmp.andNot(bits);
+	          return tmp.isEmpty();
+		}
+		return super.isSubSet(other);
+	}
+	
+	
+    public void union(FlowSet<T> otherFlow, FlowSet<T> destFlow)
     {
       if (sameType(otherFlow) &&
           sameType(destFlow)) {
-        ArrayPackedSet other = (ArrayPackedSet) otherFlow;
-        ArrayPackedSet dest = (ArrayPackedSet) destFlow;
+        ArrayPackedSet<T> other = (ArrayPackedSet<T>) otherFlow;
+        ArrayPackedSet<T> dest = (ArrayPackedSet<T>) destFlow;
 
-        if(!(other instanceof ArrayPackedSet) || bits.length != other.bits.length)
+        if(!(other instanceof ArrayPackedSet))
             throw new RuntimeException("Incompatible other set for union");
 
-        for(int i = 0; i < bits.length; i++)
-            dest.bits[i] = this.bits[i] | other.bits[i];
+        if (this != dest) {
+	        dest.bits.clear();
+	        dest.bits.or(this.bits);
+        }
+        
+        dest.bits.or(other.bits);
+        
       } else
         super.union(otherFlow, destFlow);
     }
 
-    public void difference(FlowSet otherFlow, FlowSet destFlow)
+    public void difference(FlowSet<T> otherFlow, FlowSet<T> destFlow)
     {
       if (sameType(otherFlow) &&
           sameType(destFlow)) {
-        ArrayPackedSet other = (ArrayPackedSet) otherFlow;
-        ArrayPackedSet dest = (ArrayPackedSet) destFlow;
 
-        if(!(other instanceof ArrayPackedSet) || bits.length != other.bits.length)
+        if(!(otherFlow instanceof ArrayPackedSet))
             throw new RuntimeException("Incompatible other set for union");
-            
-        for(int i = 0; i < bits.length; i++)
-            dest.bits[i] = this.bits[i] & ~other.bits[i];
+
+        ArrayPackedSet<T> other = (ArrayPackedSet<T>) otherFlow;
+        ArrayPackedSet<T> dest = (ArrayPackedSet<T>) destFlow;
+        
+
+        if (this != dest) {
+	        dest.bits.clear();
+	        dest.bits.or(this.bits);
+        }        
+        dest.bits.andNot(other.bits);
+        
       } else
         super.difference(otherFlow, destFlow);
     }
     
-    public void intersection(FlowSet otherFlow, FlowSet destFlow)
+    public void intersection(FlowSet<T> otherFlow, FlowSet<T> destFlow)
     {
       if (sameType(otherFlow) &&
           sameType(destFlow)) {
-        ArrayPackedSet other = (ArrayPackedSet) otherFlow;
-        ArrayPackedSet dest = (ArrayPackedSet) destFlow;
-
-        if(!(other instanceof ArrayPackedSet) || bits.length != other.bits.length)
+        if(!(otherFlow instanceof ArrayPackedSet))
             throw new RuntimeException("Incompatible other set for union");
 
-        for(int i = 0; i < bits.length; i++)
-            dest.bits[i] = this.bits[i] & other.bits[i];
+        ArrayPackedSet<T> other = (ArrayPackedSet<T>) otherFlow;
+        ArrayPackedSet<T> dest = (ArrayPackedSet<T>) destFlow;
+
+        if (this != dest) {
+	        dest.bits.clear();
+	        dest.bits.or(this.bits);
+        }        
+        dest.bits.and(other.bits);
       } else
         super.intersection(otherFlow, destFlow);
     }
 
   /** Returns true, if the object is in the set.
    */
-    public boolean contains(Object obj)
+    public boolean contains(T obj)
     {
       /* check if the object is in the map, direct call of map.getInt will
        * add the object into the map.
        */
         if (!map.contains(obj)) return false;
-
-        int bitNum = map.getInt(obj);
-
-        return (bits[bitNum / 32] & (1 << (bitNum % 32))) != 0;
+        
+        return bits.get(map.getInt(obj));
     }
 
-    public boolean equals(Object otherFlow)
+    @SuppressWarnings("unchecked")
+	public boolean equals(Object otherFlow)
     {
       if (sameType(otherFlow)) {
-        return Arrays.equals(bits, ((ArrayPackedSet)otherFlow).bits);
+        return bits.equals(((ArrayPackedSet<T>)otherFlow).bits);
       } else
         return super.equals(otherFlow);
     }
 
-    public void copy(FlowSet destFlow)
+    public void copy(FlowSet<T> destFlow)
     {
+		if (this == destFlow)
+			return;
       if (sameType(destFlow)) {
-        ArrayPackedSet dest = (ArrayPackedSet) destFlow;
-
-        for(int i = 0; i < bits.length; i++)
-            dest.bits[i] = this.bits[i];
+        ArrayPackedSet<T> dest = (ArrayPackedSet<T>) destFlow;
+                
+        dest.bits.clear();
+        dest.bits.or(this.bits);
       } else
         super.copy(destFlow);
     }
+
+	@Override
+	public Iterator<T> iterator() {
+		return new Iterator<T>() {
+			
+			int i = bits.nextSetBit(0);		
+			T t;
+			
+			@Override
+			public boolean hasNext() {
+				return (i >= 0);
+			}
+
+			@Override
+			public T next() {
+				if (i < 0)
+					throw new NoSuchElementException();
+				t = map.getObject(i);				
+				i = bits.nextSetBit(i+1);					
+				return t;
+			}
+
+			@Override
+			public void remove() {
+				if (t == null)
+					throw new IllegalStateException();
+		        bits.clear(i);
+		        t = null;
+			}
+			
+		};
+	}
 
 }
 

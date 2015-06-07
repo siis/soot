@@ -24,10 +24,10 @@ import heros.SynchronizedBy;
 import heros.ThreadSafe;
 import heros.solver.IDESolver;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import soot.Body;
 import soot.MethodOrMethodContext;
@@ -62,7 +62,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 				@Override
 				public boolean want(Edge e) {				
 					return e.kind().isExplicit() || e.kind().isThread() || e.kind().isExecutor()
-							|| e.kind().isAsyncTask() || e.kind().isClinit();
+							|| e.kind().isAsyncTask() || e.kind().isClinit() || e.kind().isPrivileged();
 				}
 			});
 		}
@@ -76,18 +76,27 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 			IDESolver.DEFAULT_CACHE_BUILDER.build( new CacheLoader<Unit,Collection<SootMethod>>() {
 				@Override
 				public Collection<SootMethod> load(Unit u) throws Exception {
-					List<SootMethod> res = new LinkedList<SootMethod>();
+					ArrayList<SootMethod> res = null;
 					//only retain callers that are explicit call sites or Thread.start()
 					Iterator<Edge> edgeIter = new EdgeFilter().wrap(cg.edgesOutOf(u));					
 					while(edgeIter.hasNext()) {
 						Edge edge = edgeIter.next();
 						SootMethod m = edge.getTgt().method();
-						if(m.hasActiveBody())
+						if(m.hasActiveBody()) {
+							if (res == null)
+								res = new ArrayList<SootMethod>();
 							res.add(m);
+						}
 						else if(IDESolver.DEBUG) 
 							System.err.println("Method "+m.getSignature()+" is referenced but has no body!");
 					}
-					return res; 
+					
+					if (res != null) {
+						res.trimToSize();
+						return res;
+					}
+					else
+						return Collections.emptySet();
 				}
 			});
 
@@ -96,13 +105,14 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 			IDESolver.DEFAULT_CACHE_BUILDER.build( new CacheLoader<SootMethod,Collection<Unit>>() {
 				@Override
 				public Collection<Unit> load(SootMethod m) throws Exception {
-					List<Unit> res = new LinkedList<Unit>();
+					ArrayList<Unit> res = new ArrayList<Unit>();
 					//only retain callers that are explicit call sites or Thread.start()
 					Iterator<Edge> edgeIter = new EdgeFilter().wrap(cg.edgesInto(m));					
 					while(edgeIter.hasNext()) {
 						Edge edge = edgeIter.next();
 						res.add(edge.srcUnit());
 					}
+					res.trimToSize();
 					return res;
 				}
 			});
@@ -115,12 +125,16 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 	protected void initializeUnitToOwner() {
 		for(Iterator<MethodOrMethodContext> iter = Scene.v().getReachableMethods().listener(); iter.hasNext(); ) {
 			SootMethod m = iter.next().method();
-			if(m.hasActiveBody()) {
-				Body b = m.getActiveBody();
-				PatchingChain<Unit> units = b.getUnits();
-				for (Unit unit : units) {
-					unitToOwner.put(unit, b);
-				}
+			initializeUnitToOwner(m);
+		}
+	}
+	
+	public void initializeUnitToOwner(SootMethod m) {
+		if(m.hasActiveBody()) {
+			Body b = m.getActiveBody();
+			PatchingChain<Unit> units = b.getUnits();
+			for (Unit unit : units) {
+				unitToOwner.put(unit, b);
 			}
 		}
 	}

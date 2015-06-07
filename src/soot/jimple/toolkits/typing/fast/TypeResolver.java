@@ -21,7 +21,9 @@
 package soot.jimple.toolkits.typing.fast;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +45,7 @@ import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
 import soot.jimple.BinopExpr;
 import soot.jimple.CastExpr;
+import soot.jimple.CaughtExceptionRef;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
@@ -52,11 +55,7 @@ import soot.jimple.NewExpr;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.toolkits.typing.Util;
-import soot.toolkits.graph.ExceptionalUnitGraph;
 import soot.toolkits.scalar.LocalDefs;
-import soot.toolkits.scalar.SimpleLiveLocals;
-import soot.toolkits.scalar.SimpleLocalDefs;
-import soot.toolkits.scalar.SmartLocalDefs;
 
 /**
  * New Type Resolver by Ben Bellamy (see 'Efficient Local Type Inference'
@@ -79,14 +78,14 @@ public class TypeResolver
 	private JimpleBody jb;
 	
 	private final List<DefinitionStmt> assignments;
-	private final HashMap<Local, List<DefinitionStmt>> depends;
+	private final HashMap<Local, BitSet> depends;
 	
 	public TypeResolver(JimpleBody jb)
 	{
 		this.jb = jb;
-		
-		this.assignments = new LinkedList<DefinitionStmt>();
-		this.depends = new HashMap<Local, List<DefinitionStmt>>();
+
+		this.assignments = new ArrayList<DefinitionStmt>();
+		this.depends = new HashMap<Local, BitSet>();
 		for ( Local v : this.jb.getLocals() )
 			this.addLocal(v);
 		this.initAssignments();
@@ -104,42 +103,44 @@ public class TypeResolver
 		Value lhs = ds.getLeftOp(), rhs = ds.getRightOp();
 		if ( lhs instanceof Local || lhs instanceof ArrayRef)
 		{
+			int assignmentIdx = this.assignments.size();
 			this.assignments.add(ds);
+			
 			if ( rhs instanceof Local )
-				this.addDepend((Local)rhs, ds);
+				this.addDepend((Local)rhs, assignmentIdx);
 			else if ( rhs instanceof BinopExpr )
 			{
 				BinopExpr be = (BinopExpr)rhs;
 				Value lop = be.getOp1(), rop = be.getOp2();
 				if ( lop instanceof Local )
-					this.addDepend((Local)lop, ds);
+					this.addDepend((Local)lop, assignmentIdx);
 				if ( rop instanceof Local )
-					this.addDepend((Local)rop, ds);
+					this.addDepend((Local)rop, assignmentIdx);
 			}
 			else if ( rhs instanceof NegExpr )
 			{
 				Value op = ((NegExpr)rhs).getOp();
 				if ( op instanceof Local )
-					this.addDepend((Local)op, ds);
+					this.addDepend((Local)op, assignmentIdx);
 			}
 			else if ( rhs instanceof CastExpr ) {
 				Value op = ((CastExpr)rhs).getOp();
 				if ( op instanceof Local )
-					this.addDepend((Local)op, ds);
+					this.addDepend((Local)op, assignmentIdx);
 			}
 			else if ( rhs instanceof ArrayRef )
-				this.addDepend((Local)((ArrayRef)rhs).getBase(), ds);
+				this.addDepend((Local)((ArrayRef)rhs).getBase(), assignmentIdx);
 		}
 	}
 	
 	private void addLocal(Local v)
 	{
-		this.depends.put(v, new LinkedList<DefinitionStmt>());
+		this.depends.put(v, new BitSet());
 	}
 	
-	private void addDepend(Local v, DefinitionStmt stmt)
+	private void addDepend(Local v, int stmtIndex)
 	{
-		this.depends.get(v).add(stmt);
+		this.depends.get(v).set(stmtIndex);
 	}
 	
 	public void inferTypes()
@@ -148,6 +149,11 @@ public class TypeResolver
 		BytecodeHierarchy bh = new BytecodeHierarchy();
 		Collection<Typing> sigma = this.applyAssignmentConstraints(
 			new Typing(this.jb.getLocals()), ef, bh);
+		
+		// If there is nothing to type, we can quit
+		if (sigma.isEmpty())
+			return;
+		
 		int[] castCount = new int[1];
 		Typing tg = this.minCasts(sigma, bh, castCount);
 		if ( castCount[0] != 0 )
@@ -207,7 +213,7 @@ public class TypeResolver
 				return op;
 			
 			this.count++;
-
+			
 			if ( countOnly )
 				return op;
 			else
@@ -430,14 +436,18 @@ public class TypeResolver
 	private Collection<Typing> applyAssignmentConstraints(Typing tg,
 		IEvalFunction ef, IHierarchy h)
 	{
+		final int numAssignments = this.assignments.size();
+		
 		LinkedList<Typing> sigma = new LinkedList<Typing>(),
 			r = new LinkedList<Typing>();
-		HashMap<Typing, QueuedSet<DefinitionStmt>> worklists
-			= new HashMap<Typing, QueuedSet<DefinitionStmt>>();
-			
+		if (numAssignments == 0)
+			return sigma;
+		
+		HashMap<Typing, BitSet> worklists = new HashMap<Typing, BitSet>();
+		
 		sigma.add(tg);
-		QueuedSet<DefinitionStmt> wl = new QueuedSet<DefinitionStmt>(
-			this.assignments);
+		BitSet wl = new BitSet(numAssignments - 1);
+		wl.set(0, numAssignments);
 		worklists.put(tg, wl);
 		
 		while ( !sigma.isEmpty() )
@@ -452,7 +462,11 @@ public class TypeResolver
 			}
 			else
 			{
-				DefinitionStmt stmt = wl.removeFirst();
+				// Get the next definition statement
+				int defIdx = wl.nextSetBit(0);
+				wl.clear(defIdx);
+				DefinitionStmt stmt = this.assignments.get(defIdx);
+				
 				Value lhs = stmt.getLeftOp(), rhs = stmt.getRightOp();
 				
 				Local v;
@@ -465,6 +479,7 @@ public class TypeResolver
 				
 				Collection<Type> eval = new ArrayList<Type>(ef.eval(tg, rhs, stmt));
 				
+				boolean isFirstType = true;
 				for ( Type t_ : eval )
 				{
 					if ( lhs instanceof ArrayRef )
@@ -482,28 +497,46 @@ public class TypeResolver
 						t_ = t_.makeArrayType();
 					}
 					
-					Collection<Type> lcas = h.lcas(told, t_);
-					
-					for ( Type t : lcas )
+					// Special handling for exception objects with phantom types
+					final Collection<Type> lcas;
+					if (!typesEqual(told, t_)
+							&& told instanceof RefType && t_ instanceof RefType
+							&& (
+									((RefType) told).getSootClass().isPhantom()
+									|| ((RefType) t_).getSootClass().isPhantom())
+							&& (stmt.getRightOp() instanceof CaughtExceptionRef))
+						lcas = Collections.<Type>singleton(RefType.v("java.lang.Throwable"));
+					else
+						lcas = h.lcas(told, t_);
+
+					for ( Type t : lcas ) {
 						if ( ! typesEqual(t, told) )
 						{
 							Typing tg_;
-							QueuedSet<DefinitionStmt> wl_;
-							if ( eval.size() == 1 && lcas.size() == 1 )
+							BitSet wl_;
+							if ( /*(eval.size() == 1 && lcas.size() == 1) ||*/ isFirstType )
 							{
+								// The types agree, we have a type we can directly use
 								tg_ = tg;
 								wl_ = wl;
 							}
 							else
 							{
+								// The types do not agree, add all supertype candidates
 								tg_ = new Typing(tg);
-								wl_ = new QueuedSet<DefinitionStmt>(wl);
+								wl_ = new BitSet(numAssignments - 1);
+								wl_.or(wl);
 								sigma.add(tg_);
 								worklists.put(tg_, wl_);
 							}
 							tg_.set(v, t);
-							wl_.addLast(this.depends.get(v));
+							
+							BitSet dependsV = this.depends.get(v);
+							if (dependsV != null)
+								wl_.or(dependsV);
 						}
+						isFirstType = false;
+					}
 				}//end for
 			}
 		}
@@ -528,10 +561,8 @@ public class TypeResolver
 	/* Taken from the soot.jimple.toolkits.typing.TypeResolver class of Soot
 	version 2.2.5. */
 	private void split_new()
-	{
-		ExceptionalUnitGraph graph = new ExceptionalUnitGraph(this.jb);
-		LocalDefs defs = new SmartLocalDefs(graph,new SimpleLiveLocals(graph));
-		// SimpleLocalUses uses = new SimpleLocalUses(graph, defs);
+	{		
+		LocalDefs defs = LocalDefs.Factory.newLocalDefs(jb);
 		PatchingChain<Unit> units = this.jb.getUnits();
 		Stmt[] stmts = new Stmt[units.size()];
 		
