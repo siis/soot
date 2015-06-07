@@ -113,28 +113,28 @@ public class Options extends OptionsBase {
             }
             if( false );
 
-            else if( false 
+            else if( false
             || option.equals( "coffi" )
             )
                 coffi = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "asm-backend" )
             )
                 asm_backend = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "h" )
             || option.equals( "help" )
             )
                 help = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "pl" )
             || option.equals( "phase-list" )
             )
                 phase_list = true;
-  
+
             else if( false
             || option.equals( "ph" )
             || option.equals( "phase-help" )
@@ -144,73 +144,73 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( phase_help == null )
                     phase_help = new LinkedList<String>();
 
                 phase_help.add( value );
-                
+
             }
-  
-            else if( false 
+
+            else if( false
             || option.equals( "version" )
             )
                 version = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "v" )
             || option.equals( "verbose" )
             )
                 verbose = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "interactive-mode" )
             )
                 interactive_mode = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "unfriendly-mode" )
             )
                 unfriendly_mode = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "app" )
             )
                 app = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "w" )
             || option.equals( "whole-program" )
             )
                 whole_program = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "ws" )
             || option.equals( "whole-shimple" )
             )
                 whole_shimple = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "fly" )
             || option.equals( "on-the-fly" )
             )
                 on_the_fly = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "validate" )
             )
                 validate = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "debug" )
             )
                 debug = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "debug-resolver" )
             )
                 debug_resolver = true;
-  
+
             else if( false
             || option.equals( "cp" )
             || option.equals( "soot-class-path" )
@@ -221,7 +221,7 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( soot_classpath.length() == 0 )
                     soot_classpath = value;
                 else {
@@ -229,13 +229,13 @@ public class Options extends OptionsBase {
                     return false;
                 }
             }
-  
-            else if( false 
+
+            else if( false
             || option.equals( "pp" )
             || option.equals( "prepend-classpath" )
             )
                 prepend_classpath = true;
-  
+
             else if( false
             || option.equals( "process-path" )
             || option.equals( "process-dir" )
@@ -245,19 +245,19 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( process_dir == null )
                     process_dir = new LinkedList<String>();
 
                 process_dir.add( value );
-                
+
             }
-  
-            else if( false 
+
+            else if( false
             || option.equals( "oaat" )
             )
                 oaat = true;
-  
+
             else if( false
             || option.equals( "android-jars" )
             ) {
@@ -266,7 +266,7 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( android_jars.length() == 0 )
                     android_jars = value;
                 else {
@@ -274,7 +274,7 @@ public class Options extends OptionsBase {
                     return false;
                 }
             }
-  
+
             else if( false
             || option.equals( "force-android-jar" )
             ) {
@@ -283,7 +283,7 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( force_android_jar.length() == 0 )
                     force_android_jar = value;
                 else {
@@ -291,12 +291,12 @@ public class Options extends OptionsBase {
                     return false;
                 }
             }
-  
-            else if( false 
+
+            else if( false
             || option.equals( "ast-metrics" )
             )
                 ast_metrics = true;
-  
+
             else if( false
             || option.equals( "src-prec" )
             ) {
@@ -305,9 +305,9 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( false );
-    
+
                 else if( false
                 || value.equals( "c" )
                 || value.equals( "class" )
@@ -319,7 +319,7 @@ public class Options extends OptionsBase {
                     }
                     src_prec = src_prec_class;
                 }
-    
+
                 else if( false
                 || value.equals( "only-class" )
                 ) {
@@ -330,7 +330,7 @@ public class Options extends OptionsBase {
                     }
                     src_prec = src_prec_only_class;
                 }
-    
+
                 else if( false
                 || value.equals( "J" )
                 || value.equals( "jimple" )
@@ -342,7 +342,7 @@ public class Options extends OptionsBase {
                     }
                     src_prec = src_prec_jimple;
                 }
-    
+
                 else if( false
                 || value.equals( "java" )
                 ) {
@@ -353,7 +353,7 @@ public class Options extends OptionsBase {
                     }
                     src_prec = src_prec_java;
                 }
-    
+
                 else if( false
                 || value.equals( "apk" )
                 ) {
@@ -364,33 +364,33 @@ public class Options extends OptionsBase {
                     }
                     src_prec = src_prec_apk;
                 }
-    
+
                 else {
                     G.v().out.println( "Invalid value "+value+" given for option -"+option );
                     return false;
                 }
            }
-  
-            else if( false 
+
+            else if( false
             || option.equals( "full-resolver" )
             )
                 full_resolver = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "allow-phantom-refs" )
             )
                 allow_phantom_refs = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "no-bodies-for-excluded" )
             )
                 no_bodies_for_excluded = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "j2me" )
             )
                 j2me = true;
-  
+
             else if( false
             || option.equals( "main-class" )
             ) {
@@ -399,7 +399,7 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( main_class.length() == 0 )
                     main_class = value;
                 else {
@@ -407,12 +407,12 @@ public class Options extends OptionsBase {
                     return false;
                 }
             }
-  
-            else if( false 
+
+            else if( false
             || option.equals( "polyglot" )
             )
                 polyglot = true;
-  
+
             else if( false
             || option.equals( "d" )
             || option.equals( "output-dir" )
@@ -422,7 +422,7 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( output_dir.length() == 0 )
                     output_dir = value;
                 else {
@@ -430,7 +430,7 @@ public class Options extends OptionsBase {
                     return false;
                 }
             }
-  
+
             else if( false
             || option.equals( "f" )
             || option.equals( "output-format" )
@@ -440,9 +440,9 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( false );
-    
+
                 else if( false
                 || value.equals( "J" )
                 || value.equals( "jimple" )
@@ -454,7 +454,7 @@ public class Options extends OptionsBase {
                     }
                     output_format = output_format_jimple;
                 }
-    
+
                 else if( false
                 || value.equals( "j" )
                 || value.equals( "jimp" )
@@ -466,7 +466,7 @@ public class Options extends OptionsBase {
                     }
                     output_format = output_format_jimp;
                 }
-    
+
                 else if( false
                 || value.equals( "S" )
                 || value.equals( "shimple" )
@@ -478,7 +478,7 @@ public class Options extends OptionsBase {
                     }
                     output_format = output_format_shimple;
                 }
-    
+
                 else if( false
                 || value.equals( "s" )
                 || value.equals( "shimp" )
@@ -490,7 +490,7 @@ public class Options extends OptionsBase {
                     }
                     output_format = output_format_shimp;
                 }
-    
+
                 else if( false
                 || value.equals( "B" )
                 || value.equals( "baf" )
@@ -502,7 +502,7 @@ public class Options extends OptionsBase {
                     }
                     output_format = output_format_baf;
                 }
-    
+
                 else if( false
                 || value.equals( "b" )
                 ) {
@@ -513,7 +513,7 @@ public class Options extends OptionsBase {
                     }
                     output_format = output_format_b;
                 }
-    
+
                 else if( false
                 || value.equals( "G" )
                 || value.equals( "grimple" )
@@ -525,7 +525,7 @@ public class Options extends OptionsBase {
                     }
                     output_format = output_format_grimple;
                 }
-    
+
                 else if( false
                 || value.equals( "g" )
                 || value.equals( "grimp" )
@@ -537,7 +537,7 @@ public class Options extends OptionsBase {
                     }
                     output_format = output_format_grimp;
                 }
-    
+
                 else if( false
                 || value.equals( "X" )
                 || value.equals( "xml" )
@@ -549,7 +549,7 @@ public class Options extends OptionsBase {
                     }
                     output_format = output_format_xml;
                 }
-    
+
                 else if( false
                 || value.equals( "dex" )
                 ) {
@@ -560,7 +560,7 @@ public class Options extends OptionsBase {
                     }
                     output_format = output_format_dex;
                 }
-    
+
                 else if( false
                 || value.equals( "force-dex" )
                 ) {
@@ -571,7 +571,7 @@ public class Options extends OptionsBase {
                     }
                     output_format = output_format_force_dex;
                 }
-    
+
                 else if( false
                 || value.equals( "n" )
                 || value.equals( "none" )
@@ -583,7 +583,7 @@ public class Options extends OptionsBase {
                     }
                     output_format = output_format_none;
                 }
-    
+
                 else if( false
                 || value.equals( "jasmin" )
                 ) {
@@ -594,7 +594,7 @@ public class Options extends OptionsBase {
                     }
                     output_format = output_format_jasmin;
                 }
-    
+
                 else if( false
                 || value.equals( "c" )
                 || value.equals( "class" )
@@ -606,7 +606,7 @@ public class Options extends OptionsBase {
                     }
                     output_format = output_format_class;
                 }
-    
+
                 else if( false
                 || value.equals( "d" )
                 || value.equals( "dava" )
@@ -618,7 +618,7 @@ public class Options extends OptionsBase {
                     }
                     output_format = output_format_dava;
                 }
-    
+
                 else if( false
                 || value.equals( "t" )
                 || value.equals( "template" )
@@ -630,7 +630,7 @@ public class Options extends OptionsBase {
                     }
                     output_format = output_format_template;
                 }
-    
+
                 else if( false
                 || value.equals( "a" )
                 || value.equals( "asm" )
@@ -642,13 +642,13 @@ public class Options extends OptionsBase {
                     }
                     output_format = output_format_asm;
                 }
-    
+
                 else {
                     G.v().out.println( "Invalid value "+value+" given for option -"+option );
                     return false;
                 }
            }
-  
+
             else if( false
             || option.equals( "java-version" )
             ) {
@@ -657,9 +657,9 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( false );
-    
+
                 else if( false
                 || value.equals( "default" )
                 ) {
@@ -670,7 +670,7 @@ public class Options extends OptionsBase {
                     }
                     java_version = java_version_default;
                 }
-    
+
                 else if( false
                 || value.equals( "1.1" )
                 || value.equals( "1" )
@@ -682,7 +682,7 @@ public class Options extends OptionsBase {
                     }
                     java_version = java_version_1;
                 }
-    
+
                 else if( false
                 || value.equals( "1.2" )
                 || value.equals( "2" )
@@ -694,7 +694,7 @@ public class Options extends OptionsBase {
                     }
                     java_version = java_version_2;
                 }
-    
+
                 else if( false
                 || value.equals( "1.3" )
                 || value.equals( "3" )
@@ -706,7 +706,7 @@ public class Options extends OptionsBase {
                     }
                     java_version = java_version_3;
                 }
-    
+
                 else if( false
                 || value.equals( "1.4" )
                 || value.equals( "4" )
@@ -718,7 +718,7 @@ public class Options extends OptionsBase {
                     }
                     java_version = java_version_4;
                 }
-    
+
                 else if( false
                 || value.equals( "1.5" )
                 || value.equals( "5" )
@@ -730,7 +730,7 @@ public class Options extends OptionsBase {
                     }
                     java_version = java_version_5;
                 }
-    
+
                 else if( false
                 || value.equals( "1.6" )
                 || value.equals( "6" )
@@ -742,7 +742,7 @@ public class Options extends OptionsBase {
                     }
                     java_version = java_version_6;
                 }
-    
+
                 else if( false
                 || value.equals( "1.7" )
                 || value.equals( "7" )
@@ -754,7 +754,7 @@ public class Options extends OptionsBase {
                     }
                     java_version = java_version_7;
                 }
-    
+
                 else if( false
                 || value.equals( "1.8" )
                 || value.equals( "8" )
@@ -766,40 +766,40 @@ public class Options extends OptionsBase {
                     }
                     java_version = java_version_8;
                 }
-    
+
                 else {
                     G.v().out.println( "Invalid value "+value+" given for option -"+option );
                     return false;
                 }
            }
-  
-            else if( false 
+
+            else if( false
             || option.equals( "outjar" )
             || option.equals( "output-jar" )
             )
                 output_jar = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "xml-attributes" )
             )
                 xml_attributes = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "print-tags" )
             || option.equals( "print-tags-in-output" )
             )
                 print_tags_in_output = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "no-output-source-file-attribute" )
             )
                 no_output_source_file_attribute = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "no-output-inner-classes-attribute" )
             )
                 no_output_inner_classes_attribute = true;
-  
+
             else if( false
             || option.equals( "dump-body" )
             ) {
@@ -808,14 +808,14 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( dump_body == null )
                     dump_body = new LinkedList<String>();
 
                 dump_body.add( value );
-                
+
             }
-  
+
             else if( false
             || option.equals( "dump-cfg" )
             ) {
@@ -824,29 +824,29 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( dump_cfg == null )
                     dump_cfg = new LinkedList<String>();
 
                 dump_cfg.add( value );
-                
+
             }
-  
-            else if( false 
+
+            else if( false
             || option.equals( "show-exception-dests" )
             )
                 show_exception_dests = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "gzip" )
             )
                 gzip = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "force-overwrite" )
             )
                 force_overwrite = true;
-  
+
             else if( false
             || option.equals( "plugin" )
             ) {
@@ -855,19 +855,19 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( plugin == null )
                     plugin = new LinkedList<String>();
 
                 plugin.add( value );
-                
+
                 if(!loadPluginConfiguration(value)) {
                     G.v().out.println( "Failed to load plugin" +value );
                     return false;
                 }
-                
+
             }
-  
+
             else if( false
             || option.equals( "p" )
             || option.equals( "phase-option" )
@@ -882,16 +882,16 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String phaseOption = nextOption();
-    
+
                 phaseOptions.add( phaseName );
                 phaseOptions.add( phaseOption );
             }
-  
+
             else if( false
             || option.equals( "O" )
             || option.equals( "optimize" )
             ) {
-                
+
                 pushOptions( "enabled:true" );
                 pushOptions( "sop" );
                 pushOptions( "-p" );
@@ -911,12 +911,12 @@ public class Options extends OptionsBase {
                 pushOptions( "gb.a1" );
                 pushOptions( "-p" );
             }
-  
+
             else if( false
             || option.equals( "W" )
             || option.equals( "whole-optimize" )
             ) {
-                
+
                 pushOptions( "-O" );
                 pushOptions( "-w" );
                 pushOptions( "enabled:true" );
@@ -926,17 +926,17 @@ public class Options extends OptionsBase {
                 pushOptions( "wjop" );
                 pushOptions( "-p" );
             }
-  
-            else if( false 
+
+            else if( false
             || option.equals( "via-grimp" )
             )
                 via_grimp = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "via-shimple" )
             )
                 via_shimple = true;
-  
+
             else if( false
             || option.equals( "throw-analysis" )
             ) {
@@ -945,9 +945,9 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( false );
-    
+
                 else if( false
                 || value.equals( "pedantic" )
                 ) {
@@ -958,7 +958,7 @@ public class Options extends OptionsBase {
                     }
                     throw_analysis = throw_analysis_pedantic;
                 }
-    
+
                 else if( false
                 || value.equals( "unit" )
                 ) {
@@ -969,13 +969,13 @@ public class Options extends OptionsBase {
                     }
                     throw_analysis = throw_analysis_unit;
                 }
-    
+
                 else {
                     G.v().out.println( "Invalid value "+value+" given for option -"+option );
                     return false;
                 }
            }
-  
+
             else if( false
             || option.equals( "check-init-ta" )
             || option.equals( "check-init-throw-analysis" )
@@ -985,9 +985,9 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( false );
-    
+
                 else if( false
                 || value.equals( "auto" )
                 ) {
@@ -998,7 +998,7 @@ public class Options extends OptionsBase {
                     }
                     check_init_throw_analysis = check_init_throw_analysis_auto;
                 }
-    
+
                 else if( false
                 || value.equals( "pedantic" )
                 ) {
@@ -1009,7 +1009,7 @@ public class Options extends OptionsBase {
                     }
                     check_init_throw_analysis = check_init_throw_analysis_pedantic;
                 }
-    
+
                 else if( false
                 || value.equals( "unit" )
                 ) {
@@ -1020,7 +1020,7 @@ public class Options extends OptionsBase {
                     }
                     check_init_throw_analysis = check_init_throw_analysis_unit;
                 }
-    
+
                 else if( false
                 || value.equals( "dalvik" )
                 ) {
@@ -1031,22 +1031,22 @@ public class Options extends OptionsBase {
                     }
                     check_init_throw_analysis = check_init_throw_analysis_dalvik;
                 }
-    
+
                 else {
                     G.v().out.println( "Invalid value "+value+" given for option -"+option );
                     return false;
                 }
            }
-  
-            else if( false 
+
+            else if( false
             || option.equals( "omit-excepting-unit-edges" )
             )
                 omit_excepting_unit_edges = true;
-  
+
             else if( false
             || option.equals( "trim-cfgs" )
             ) {
-                
+
                 pushOptions( "enabled:true" );
                 pushOptions( "jb.tt" );
                 pushOptions( "-p" );
@@ -1054,13 +1054,13 @@ public class Options extends OptionsBase {
                 pushOptions( "unit" );
                 pushOptions( "-throw-analysis" );
             }
-  
-            else if( false 
+
+            else if( false
             || option.equals( "ire" )
             || option.equals( "ignore-resolution-errors" )
             )
                 ignore_resolution_errors = true;
-  
+
             else if( false
             || option.equals( "i" )
             || option.equals( "include" )
@@ -1070,14 +1070,14 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( include == null )
                     include = new LinkedList<String>();
 
                 include.add( value );
-                
+
             }
-  
+
             else if( false
             || option.equals( "x" )
             || option.equals( "exclude" )
@@ -1087,19 +1087,19 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( exclude == null )
                     exclude = new LinkedList<String>();
 
                 exclude.add( value );
-                
+
             }
-  
-            else if( false 
+
+            else if( false
             || option.equals( "include-all" )
             )
                 include_all = true;
-  
+
             else if( false
             || option.equals( "dynamic-class" )
             ) {
@@ -1108,14 +1108,14 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( dynamic_class == null )
                     dynamic_class = new LinkedList<String>();
 
                 dynamic_class.add( value );
-                
+
             }
-  
+
             else if( false
             || option.equals( "dynamic-dir" )
             ) {
@@ -1124,14 +1124,14 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( dynamic_dir == null )
                     dynamic_dir = new LinkedList<String>();
 
                 dynamic_dir.add( value );
-                
+
             }
-  
+
             else if( false
             || option.equals( "dynamic-package" )
             ) {
@@ -1140,29 +1140,29 @@ public class Options extends OptionsBase {
                     return false;
                 }
                 String value = nextOption();
-    
+
                 if( dynamic_package == null )
                     dynamic_package = new LinkedList<String>();
 
                 dynamic_package.add( value );
-                
+
             }
-  
-            else if( false 
+
+            else if( false
             || option.equals( "keep-line-number" )
             )
                 keep_line_number = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "keep-bytecode-offset" )
             || option.equals( "keep-offset" )
             )
                 keep_offset = true;
-  
+
             else if( false
             || option.equals( "annot-purity" )
             ) {
-                
+
                 pushOptions( "enabled:true" );
                 pushOptions( "wjap.purity" );
                 pushOptions( "-p" );
@@ -1171,11 +1171,11 @@ public class Options extends OptionsBase {
                 pushOptions( "-p" );
                 pushOptions( "-w" );
             }
-  
+
             else if( false
             || option.equals( "annot-nullpointer" )
             ) {
-                
+
                 pushOptions( "enabled:true" );
                 pushOptions( "tag.an" );
                 pushOptions( "-p" );
@@ -1183,11 +1183,11 @@ public class Options extends OptionsBase {
                 pushOptions( "jap.npc" );
                 pushOptions( "-p" );
             }
-  
+
             else if( false
             || option.equals( "annot-arraybounds" )
             ) {
-                
+
                 pushOptions( "enabled:true" );
                 pushOptions( "tag.an" );
                 pushOptions( "-p" );
@@ -1198,11 +1198,11 @@ public class Options extends OptionsBase {
                 pushOptions( "wjap.ra" );
                 pushOptions( "-p" );
             }
-  
+
             else if( false
             || option.equals( "annot-side-effect" )
             ) {
-                
+
                 pushOptions( "enabled:true" );
                 pushOptions( "tag.dep" );
                 pushOptions( "-p" );
@@ -1211,11 +1211,11 @@ public class Options extends OptionsBase {
                 pushOptions( "-p" );
                 pushOptions( "-w" );
             }
-  
+
             else if( false
             || option.equals( "annot-fieldrw" )
             ) {
-                
+
                 pushOptions( "enabled:true" );
                 pushOptions( "tag.fieldrw" );
                 pushOptions( "-p" );
@@ -1224,30 +1224,31 @@ public class Options extends OptionsBase {
                 pushOptions( "-p" );
                 pushOptions( "-w" );
             }
-  
-            else if( false 
+
+            else if( false
             || option.equals( "time" )
             )
                 time = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "subtract-gc" )
             )
                 subtract_gc = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "dex-mode" )
             )
                 dex_mode = true;
-  
-            else if( false 
+
+            else if( false
             || option.equals( "synchronous-only" )
             )
                 synchronous_only = true;
+            else if( false
             || option.equals( "no-writeout-body-releasing" )
             )
                 no_writeout_body_releasing = true;
-  
+
             else {
                 G.v().out.println( "Invalid option -"+option );
                 return false;
@@ -1275,20 +1276,20 @@ public class Options extends OptionsBase {
     public boolean coffi() { return coffi; }
     private boolean coffi = false;
     public void set_coffi( boolean setting ) { coffi = setting; }
-  
+
     public boolean asm_backend() { return asm_backend; }
     private boolean asm_backend = false;
     public void set_asm_backend( boolean setting ) { asm_backend = setting; }
-  
+
     public boolean help() { return help; }
     private boolean help = false;
     public void set_help( boolean setting ) { help = setting; }
-  
+
     public boolean phase_list() { return phase_list; }
     private boolean phase_list = false;
     public void set_phase_list( boolean setting ) { phase_list = setting; }
-  
-    public List<String> phase_help() { 
+
+    public List<String> phase_help() {
         if( phase_help == null )
             return java.util.Collections.emptyList();
         else
@@ -1299,55 +1300,55 @@ public class Options extends OptionsBase {
     public boolean version() { return version; }
     private boolean version = false;
     public void set_version( boolean setting ) { version = setting; }
-  
+
     public boolean verbose() { return verbose; }
     private boolean verbose = false;
     public void set_verbose( boolean setting ) { verbose = setting; }
-  
+
     public boolean interactive_mode() { return interactive_mode; }
     private boolean interactive_mode = false;
     public void set_interactive_mode( boolean setting ) { interactive_mode = setting; }
-  
+
     public boolean unfriendly_mode() { return unfriendly_mode; }
     private boolean unfriendly_mode = false;
     public void set_unfriendly_mode( boolean setting ) { unfriendly_mode = setting; }
-  
+
     public boolean app() { return app; }
     private boolean app = false;
     public void set_app( boolean setting ) { app = setting; }
-  
+
     public boolean whole_program() { return whole_program; }
     private boolean whole_program = false;
     public void set_whole_program( boolean setting ) { whole_program = setting; }
-  
+
     public boolean whole_shimple() { return whole_shimple; }
     private boolean whole_shimple = false;
     public void set_whole_shimple( boolean setting ) { whole_shimple = setting; }
-  
+
     public boolean on_the_fly() { return on_the_fly; }
     private boolean on_the_fly = false;
     public void set_on_the_fly( boolean setting ) { on_the_fly = setting; }
-  
+
     public boolean validate() { return validate; }
     private boolean validate = false;
     public void set_validate( boolean setting ) { validate = setting; }
-  
+
     public boolean debug() { return debug; }
     private boolean debug = false;
     public void set_debug( boolean setting ) { debug = setting; }
-  
+
     public boolean debug_resolver() { return debug_resolver; }
     private boolean debug_resolver = false;
     public void set_debug_resolver( boolean setting ) { debug_resolver = setting; }
-  
+
     public String soot_classpath() { return soot_classpath; }
     public void set_soot_classpath( String setting ) { soot_classpath = setting; }
     private String soot_classpath = "";
     public boolean prepend_classpath() { return prepend_classpath; }
     private boolean prepend_classpath = false;
     public void set_prepend_classpath( boolean setting ) { prepend_classpath = setting; }
-  
-    public List<String> process_dir() { 
+
+    public List<String> process_dir() {
         if( process_dir == null )
             return java.util.Collections.emptyList();
         else
@@ -1358,7 +1359,7 @@ public class Options extends OptionsBase {
     public boolean oaat() { return oaat; }
     private boolean oaat = false;
     public void set_oaat( boolean setting ) { oaat = setting; }
-  
+
     public String android_jars() { return android_jars; }
     public void set_android_jars( String setting ) { android_jars = setting; }
     private String android_jars = "";
@@ -1368,71 +1369,71 @@ public class Options extends OptionsBase {
     public boolean ast_metrics() { return ast_metrics; }
     private boolean ast_metrics = false;
     public void set_ast_metrics( boolean setting ) { ast_metrics = setting; }
-  
+
     public int src_prec() {
         if( src_prec == 0 ) return src_prec_class;
-        return src_prec; 
+        return src_prec;
     }
     public void set_src_prec( int setting ) { src_prec = setting; }
     private int src_prec = 0;
     public boolean full_resolver() { return full_resolver; }
     private boolean full_resolver = false;
     public void set_full_resolver( boolean setting ) { full_resolver = setting; }
-  
+
     public boolean allow_phantom_refs() { return allow_phantom_refs; }
     private boolean allow_phantom_refs = false;
     public void set_allow_phantom_refs( boolean setting ) { allow_phantom_refs = setting; }
-  
+
     public boolean no_bodies_for_excluded() { return no_bodies_for_excluded; }
     private boolean no_bodies_for_excluded = false;
     public void set_no_bodies_for_excluded( boolean setting ) { no_bodies_for_excluded = setting; }
-  
+
     public boolean j2me() { return j2me; }
     private boolean j2me = false;
     public void set_j2me( boolean setting ) { j2me = setting; }
-  
+
     public String main_class() { return main_class; }
     public void set_main_class( String setting ) { main_class = setting; }
     private String main_class = "";
     public boolean polyglot() { return polyglot; }
     private boolean polyglot = false;
     public void set_polyglot( boolean setting ) { polyglot = setting; }
-  
+
     public String output_dir() { return output_dir; }
     public void set_output_dir( String setting ) { output_dir = setting; }
     private String output_dir = "";
     public int output_format() {
         if( output_format == 0 ) return output_format_class;
-        return output_format; 
+        return output_format;
     }
     public void set_output_format( int setting ) { output_format = setting; }
     private int output_format = 0;
     public int java_version() {
-        return java_version; 
+        return java_version;
     }
     public void set_java_version( int setting ) { java_version = setting; }
     private int java_version = 0;
     public boolean output_jar() { return output_jar; }
     private boolean output_jar = false;
     public void set_output_jar( boolean setting ) { output_jar = setting; }
-  
+
     public boolean xml_attributes() { return xml_attributes; }
     private boolean xml_attributes = false;
     public void set_xml_attributes( boolean setting ) { xml_attributes = setting; }
-  
+
     public boolean print_tags_in_output() { return print_tags_in_output; }
     private boolean print_tags_in_output = false;
     public void set_print_tags_in_output( boolean setting ) { print_tags_in_output = setting; }
-  
+
     public boolean no_output_source_file_attribute() { return no_output_source_file_attribute; }
     private boolean no_output_source_file_attribute = false;
     public void set_no_output_source_file_attribute( boolean setting ) { no_output_source_file_attribute = setting; }
-  
+
     public boolean no_output_inner_classes_attribute() { return no_output_inner_classes_attribute; }
     private boolean no_output_inner_classes_attribute = false;
     public void set_no_output_inner_classes_attribute( boolean setting ) { no_output_inner_classes_attribute = setting; }
-  
-    public List<String> dump_body() { 
+
+    public List<String> dump_body() {
         if( dump_body == null )
             return java.util.Collections.emptyList();
         else
@@ -1440,7 +1441,7 @@ public class Options extends OptionsBase {
     }
     public void set_dump_body( List<String> setting ) { dump_body = setting; }
     private List<String> dump_body = null;
-    public List<String> dump_cfg() { 
+    public List<String> dump_cfg() {
         if( dump_cfg == null )
             return java.util.Collections.emptyList();
         else
@@ -1451,16 +1452,16 @@ public class Options extends OptionsBase {
     public boolean show_exception_dests() { return show_exception_dests; }
     private boolean show_exception_dests = false;
     public void set_show_exception_dests( boolean setting ) { show_exception_dests = setting; }
-  
+
     public boolean gzip() { return gzip; }
     private boolean gzip = false;
     public void set_gzip( boolean setting ) { gzip = setting; }
-  
+
     public boolean force_overwrite() { return force_overwrite; }
     private boolean force_overwrite = false;
     public void set_force_overwrite( boolean setting ) { force_overwrite = setting; }
-  
-    public List<String> plugin() { 
+
+    public List<String> plugin() {
         if( plugin == null )
             return java.util.Collections.emptyList();
         else
@@ -1471,32 +1472,32 @@ public class Options extends OptionsBase {
     public boolean via_grimp() { return via_grimp; }
     private boolean via_grimp = false;
     public void set_via_grimp( boolean setting ) { via_grimp = setting; }
-  
+
     public boolean via_shimple() { return via_shimple; }
     private boolean via_shimple = false;
     public void set_via_shimple( boolean setting ) { via_shimple = setting; }
-  
+
     public int throw_analysis() {
         if( throw_analysis == 0 ) return throw_analysis_unit;
-        return throw_analysis; 
+        return throw_analysis;
     }
     public void set_throw_analysis( int setting ) { throw_analysis = setting; }
     private int throw_analysis = 0;
     public int check_init_throw_analysis() {
         if( check_init_throw_analysis == 0 ) return check_init_throw_analysis_auto;
-        return check_init_throw_analysis; 
+        return check_init_throw_analysis;
     }
     public void set_check_init_throw_analysis( int setting ) { check_init_throw_analysis = setting; }
     private int check_init_throw_analysis = 0;
     public boolean omit_excepting_unit_edges() { return omit_excepting_unit_edges; }
     private boolean omit_excepting_unit_edges = false;
     public void set_omit_excepting_unit_edges( boolean setting ) { omit_excepting_unit_edges = setting; }
-  
+
     public boolean ignore_resolution_errors() { return ignore_resolution_errors; }
     private boolean ignore_resolution_errors = false;
     public void set_ignore_resolution_errors( boolean setting ) { ignore_resolution_errors = setting; }
-  
-    public List<String> include() { 
+
+    public List<String> include() {
         if( include == null )
             return java.util.Collections.emptyList();
         else
@@ -1504,7 +1505,7 @@ public class Options extends OptionsBase {
     }
     public void set_include( List<String> setting ) { include = setting; }
     private List<String> include = null;
-    public List<String> exclude() { 
+    public List<String> exclude() {
         if( exclude == null )
             return java.util.Collections.emptyList();
         else
@@ -1515,8 +1516,8 @@ public class Options extends OptionsBase {
     public boolean include_all() { return include_all; }
     private boolean include_all = false;
     public void set_include_all( boolean setting ) { include_all = setting; }
-  
-    public List<String> dynamic_class() { 
+
+    public List<String> dynamic_class() {
         if( dynamic_class == null )
             return java.util.Collections.emptyList();
         else
@@ -1524,7 +1525,7 @@ public class Options extends OptionsBase {
     }
     public void set_dynamic_class( List<String> setting ) { dynamic_class = setting; }
     private List<String> dynamic_class = null;
-    public List<String> dynamic_dir() { 
+    public List<String> dynamic_dir() {
         if( dynamic_dir == null )
             return java.util.Collections.emptyList();
         else
@@ -1532,7 +1533,7 @@ public class Options extends OptionsBase {
     }
     public void set_dynamic_dir( List<String> setting ) { dynamic_dir = setting; }
     private List<String> dynamic_dir = null;
-    public List<String> dynamic_package() { 
+    public List<String> dynamic_package() {
         if( dynamic_package == null )
             return java.util.Collections.emptyList();
         else
@@ -1543,36 +1544,36 @@ public class Options extends OptionsBase {
     public boolean keep_line_number() { return keep_line_number; }
     private boolean keep_line_number = false;
     public void set_keep_line_number( boolean setting ) { keep_line_number = setting; }
-  
+
     public boolean keep_offset() { return keep_offset; }
     private boolean keep_offset = false;
     public void set_keep_offset( boolean setting ) { keep_offset = setting; }
-  
+
     public boolean time() { return time; }
     private boolean time = false;
     public void set_time( boolean setting ) { time = setting; }
-  
+
     public boolean subtract_gc() { return subtract_gc; }
     private boolean subtract_gc = false;
     public void set_subtract_gc( boolean setting ) { subtract_gc = setting; }
-  
+
     public boolean dex_mode() { return dex_mode; }
     private boolean dex_mode = false;
     public void set_dex_mode( boolean setting ) { dex_mode = setting; }
-  
+
     public boolean synchronous_only() { return synchronous_only; }
     private boolean synchronous_only = false;
     public void set_synchronous_only( boolean setting ) { synchronous_only = setting; }
     public boolean no_writeout_body_releasing() { return no_writeout_body_releasing; }
     private boolean no_writeout_body_releasing = false;
     public void set_no_writeout_body_releasing( boolean setting ) { no_writeout_body_releasing = setting; }
-  
+
 
     public String getUsage() {
         return ""
 
 +"\nGeneral Options:\n"
-      
+
 +padOpt(" -coffi", "Use the good old Coffi front end for parsing Java bytecode (instead of using ASM)." )
 +padOpt(" -asm-backend", "Use the ASM back end for generating Java bytecode (instead of using Jasmin)." )
 +padOpt(" -h -help", "Display help and exit" )
@@ -1590,7 +1591,7 @@ public class Options extends OptionsBase {
 +padOpt(" -debug", "Print various Soot debugging info" )
 +padOpt(" -debug-resolver", "Print debugging info from SootResolver" )
 +"\nInput Options:\n"
-      
+
 +padOpt(" -cp PATH -soot-class-path PATH -soot-classpath PATH", "Use PATH as the classpath for finding classes." )
 +padOpt(" -pp -prepend-classpath", "Prepend the given soot classpath to the default classpath." )
 +padOpt(" -process-path DIR -process-dir DIR", "Process all classes found in DIR" )
@@ -1611,7 +1612,7 @@ public class Options extends OptionsBase {
 +padOpt(" -main-class CLASS", "Sets the main class for whole-program analysis." )
 +padOpt(" -polyglot", "Use Java 1.4 Polyglot frontend instead of JastAdd" )
 +"\nOutput Options:\n"
-      
+
 +padOpt(" -d DIR -output-dir DIR", "Store output files in DIR" )
 +padOpt(" -f FORMAT -output-format FORMAT", "Set output format for Soot" )
 +padVal(" J jimple", "Produce .jimple Files" )
@@ -1652,7 +1653,7 @@ public class Options extends OptionsBase {
 +padOpt(" -gzip", "GZip IR output files" )
 +padOpt(" -force-overwrite", "Force Overwrite Output Files" )
 +"\nProcessing Options:\n"
-      
+
 +padOpt(" -plugin FILE", "Load all plugins found in FILE" )
 +padOpt(" -p PHASE OPT:VAL -phase-option PHASE OPT:VAL", "Set PHASE's OPT option to VALUE" )
 +padOpt(" -O -optimize", "Perform intraprocedural optimizations" )
@@ -1671,7 +1672,7 @@ public class Options extends OptionsBase {
 +padOpt(" -trim-cfgs", "Trim unrealizable exceptional edges from CFGs" )
 +padOpt(" -ire -ignore-resolution-errors", "Does not throw an exception when a program references an undeclared field or method." )
 +"\nApplication Mode Options:\n"
-      
+
 +padOpt(" -i PKG -include PKG", "Include classes in PKG as application classes" )
 +padOpt(" -x PKG -exclude PKG", "Exclude classes in PKG from application classes" )
 +padOpt(" -include-all", "Set default excluded packages to empty list" )
@@ -1679,31 +1680,31 @@ public class Options extends OptionsBase {
 +padOpt(" -dynamic-dir DIR", "Mark all classes in DIR as potentially dynamic" )
 +padOpt(" -dynamic-package PKG", "Marks classes in PKG as potentially dynamic" )
 +"\nInput Attribute Options:\n"
-      
+
 +padOpt(" -keep-line-number", "Keep line number tables" )
 +padOpt(" -keep-bytecode-offset -keep-offset", "Attach bytecode offset to IR" )
 +"\nAnnotation Options:\n"
-      
+
 +padOpt(" -annot-purity", "Emit purity attributes" )
 +padOpt(" -annot-nullpointer", "Emit null pointer attributes" )
 +padOpt(" -annot-arraybounds", "Emit array bounds check attributes" )
 +padOpt(" -annot-side-effect", "Emit side-effect attributes" )
 +padOpt(" -annot-fieldrw", "Emit field read/write attributes" )
 +"\nMiscellaneous Options:\n"
-      
+
 +padOpt(" -time", "Report time required for transformations" )
 +padOpt(" -subtract-gc", "Subtract gc from time" )
 +"\nDex-Specific Options:\n"
-      
+
 +padOpt(" -dex-mode", "Exceptional CFG represents an Android application." )
-+padOpt(" -synchronous-only", "Only include synchronous exceptions." );
++padOpt(" -synchronous-only", "Only include synchronous exceptions." )
 +padOpt(" -no-writeout-body-releasing", "Disables the release of method bodies after writeout. This flag is used internally." );
     }
 
 
     public String getPhaseList() {
         return ""
-    
+
         +padOpt("jb", "Creates a JimpleBody for each method")
         +padVal("jb.ls", "Local splitter: one local per DU-UD web")
         +padVal("jb.a", "Aggregator: removes some unnecessary copies")
@@ -1814,7 +1815,7 @@ public class Options extends OptionsBase {
     }
 
     public String getPhaseHelp( String phaseName ) {
-    
+
         if( phaseName.equals( "jb" ) )
             return "Phase "+phaseName+":\n"+
                 "\nJimple Body Creation creates a JimpleBody for each input \nmethod, using either coffi, to read .class files, or the jimple \nparser, to read .jimple files. "
@@ -1822,26 +1823,26 @@ public class Options extends OptionsBase {
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "use-original-names (false)", "" )
                 +padOpt( "preserve-source-annotations (false)", "" );
-    
+
         if( phaseName.equals( "jb.ls" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Local Splitter identifies DU-UD webs for local variables \nand introduces new variables so that each disjoint web is \nassociated with a single local. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "jb.a" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Jimple Local Aggregator removes some unnecessary copies by \ncombining local variables. Essentially, it finds definitions \nwhich have only a single use and, if it is safe to do so, \nremoves the original definition after replacing the use with the \ndefinition's right-hand side. At this stage in JimpleBody \nconstruction, local aggregation serves largely to remove the \ncopies to and from stack variables which simulate load and store \ninstructions in the original bytecode."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "only-stack-locals (true)", "" );
-    
+
         if( phaseName.equals( "jb.ule" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Unused Local Eliminator removes any unused locals from the \nmethod. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "jb.tr" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Type Assigner gives local variables types which will \naccommodate the values stored in them over the course of the \nmethod. "
@@ -1850,21 +1851,21 @@ public class Options extends OptionsBase {
                 +padOpt( "ignore-wrong-staticness (false)", "Ignores errors due to wrong staticness" )
                 +padOpt( "use-older-type-assigner (false)", "Enables the older type assigner" )
                 +padOpt( "compare-type-assigners (false)", "Compares Ben Bellamy's and the older type assigner" );
-    
+
         if( phaseName.equals( "jb.ulp" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Unsplit-originals Local Packer executes only when the \n`use-original-names' option is chosen for the `jb' phase. The \nLocal Packer attempts to minimize the number of local variables \nrequired in a method by reusing the same variable for disjoint \nDU-UD webs. Conceptually, it is the inverse of the Local \nSplitter. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "unsplit-original-locals (true)", "" );
-    
+
         if( phaseName.equals( "jb.lns" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Local Name Standardizer assigns generic names to local \nvariables. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "only-stack-locals (false)", "" );
-    
+
         if( phaseName.equals( "jb.cp" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThis phase performs cascaded copy propagation. If the \npropagator encounters situations of the form: A: a = ...; \n... B: x = a; ... C: ... = ... x; where a and x are \neach defined only once (at A and B, respectively), then it can \npropagate immediately without checking between B and C for \nredefinitions of a. In this case the propagator is global. \nOtherwise, if a has multiple definitions then the propagator \nchecks for redefinitions and propagates copies only within \nextended basic blocks. "
@@ -1872,92 +1873,92 @@ public class Options extends OptionsBase {
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "only-regular-locals (false)", "" )
                 +padOpt( "only-stack-locals (true)", "" );
-    
+
         if( phaseName.equals( "jb.dae" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Dead Assignment Eliminator eliminates assignment statements \nto locals whose values are not subsequently used, unless \nevaluating the right-hand side of the assignment may cause \nside-effects. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "only-stack-locals (true)", "" );
-    
+
         if( phaseName.equals( "jb.cp-ule" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThis phase removes any locals that are unused after copy \npropagation. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "jb.lp" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Local Packer attempts to minimize the number of local \nvariables required in a method by reusing the same variable for \ndisjoint DU-UD webs. Conceptually, it is the inverse of the \nLocal Splitter. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" )
                 +padOpt( "unsplit-original-locals (false)", "" );
-    
+
         if( phaseName.equals( "jb.ne" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Nop Eliminator removes nop statements from the method. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "jb.uce" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Unreachable Code Eliminator removes unreachable code and \ntraps whose catch blocks are empty. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "remove-unreachable-traps (true)", "" );
-    
+
         if( phaseName.equals( "jb.tt" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Trap Tightener changes the area protected by each exception \nhandler, so that it begins with the first instruction in the old \nprotected area which is actually capable of throwing an \nexception caught by the handler, and ends just after the last \ninstruction in the old protected area which can throw an \nexception caught by the handler. This reduces the chance of \nproducing unverifiable code as a byproduct of pruning \nexceptional control flow within CFGs. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "jj" ) )
             return "Phase "+phaseName+":\n"+
                 "\nJimple Body Creation creates a JimpleBody for each input \nmethod, using polyglot, to read .java files. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "use-original-names (true)", "" );
-    
+
         if( phaseName.equals( "jj.ls" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Local Splitter identifies DU-UD webs for local variables \nand introduces new variables so that each disjoint web is \nassociated with a single local. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "jj.a" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Jimple Local Aggregator removes some unnecessary copies by \ncombining local variables. Essentially, it finds definitions \nwhich have only a single use and, if it is safe to do so, \nremoves the original definition after replacing the use with the \ndefinition's right-hand side. At this stage in JimpleBody \nconstruction, local aggregation serves largely to remove the \ncopies to and from stack variables which simulate load and store \ninstructions in the original bytecode."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "only-stack-locals (true)", "" );
-    
+
         if( phaseName.equals( "jj.ule" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Unused Local Eliminator removes any unused locals from the \nmethod. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "jj.tr" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Type Assigner gives local variables types which will \naccommodate the values stored in them over the course of the \nmethod. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "jj.ulp" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Unsplit-originals Local Packer executes only when the \n`use-original-names' option is chosen for the `jb' phase. The \nLocal Packer attempts to minimize the number of local variables \nrequired in a method by reusing the same variable for disjoint \nDU-UD webs. Conceptually, it is the inverse of the Local \nSplitter. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" )
                 +padOpt( "unsplit-original-locals (false)", "" );
-    
+
         if( phaseName.equals( "jj.lns" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Local Name Standardizer assigns generic names to local \nvariables. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "only-stack-locals (false)", "" );
-    
+
         if( phaseName.equals( "jj.cp" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThis phase performs cascaded copy propagation. If the \npropagator encounters situations of the form: A: a = ...; \n... B: x = a; ... C: ... = ... x; where a and x are \neach defined only once (at A and B, respectively), then it can \npropagate immediately without checking between B and C for \nredefinitions of a. In this case the propagator is global. \nOtherwise, if a has multiple definitions then the propagator \nchecks for redefinitions and propagates copies only within \nextended basic blocks. "
@@ -1965,51 +1966,51 @@ public class Options extends OptionsBase {
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "only-regular-locals (false)", "" )
                 +padOpt( "only-stack-locals (true)", "" );
-    
+
         if( phaseName.equals( "jj.dae" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Dead Assignment Eliminator eliminates assignment statements \nto locals whose values are not subsequently used, unless \nevaluating the right-hand side of the assignment may cause \nside-effects. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "only-stack-locals (true)", "" );
-    
+
         if( phaseName.equals( "jj.cp-ule" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThis phase removes any locals that are unused after copy \npropagation. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "jj.lp" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Local Packer attempts to minimize the number of local \nvariables required in a method by reusing the same variable for \ndisjoint DU-UD webs. Conceptually, it is the inverse of the \nLocal Splitter. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" )
                 +padOpt( "unsplit-original-locals (false)", "" );
-    
+
         if( phaseName.equals( "jj.ne" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Nop Eliminator removes nop statements from the method. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "jj.uce" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Unreachable Code Eliminator removes unreachable code and \ntraps whose catch blocks are empty. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "wjpp" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThis pack allows you to insert pre-processors that are run \nbefore call-graph construction. Only enabled in whole-program \nmode. In an unmodified copy of Soot, this pack is empty."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "wspp" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThis pack allows you to insert pre-processors that are run \nbefore call-graph construction. Only enabled in whole-program \nShimple mode. In an unmodified copy of Soot, this pack is empty."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "cg" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Call Graph Constructor computes a call graph for whole \nprogram analysis. When this pack finishes, a call graph is \navailable in the Scene. The different phases in this pack are \ndifferent ways to construct the call graph. Exactly one phase in \nthis pack must be enabled; Soot will raise an error otherwise. "
@@ -2024,14 +2025,14 @@ public class Options extends OptionsBase {
                 +padOpt( "trim-clinit (true)", "Removes redundant static initializer calls" )
                 +padOpt( "reflection-log", "Uses a reflection log to resolve reflective calls." )
                 +padOpt( "guards (ignore)", "Describes how to guard the program from unsound assumptions." );
-    
+
         if( phaseName.equals( "cg.cha" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThis phase uses Class Hierarchy Analysis to generate a call \ngraph."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "verbose (false)", "Print statistics about the resulting call graph" );
-    
+
         if( phaseName.equals( "cg.spark" ) )
             return "Phase "+phaseName+":\n"+
                 "\nSpark is a flexible points-to analysis framework. Aside from \nbuilding a call graph, it also generates information about the \ntargets of pointers. For details about Spark, please see Ondrej \nLhotak's M.Sc. thesis."
@@ -2056,58 +2057,58 @@ public class Options extends OptionsBase {
                 +padOpt( "ignore-types-for-sccs (false)", "Ignore declared types when determining node equivalence for SCCs" )
                 +padOpt( "propagator", "Select propagation algorithm" )
                 +padVal( "iter", "Simple iterative algorithm" )
-                
+
                 +padVal( "worklist (default)", "Fast, worklist-based algorithm" )
-                
+
                 +padVal( "cycle", "Unfinished on-the-fly cycle detection algorithm" )
-                
+
                 +padVal( "merge", "Unfinished field reference merging algorithms" )
-                
+
                 +padVal( "alias", "Alias-edge based algorithm" )
-                
+
                 +padVal( "none", "Disable propagation" )
-                
+
                 +padOpt( "set-impl", "Select points-to set implementation" )
                 +padVal( "hash", "Use Java HashSet" )
-                
+
                 +padVal( "bit", "Bit vector" )
-                
+
                 +padVal( "hybrid", "Hybrid representation using bit vector for large sets" )
-                
+
                 +padVal( "array", "Sorted array representation" )
-                
+
                 +padVal( "heintze", "Heintze's shared bit-vector and overflow list representation" )
-                
+
                 +padVal( "sharedlist", "Shared list representation" )
-                
+
                 +padVal( "double (default)", "Double set representation for incremental propagation" )
-                
+
                 +padOpt( "double-set-old", "Select implementation of points-to set for old part of double set" )
                 +padVal( "hash", "Use Java HashSet" )
-                
+
                 +padVal( "bit", "Bit vector" )
-                
+
                 +padVal( "hybrid (default)", "Hybrid representation using bit vector for large sets" )
-                
+
                 +padVal( "array", "Sorted array representation" )
-                
+
                 +padVal( "heintze", "Heintze's shared bit-vector and overflow list representation" )
-                
+
                 +padVal( "sharedlist", "Shared list representation" )
-                
+
                 +padOpt( "double-set-new", "Select implementation of points-to set for new part of double set" )
                 +padVal( "hash", "Use Java HashSet" )
-                
+
                 +padVal( "bit", "Bit vector" )
-                
+
                 +padVal( "hybrid (default)", "Hybrid representation using bit vector for large sets" )
-                
+
                 +padVal( "array", "Sorted array representation" )
-                
+
                 +padVal( "heintze", "Heintze's shared bit-vector and overflow list representation" )
-                
+
                 +padVal( "sharedlist", "Shared list representation" )
-                
+
                 +padOpt( "dump-html (false)", "Dump pointer assignment graph to HTML for debugging" )
                 +padOpt( "dump-pag (false)", "Dump pointer assignment graph for other solvers" )
                 +padOpt( "dump-solution (false)", "Dump final solution for comparison with other solvers" )
@@ -2124,16 +2125,16 @@ public class Options extends OptionsBase {
                 +padOpt( "geom-pta (false)", "This switch enables/disables the geometric analysis." )
                 +padOpt( "geom-encoding (Geom)", "Encoding methodology" )
                 +padVal( "Geom (default)", "Geometric Encoding" )
-                
+
                 +padVal( "HeapIns", "Heap Insensitive Encoding" )
-                
+
                 +padVal( "PtIns", "PtIns" )
-                
+
                 +padOpt( "geom-worklist (PQ)", "Worklist type" )
                 +padVal( "PQ (default)", "Priority Queue" )
-                
+
                 +padVal( "FIFO", "FIFO Queue" )
-                
+
                 +padOpt( "geom-dump-verbose ()", "Filename for detailed execution log" )
                 +padOpt( "geom-verify-name ()", "Filename for verification file" )
                 +padOpt( "geom-eval (0)", "Precision evaluation methodologies" )
@@ -2142,7 +2143,7 @@ public class Options extends OptionsBase {
                 +padOpt( "geom-blocking (true)", "Enable blocking strategy for recursive calls" )
                 +padOpt( "geom-runs (1)", "Iterations of analysis" )
                 +padOpt( "geom-app-only (true)", "Processing pointers that impact pointers in application code only" );
-    
+
         if( phaseName.equals( "cg.paddle" ) )
             return "Phase "+phaseName+":\n"+
                 "\nPaddle is a BDD-based interprocedural analysis framework. It \nincludes points-to analysis, call graph construction, and \nvarious client analyses."
@@ -2151,21 +2152,21 @@ public class Options extends OptionsBase {
                 +padOpt( "verbose (false)", "Print detailed information about the execution of Paddle" )
                 +padOpt( "conf", "Select Paddle configuration" )
                 +padVal( "ofcg (default)", "On-the fly call graph" )
-                
+
                 +padVal( "cha", "CHA only" )
-                
+
                 +padVal( "cha-aot", "CHA ahead-of-time callgraph" )
-                
+
                 +padVal( "ofcg-aot", "OFCG-AOT callgraph" )
-                
+
                 +padVal( "cha-context-aot", "CHA-Context-AOT callgraph" )
-                
+
                 +padVal( "ofcg-context-aot", "OFCG-Context-AOT callgraph" )
-                
+
                 +padVal( "cha-context", "CHA-Context callgraph" )
-                
+
                 +padVal( "ofcg-context", "OFCG-Context callgraph" )
-                
+
                 +padOpt( "bdd (false)", "Use BDD version of Paddle" )
                 +padOpt( "order (32)", "" )
                 +padOpt( "dynamic-order", "" )
@@ -2173,48 +2174,48 @@ public class Options extends OptionsBase {
                 +padOpt( "verbosegc (false)", "Print memory usage at each BDD garbage collection." )
                 +padOpt( "q", "Select queue implementation" )
                 +padVal( "auto (default)", "Select queue implementation based on bdd option" )
-                
+
                 +padVal( "trad", "Normal worklist queue implementation" )
-                
+
                 +padVal( "bdd", "BDD-based queue implementation" )
-                
+
                 +padVal( "debug", "Debugging queue implementation" )
-                
+
                 +padVal( "trace", "Tracing queue implementation" )
-                
+
                 +padVal( "numtrace", "Number-tracing queue implementation" )
-                
+
                 +padOpt( "backend", "Select BDD backend" )
                 +padVal( "auto (default)", "Select backend based on bdd option" )
-                
+
                 +padVal( "buddy", "BuDDy backend" )
-                
+
                 +padVal( "cudd", "CUDD backend" )
-                
+
                 +padVal( "sable", "SableJBDD backend" )
-                
+
                 +padVal( "javabdd", "JavaBDD backend" )
-                
+
                 +padVal( "none", "No BDDs" )
-                
+
                 +padOpt( "bdd-nodes (0)", "Number of BDD nodes to allocate (0=unlimited)" )
                 +padOpt( "ignore-types (false)", "Make Paddle completely ignore declared types of variables" )
                 +padOpt( "pre-jimplify (false)", "Jimplify all methods before starting Paddle" )
                 +padOpt( "context", "Select context-sensitivity level" )
                 +padVal( "insens (default)", "Builds a context-insensitive call graph" )
-                
+
                 +padVal( "1cfa", "Builds a 1-CFA call graph" )
-                
+
                 +padVal( "kcfa", "Builds a k-CFA call graph" )
-                
+
                 +padVal( "objsens", "Builds an object-sensitive call graph" )
-                
+
                 +padVal( "kobjsens", "Builds a k-object-sensitive call graph" )
-                
+
                 +padVal( "uniqkobjsens", "Builds a unique-k-object-sensitive call graph" )
-                
+
                 +padVal( "threadkobjsens", "Experimental option for thread-entry-point sensitivity" )
-                
+
                 +padOpt( "k (2)", "" )
                 +padOpt( "context-heap (false)", "Treat allocation sites context-sensitively" )
                 +padOpt( "rta (false)", "Emulate Rapid Type Analysis" )
@@ -2229,82 +2230,82 @@ public class Options extends OptionsBase {
                 +padOpt( "precise-newinstance (true)", "Make newInstance only allocate objects of dynamic classes" )
                 +padOpt( "propagator", "Select propagation algorithm" )
                 +padVal( "auto (default)", "Select propagation algorithm based on bdd option" )
-                
+
                 +padVal( "iter", "Simple iterative algorithm" )
-                
+
                 +padVal( "worklist", "Fast, worklist-based algorithm" )
-                
+
                 +padVal( "alias", "Alias-edge based algorithm" )
-                
+
                 +padVal( "bdd", "BDD-based propagator" )
-                
+
                 +padVal( "incbdd", "Incrementalized BDD-based propagator" )
-                
+
                 +padOpt( "set-impl", "Select points-to set implementation" )
                 +padVal( "hash", "Use Java HashSet" )
-                
+
                 +padVal( "bit", "Bit vector" )
-                
+
                 +padVal( "hybrid", "Hybrid representation using bit vector for large sets" )
-                
+
                 +padVal( "array", "Sorted array representation" )
-                
+
                 +padVal( "heintze", "Heintze's shared bit-vector and overflow list representation" )
-                
+
                 +padVal( "double (default)", "Double set representation for incremental propagation" )
-                
+
                 +padOpt( "double-set-old", "Select implementation of points-to set for old part of double set" )
                 +padVal( "hash", "Use Java HashSet" )
-                
+
                 +padVal( "bit", "Bit vector" )
-                
+
                 +padVal( "hybrid (default)", "Hybrid representation using bit vector for large sets" )
-                
+
                 +padVal( "array", "Sorted array representation" )
-                
+
                 +padVal( "heintze", "Heintze's shared bit-vector and overflow list representation" )
-                
+
                 +padOpt( "double-set-new", "Select implementation of points-to set for new part of double set" )
                 +padVal( "hash", "Use Java HashSet" )
-                
+
                 +padVal( "bit", "Bit vector" )
-                
+
                 +padVal( "hybrid (default)", "Hybrid representation using bit vector for large sets" )
-                
+
                 +padVal( "array", "Sorted array representation" )
-                
+
                 +padVal( "heintze", "Heintze's shared bit-vector and overflow list representation" )
-                
+
                 +padOpt( "context-counts (false)", "Print number of contexts for each method" )
                 +padOpt( "total-context-counts (false)", "Print total number of contexts" )
                 +padOpt( "method-context-counts (false)", "Print number of contexts for each method" )
                 +padOpt( "set-mass (false)", "Calculate statistics about points-to set sizes" )
                 +padOpt( "number-nodes (true)", "Print node numbers in dumps" );
-    
+
         if( phaseName.equals( "wstp" ) )
             return "Phase "+phaseName+":\n"+
                 "\nSoot can perform whole-program analyses. In whole-shimple \nmode, Soot applies the contents of the Whole-Shimple \nTransformation Pack to the scene as a whole after constructing a \ncall graph for the program. In an unmodified copy of Soot the \nWhole-Shimple Transformation Pack is empty."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "wsop" ) )
             return "Phase "+phaseName+":\n"+
                 "\nIf Soot is running in whole shimple mode and the Whole-Shimple \nOptimization Pack is enabled, the pack's transformations are \napplied to the scene as a whole after construction of the call \ngraph and application of any enabled Whole-Shimple \nTransformations. In an unmodified copy of Soot the Whole-Shimple \nOptimization Pack is empty."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "wjtp" ) )
             return "Phase "+phaseName+":\n"+
                 "\nSoot can perform whole-program analyses. In whole-program \nmode, Soot applies the contents of the Whole-Jimple \nTransformation Pack to the scene as a whole after constructing a \ncall graph for the program."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "wjtp.mhp" ) )
             return "Phase "+phaseName+":\n"+
                 "\nMay Happen in Parallel (MHP) Analyses determine what program \nstatements may be run by different threads concurrently. This \nphase does not perform any transformation. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "wjtp.tn" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Lock Allocator finds critical sections (synchronized \nregions) in Java programs and assigns locks for execution on \nboth optimistic and pessimistic JVMs. It can also be used to \nanalyze the existing locks. "
@@ -2312,13 +2313,13 @@ public class Options extends OptionsBase {
                 +padOpt( "enabled (false)", "" )
                 +padOpt( "locking-scheme", "Selects the granularity of the generated lock allocation" )
                 +padVal( "medium-grained (default)", "Use a runtime object for synchronization where possible" )
-                
+
                 +padVal( "coarse-grained", "Use static objects for synchronization" )
-                
+
                 +padVal( "single-static", "Use just one static synchronization object for all transactional regions" )
-                
+
                 +padVal( "leave-original", "Analyse the existing lock structure without making changes" )
-                
+
                 +padOpt( "avoid-deadlock (true)", "Perform Deadlock Avoidance" )
                 +padOpt( "open-nesting (true)", "Use an open nesting model" )
                 +padOpt( "do-mhp (true)", "Perform a May-Happen-in-Parallel analysis" )
@@ -2326,20 +2327,20 @@ public class Options extends OptionsBase {
                 +padOpt( "print-graph (false)", "Print topological graph of transactions" )
                 +padOpt( "print-table (false)", "Print table of transactions" )
                 +padOpt( "print-debug (false)", "Print debugging info" );
-    
+
         if( phaseName.equals( "wjtp.rdc" ) )
             return "Phase "+phaseName+":\n"+
                 "\nRename duplicated classes when the file system is not case \nsensitive. If the file system is case sensitive, this phase does \nnothing. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" )
                 +padOpt( "fcn", "Set  for the fixed class names." );
-    
+
         if( phaseName.equals( "wjop" ) )
             return "Phase "+phaseName+":\n"+
                 "\nIf Soot is running in whole program mode and the Whole-Jimple \nOptimization Pack is enabled, the pack's transformations are \napplied to the scene as a whole after construction of the call \ngraph and application of any enabled Whole-Jimple \nTransformations."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "wjop.smb" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Static Method Binder statically binds monomorphic call \nsites. That is, it searches the call graph for virtual method \ninvocations that can be determined statically to call only a \nsingle implementation of the called method. Then it replaces \nsuch virtual invocations with invocations of a static copy of \nthe single called implementation. "
@@ -2349,12 +2350,12 @@ public class Options extends OptionsBase {
                 +padOpt( "insert-redundant-casts (true)", "" )
                 +padOpt( "allowed-modifier-changes", "" )
                 +padVal( "unsafe (default)", "" )
-                
+
                 +padVal( "safe", "" )
-                
+
                 +padVal( "none", "" )
                 ;
-    
+
         if( phaseName.equals( "wjop.si" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Static Inliner visits all call sites in the call graph in a \nbottom-up fashion, replacing monomorphic calls with inlined \ncopies of the invoked methods. "
@@ -2365,52 +2366,52 @@ public class Options extends OptionsBase {
                 +padOpt( "insert-redundant-casts (true)", "" )
                 +padOpt( "allowed-modifier-changes", "" )
                 +padVal( "unsafe (default)", "" )
-                
+
                 +padVal( "safe", "" )
-                
+
                 +padVal( "none", "" )
-                
+
                 +padOpt( "expansion-factor (3)", "" )
                 +padOpt( "max-container-size (5000)", "" )
                 +padOpt( "max-inlinee-size (20)", "" );
-    
+
         if( phaseName.equals( "wjap" ) )
             return "Phase "+phaseName+":\n"+
                 "\nSome analyses do not transform Jimple body directly, but \nannotate statements or values with tags. Whole-Jimple annotation \npack provides a place for annotation-oriented analyses in whole \nprogram mode."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "wjap.ra" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Rectangular Array Finder traverses Jimple statements based \non the static call graph, and finds array variables which always \nhold rectangular two-dimensional array objects. In Java, a \nmulti-dimensional array is an array of arrays, which means the \nshape of the array can be ragged. Nevertheless, many \napplications use rectangular arrays. Knowing that an array is \nrectangular can be very helpful in proving safe array bounds \nchecks. The Rectangular Array Finder does not change the program \nbeing analyzed. Its results are used by the Array Bound Checker."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "wjap.umt" ) )
             return "Phase "+phaseName+":\n"+
                 "\nUses the call graph to determine which methods are unreachable \nand adds color tags so they can be highlighted in a source \nbrowser."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "wjap.uft" ) )
             return "Phase "+phaseName+":\n"+
                 "\nUses the call graph to determine which fields are unreachable \nand adds color tags so they can be highlighted in a source \nbrowser."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "wjap.tqt" ) )
             return "Phase "+phaseName+":\n"+
                 "\nDetermines which methods and fields have qualifiers that could \nbe tightened. For example: if a field or method has the \nqualifier of public but is only used within the declaring class \nit could be private. This, this field or method is tagged with \ncolor tags so that the results can be highlighted in a source \nbrowser."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "wjap.cgg" ) )
             return "Phase "+phaseName+":\n"+
                 "\nCreates graphical call graph."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" )
                 +padOpt( "show-lib-meths (false)", "" );
-    
+
         if( phaseName.equals( "wjap.purity" ) )
             return "Phase "+phaseName+":\n"+
                 "\nPurity anaysis implemented by Antoine Mine and based on the \npaper A Combined Pointer and Purity Analysis for Java Programs \nby Alexandru Salcianu and Martin Rinard. "
@@ -2422,7 +2423,7 @@ public class Options extends OptionsBase {
                 +padOpt( "print (true)", "" )
                 +padOpt( "annotate (true)", "Marks pure methods with a purity bytecode attribute" )
                 +padOpt( "verbose (false)", "" );
-    
+
         if( phaseName.equals( "shimple" ) )
             return "Phase "+phaseName+":\n"+
                 "\nShimple Control sets parameters which apply throughout the \ncreation and manipulation of Shimple bodies. Shimple is Soot's \nSSA representation."
@@ -2432,52 +2433,52 @@ public class Options extends OptionsBase {
                 +padOpt( "standard-local-names (false)", "Uses naming scheme of the Local Name             Standardizer." )
                 +padOpt( "extended (false)", "Compute extended SSA (SSI) form." )
                 +padOpt( "debug (false)", "Enables debugging output, if any." );
-    
+
         if( phaseName.equals( "stp" ) )
             return "Phase "+phaseName+":\n"+
                 "\nWhen the Shimple representation is produced, Soot \napplies the contents of the Shimple Transformation \nPack to each method under analysis. This pack \ncontains no transformations in an unmodified version \nof Soot. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "sop" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Shimple Optimization Pack contains \ntransformations that perform optimizations on \nShimple, Soot's SSA representation. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "sop.cpf" ) )
             return "Phase "+phaseName+":\n"+
                 "\nA powerful constant propagator and folder based \non an algorithm sketched by Cytron et al that \ntakes conditional control flow into account. This \noptimization demonstrates some of the benefits of \nSSA -- particularly the fact that Phi nodes \nrepresent natural merge points in the control \nflow. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "prune-cfg (true)", "Take advantage of CFG optimization             opportunities." );
-    
+
         if( phaseName.equals( "jtp" ) )
             return "Phase "+phaseName+":\n"+
                 "\nSoot applies the contents of the Jimple Transformation Pack to \neach method under analysis. This pack contains no \ntransformations in an unmodified version of Soot. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "jop" ) )
             return "Phase "+phaseName+":\n"+
                 "\nWhen Soot's Optimize option is on, Soot applies the Jimple \nOptimization Pack to every JimpleBody in application classes. \nThis section lists the default transformations in the Jimple \nOptimization Pack. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "Eliminates common subexpressions" );
-    
+
         if( phaseName.equals( "jop.cse" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Common Subexpression Eliminator runs an available \nexpressions analysis on the method body, then eliminates common \nsubexpressions. This implementation is especially slow, as it \nruns on individual statements rather than on basic blocks. A \nbetter implementation (which would find most common \nsubexpressions, but not all) would use basic blocks instead. \nThis implementation is also slow because the flow universe is \nexplicitly created; it need not be. A better implementation \nwould implicitly compute the kill sets at every node. Because \nof its current slowness, this transformation is not enabled by \ndefault. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" )
                 +padOpt( "naive-side-effect (false)", "Use naive side effect analysis even if interprocedural information is available" );
-    
+
         if( phaseName.equals( "jop.bcm" ) )
             return "Phase "+phaseName+":\n"+
                 "\nBusy Code Motion is a straightforward implementation of Partial \nRedundancy Elimination. This implementation is not very \naggressive. Lazy Code Motion is an improved version which \nshould be used instead of Busy Code Motion. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" )
                 +padOpt( "naive-side-effect (false)", "Use a naive side effect analysis even if interprocedural information is available" );
-    
+
         if( phaseName.equals( "jop.lcm" ) )
             return "Phase "+phaseName+":\n"+
                 "\nLazy Code Motion is an enhanced version of Busy Code Motion, a \nPartial Redundancy Eliminator. Before doing Partial Redundancy \nElimination, this optimization performs loop inversion (turning \nwhile loops into do while loops inside an if statement). This \nallows the Partial Redundancy Eliminator to optimize loop \ninvariants of while loops. "
@@ -2485,14 +2486,14 @@ public class Options extends OptionsBase {
                 +padOpt( "enabled (false)", "" )
                 +padOpt( "safety", "" )
                 +padVal( "safe (default)", "" )
-                
+
                 +padVal( "medium", "" )
-                
+
                 +padVal( "unsafe", "" )
-                
+
                 +padOpt( "unroll (true)", "" )
                 +padOpt( "naive-side-effect (false)", "Use a naive side effect analysis even if interprocedural information is available" );
-    
+
         if( phaseName.equals( "jop.cp" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThis phase performs cascaded copy propagation."
@@ -2500,19 +2501,19 @@ public class Options extends OptionsBase {
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "only-regular-locals (false)", "" )
                 +padOpt( "only-stack-locals (false)", "" );
-    
+
         if( phaseName.equals( "jop.cpf" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Jimple Constant Propagator and Folder evaluates any \nexpressions consisting entirely of compile-time constants, for \nexample 2 * 3, and replaces the expression with the constant \nresult, in this case 6. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "jop.cbf" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Conditional Branch Folder statically evaluates the \nconditional expression of Jimple if statements. If the \ncondition is identically true or false, the Folder replaces the \nconditional branch statement with an unconditional goto \nstatement. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "jop.dae" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Dead Assignment Eliminator eliminates assignment statements \nto locals whose values are not subsequently used, unless \nevaluating the right-hand side of the assignment may cause \nside-effects. "
@@ -2520,51 +2521,51 @@ public class Options extends OptionsBase {
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "only-tag (false)", "" )
                 +padOpt( "only-stack-locals (false)", "" );
-    
+
         if( phaseName.equals( "jop.nce" ) )
             return "Phase "+phaseName+":\n"+
                 "\nReplaces statements 'if(x!=null) goto y' with 'goto y' if x is \nknown to be non-null or with 'nop' if it is known to be null, \netc. Generates dead code and is hence followed by unreachable \ncode elimination. Disabled by default because it can be \nexpensive on methods with many locals. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "jop.uce1" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Unreachable Code Eliminator removes unreachable code and \ntraps whose catch blocks are empty. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "remove-unreachable-traps (false)", "" );
-    
+
         if( phaseName.equals( "jop.ubf1" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Unconditional Branch Folder removes unnecessary `goto' \nstatements from a JimpleBody. If a goto statement's target is \nthe next instruction, then the statement is removed. If a \ngoto's target is another goto, with target y, then the first \nstatement's target is changed to y. If some if statement's \ntarget is a goto statement, then the if's target can be replaced \nwith the goto's target. (These situations can result from other \noptimizations, and branch folding may itself generate more \nunreachable code.)"
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "jop.uce2" ) )
             return "Phase "+phaseName+":\n"+
                 "\nAnother iteration of the Unreachable Code Eliminator. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "remove-unreachable-traps (false)", "" );
-    
+
         if( phaseName.equals( "jop.ubf2" ) )
             return "Phase "+phaseName+":\n"+
                 "\nAnother iteration of the Unconditional Branch Folder. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "jop.ule" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Unused Local Eliminator phase removes any unused locals \nfrom the method. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "jap" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Jimple Annotation Pack contains phases which add \nannotations to Jimple bodies individually (as opposed to the \nWhole-Jimple Annotation Pack, which adds annotations based on \nthe analysis of the whole program). "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "jap.npc" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Null Pointer Checker finds instruction which have the \npotential to throw NullPointerExceptions and adds annotations \nindicating whether or not the pointer being dereferenced can be \ndetermined statically not to be null. "
@@ -2572,13 +2573,13 @@ public class Options extends OptionsBase {
                 +padOpt( "enabled (false)", "" )
                 +padOpt( "only-array-ref (false)", "Annotate only array references" )
                 +padOpt( "profiling (false)", "Insert instructions to count safe pointer accesses" );
-    
+
         if( phaseName.equals( "jap.npcolorer" ) )
             return "Phase "+phaseName+":\n"+
                 "\nProduce colour tags that the Soot plug-in for Eclipse can use \nto highlight null and non-null references. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "jap.abc" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Array Bound Checker performs a static analysis to determine \nwhich array bounds checks may safely be eliminated and then \nannotates statements with the results of the analysis. If Soot \nis in whole-program mode, the Array Bound Checker can use the \nresults provided by the Rectangular Array Finder."
@@ -2592,76 +2593,76 @@ public class Options extends OptionsBase {
                 +padOpt( "with-rectarray (false)", "" )
                 +padOpt( "profiling (false)", "Profile the results of array bounds check analysis." )
                 +padOpt( "add-color-tags (false)", "Add color tags to results of array bound check analysis." );
-    
+
         if( phaseName.equals( "jap.profiling" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Profiling Generator inserts the method invocations required \nto initialize and to report the results of any profiling \nperformed by the Null Pointer Checker and Array Bound Checker. \nUsers of the Profiling Generator must provide a MultiCounter \nclass implementing the methods invoked. For details, see the \nProfilingGenerator source code. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" )
                 +padOpt( "notmainentry (false)", "Instrument runBenchmark() instead of main()" );
-    
+
         if( phaseName.equals( "jap.sea" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Side Effect Tagger uses the active invoke graph to produce \nside-effect attributes, as described in the Spark thesis, \nchapter 6."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" )
                 +padOpt( "naive (false)", "" );
-    
+
         if( phaseName.equals( "jap.fieldrw" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Field Read/Write Tagger uses the active invoke graph to \nproduce tags indicating which fields may be read or written by \neach statement, including invoke statements."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" )
                 +padOpt( "threshold (100)", "" );
-    
+
         if( phaseName.equals( "jap.cgtagger" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Call Graph Tagger produces LinkTags based on the call \ngraph. The Eclipse plugin uses these tags to produce linked \npopup lists which indicate the source and target methods of the \nstatement. Selecting a link from the list moves the cursor to \nthe indicated method. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "jap.parity" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Parity Tagger produces StringTags and ColorTags indicating \nthe parity of a variable (even, odd, top, or bottom). The \neclipse plugin can use tooltips and variable colouring to \ndisplay the information in these tags. For example, even \nvariables (such as x in x = 2) are coloured yellow. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "jap.pat" ) )
             return "Phase "+phaseName+":\n"+
                 "\nFor each method with parameters of reference type, this tagger \nindicates the aliasing relationships between the parameters \nusing colour tags. Parameters that may be aliased are the same \ncolour. Parameters that may not be aliased are in different \ncolours."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "jap.lvtagger" ) )
             return "Phase "+phaseName+":\n"+
                 "\nColors live variables."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "jap.rdtagger" ) )
             return "Phase "+phaseName+":\n"+
                 "\nFor each use of a local in a stmt creates a link to the reaching \ndef."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "jap.che" ) )
             return "Phase "+phaseName+":\n"+
                 "\nIndicates whether cast checks can be eliminated."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "jap.umt" ) )
             return "Phase "+phaseName+":\n"+
                 "\nWhen the whole-program analysis determines a method to be \nunreachable, this transformer inserts an assertion into the \nmethod to check that it is indeed unreachable."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "jap.lit" ) )
             return "Phase "+phaseName+":\n"+
                 "\nAn expression whose operands are constant or have reaching \ndefinitions from outside the loop body are tagged as loop \ninvariant."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "jap.aet" ) )
             return "Phase "+phaseName+":\n"+
                 "\nA each statement a set of available expressions is after the \nstatement is added as a tag."
@@ -2669,60 +2670,60 @@ public class Options extends OptionsBase {
                 +padOpt( "enabled (false)", "" )
                 +padOpt( "kind", "" )
                 +padVal( "optimistic (default)", "" )
-                
+
                 +padVal( "pessimistic", "" )
                 ;
-    
+
         if( phaseName.equals( "jap.dmt" ) )
             return "Phase "+phaseName+":\n"+
                 "\nProvides link tags at a statement to all of the satements \ndominators."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "gb" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Grimp Body Creation phase creates a GrimpBody for each \nsource method. It is run only if the output format is grimp or \ngrimple, or if class files are being output and the Via Grimp \noption has been specified. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "gb.a1" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Grimp Pre-folding Aggregator combines some local variables, \nfinding definitions with only a single use and removing the \ndefinition after replacing the use with the definition's \nright-hand side, if it is safe to do so. While the mechanism is \nthe same as that employed by the Jimple Local Aggregator, there \nis more scope for aggregation because of Grimp's more \ncomplicated expressions. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "only-stack-locals (true)", "" );
-    
+
         if( phaseName.equals( "gb.cf" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Grimp Constructor Folder combines new statements with the \nspecialinvoke statement that calls the new object's constructor. \nFor example, it turns r2 = new java.util.ArrayList; r2.init(); \ninto r2 = new java.util.ArrayList(); "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "gb.a2" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Grimp Post-folding Aggregator combines local variables \nafter constructors have been folded. Constructor folding \ntypically introduces new opportunities for aggregation, since \nwhen a sequence of instructions like r2 = new \njava.util.ArrayList; r2.init(); r3 = r2 is replaced by r2 = new \njava.util.ArrayList(); r3 = r2 the invocation of init no longer \nrepresents a potential side-effect separating the two \ndefinitions, so they can be combined into r3 = new \njava.util.ArrayList(); (assuming there are no subsequent uses of \nr2). "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "only-stack-locals (true)", "" );
-    
+
         if( phaseName.equals( "gb.ule" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThis phase removes any locals that are unused after constructor \nfolding and aggregation. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "gop" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Grimp Optimization pack performs optimizations on \nGrimpBodys (currently there are no optimizations performed \nspecifically on GrimpBodys, and the pack is empty). It is run \nonly if the output format is grimp or grimple, or if class files \nare being output and the Via Grimp option has been specified. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "bb" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Baf Body Creation phase creates a BafBody from each source \nmethod. It is run if the output format is baf or b or asm or a, \nor if class files are being output and the Via Grimp option has \nnot been specified. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "bb.lso" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Load Store Optimizer replaces some combinations of loads to \nand stores from local variables with stack instructions. A \nsimple example would be the replacement of store.r $r2; load.r \n$r2; with dup1.r in cases where the value of r2 is not used \nsubsequently. "
@@ -2734,236 +2735,236 @@ public class Options extends OptionsBase {
                 +padOpt( "sl2 (false)", "" )
                 +padOpt( "sll (true)", "" )
                 +padOpt( "sll2 (false)", "" );
-    
+
         if( phaseName.equals( "bb.pho" ) )
             return "Phase "+phaseName+":\n"+
                 "\nApplies peephole optimizations to the Baf intermediate \nrepresentation. Individual optimizations must be implemented by \nclasses implementing the Peephole interface. The Peephole \nOptimizer reads the names of the Peephole classes at runtime \nfrom the file peephole.dat and loads them dynamically. Then it \ncontinues to apply the Peepholes repeatedly until none of them \nare able to perform any further optimizations. Soot provides \nonly one Peephole, named ExamplePeephole, which is not enabled \nby the delivered peephole.dat file. ExamplePeephole removes all \ncheckcast instructions."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "bb.ule" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThis phase removes any locals that are unused after load store \noptimization and peephole optimization. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "bb.lp" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Local Packer attempts to minimize the number of local \nvariables required in a method by reusing the same variable for \ndisjoint DU-UD webs. Conceptually, it is the inverse of the \nLocal Splitter. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "unsplit-original-locals (false)", "" );
-    
+
         if( phaseName.equals( "bop" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Baf Optimization pack performs optimizations on BafBodys \n(currently there are no optimizations performed specifically on \nBafBodys, and the pack is empty). It is run only if the output \nformat is baf or b or asm or a, or if class files are being \noutput and the Via Grimp option has not been specified. "
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "tag" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Tag Aggregator pack aggregates tags attached to individual \nunits into a code attribute for each method, so that these \nattributes can be encoded in Java class files."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "tag.ln" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Line Number Tag Aggregator aggregates line number tags."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "tag.an" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Array Bounds and Null Pointer Tag Aggregator aggregates \ntags produced by the Array Bound Checker and Null Pointer \nChecker."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "tag.dep" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Dependence Tag Aggregator aggregates tags produced by the \nSide Effect Tagger."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "tag.fieldrw" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe Field Read/Write Tag Aggregator aggregates field read/write \ntags produced by the Field Read/Write Tagger, phase jap.fieldrw. \n"
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "db" ) )
             return "Phase "+phaseName+":\n"+
                 "\nThe decompile (Dava) option is set using the -f dava options in \nSoot. Options provided by Dava are added to this dummy phase so \nas not to clutter the soot general arguments. -p db (option \nname):(value) will be used to set all required values for Dava. \n"
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" )
                 +padOpt( "source-is-javac (true)", "" );
-    
+
         if( phaseName.equals( "db.transformations" ) )
             return "Phase "+phaseName+":\n"+
                 "\n					The transformations implemented using AST Traversal and \nstructural flow analses on Dava's AST 					"
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "db.renamer" ) )
             return "Phase "+phaseName+":\n"+
                 "\nIf set, the renaming analyses implemented in Dava are applied to \neach method body being decompiled. The analyses use heuristics \nto choose potentially better names for local variables. (As of \nFebruary 14th 2006, work is still under progress on these \nanalyses (dava.toolkits.base.renamer). 					"
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (false)", "" );
-    
+
         if( phaseName.equals( "db.deobfuscate" ) )
             return "Phase "+phaseName+":\n"+
                 "\nCertain analyses make sense only when the bytecode is obfuscated \ncode. There are plans to implement such analyses and apply them \non methods only if this flag is set. Dead Code elimination \nwhich includes removing code guarded by some condition which is \nalways false or always true is one such analysis. Another \nsuggested analysis is giving default names to classes and \nfields. Onfuscators love to use weird names for fields and \nclasses and even a simple re-naming of these could be a good \nhelp to the user. Another more advanced analysis would be to \ncheck for redundant constant fields added by obfuscators and \nthen remove uses of these constant fields from the code."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
         if( phaseName.equals( "db.force-recompile" ) )
             return "Phase "+phaseName+":\n"+
                 "\nWhile decompiling we have to be clear what our aim is: do we \nwant to convert bytecode to Java syntax and stay as close to the \nactual execution of bytecode or do we want recompilably Java \nsource representing the bytecode. This distinction is important \nbecause some restrictions present in Java source are absent from \nthe bytecode. Examples of this include that fact that in Java a \ncall to a constructor or super needs to be the first statement \nin a constructors body. This restriction is absent from the \nbytecode. Similarly final fields HAVE to be initialized once and \nonly once in either the static initializer (static fields) or \nall the constructors (non-static fields). Additionally the \nfields should be initialized on all possible execution paths. \nThese restrictions are again absent from the bytecode. In doing \na one-one conversion of bytecode to Java source then no attempt \nshould be made to fix any of these and similar problems in the \nJava source. However, if the aim is to get recompilable code \nthen these and similar issues need to be fixed. Setting the \nforce-recompilability flag will ensure that the decompiler tries \nits best to produce recompilable Java source."
                 +"\n\nRecognized options (with default values):\n"
                 +padOpt( "enabled (true)", "" );
-    
+
 
         return "Unrecognized phase: "+phaseName;
     }
-  
+
     public static String getDeclaredOptionsForPhase( String phaseName ) {
-    
+
         if( phaseName.equals( "jb" ) )
             return ""
                 +"enabled "
                 +"use-original-names "
                 +"preserve-source-annotations ";
-    
+
         if( phaseName.equals( "jb.ls" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jb.a" ) )
             return ""
                 +"enabled "
                 +"only-stack-locals ";
-    
+
         if( phaseName.equals( "jb.ule" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jb.tr" ) )
             return ""
                 +"enabled "
                 +"ignore-wrong-staticness "
                 +"use-older-type-assigner "
                 +"compare-type-assigners ";
-    
+
         if( phaseName.equals( "jb.ulp" ) )
             return ""
                 +"enabled "
                 +"unsplit-original-locals ";
-    
+
         if( phaseName.equals( "jb.lns" ) )
             return ""
                 +"enabled "
                 +"only-stack-locals ";
-    
+
         if( phaseName.equals( "jb.cp" ) )
             return ""
                 +"enabled "
                 +"only-regular-locals "
                 +"only-stack-locals ";
-    
+
         if( phaseName.equals( "jb.dae" ) )
             return ""
                 +"enabled "
                 +"only-stack-locals ";
-    
+
         if( phaseName.equals( "jb.cp-ule" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jb.lp" ) )
             return ""
                 +"enabled "
                 +"unsplit-original-locals ";
-    
+
         if( phaseName.equals( "jb.ne" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jb.uce" ) )
             return ""
                 +"enabled "
                 +"remove-unreachable-traps ";
-    
+
         if( phaseName.equals( "jb.tt" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jj" ) )
             return ""
                 +"enabled "
                 +"use-original-names ";
-    
+
         if( phaseName.equals( "jj.ls" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jj.a" ) )
             return ""
                 +"enabled "
                 +"only-stack-locals ";
-    
+
         if( phaseName.equals( "jj.ule" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jj.tr" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jj.ulp" ) )
             return ""
                 +"enabled "
                 +"unsplit-original-locals ";
-    
+
         if( phaseName.equals( "jj.lns" ) )
             return ""
                 +"enabled "
                 +"only-stack-locals ";
-    
+
         if( phaseName.equals( "jj.cp" ) )
             return ""
                 +"enabled "
                 +"only-regular-locals "
                 +"only-stack-locals ";
-    
+
         if( phaseName.equals( "jj.dae" ) )
             return ""
                 +"enabled "
                 +"only-stack-locals ";
-    
+
         if( phaseName.equals( "jj.cp-ule" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jj.lp" ) )
             return ""
                 +"enabled "
                 +"unsplit-original-locals ";
-    
+
         if( phaseName.equals( "jj.ne" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jj.uce" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "wjpp" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "wspp" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "cg" ) )
             return ""
                 +"enabled "
@@ -2976,12 +2977,12 @@ public class Options extends OptionsBase {
                 +"trim-clinit "
                 +"reflection-log "
                 +"guards ";
-    
+
         if( phaseName.equals( "cg.cha" ) )
             return ""
                 +"enabled "
                 +"verbose ";
-    
+
         if( phaseName.equals( "cg.spark" ) )
             return ""
                 +"enabled "
@@ -3030,7 +3031,7 @@ public class Options extends OptionsBase {
                 +"geom-blocking "
                 +"geom-runs "
                 +"geom-app-only ";
-    
+
         if( phaseName.equals( "cg.paddle" ) )
             return ""
                 +"enabled "
@@ -3068,23 +3069,23 @@ public class Options extends OptionsBase {
                 +"method-context-counts "
                 +"set-mass "
                 +"number-nodes ";
-    
+
         if( phaseName.equals( "wstp" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "wsop" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "wjtp" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "wjtp.mhp" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "wjtp.tn" ) )
             return ""
                 +"enabled "
@@ -3096,23 +3097,23 @@ public class Options extends OptionsBase {
                 +"print-graph "
                 +"print-table "
                 +"print-debug ";
-    
+
         if( phaseName.equals( "wjtp.rdc" ) )
             return ""
                 +"enabled "
                 +"fcn ";
-    
+
         if( phaseName.equals( "wjop" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "wjop.smb" ) )
             return ""
                 +"enabled "
                 +"insert-null-checks "
                 +"insert-redundant-casts "
                 +"allowed-modifier-changes ";
-    
+
         if( phaseName.equals( "wjop.si" ) )
             return ""
                 +"enabled "
@@ -3123,32 +3124,32 @@ public class Options extends OptionsBase {
                 +"expansion-factor "
                 +"max-container-size "
                 +"max-inlinee-size ";
-    
+
         if( phaseName.equals( "wjap" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "wjap.ra" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "wjap.umt" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "wjap.uft" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "wjap.tqt" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "wjap.cgg" ) )
             return ""
                 +"enabled "
                 +"show-lib-meths ";
-    
+
         if( phaseName.equals( "wjap.purity" ) )
             return ""
                 +"enabled "
@@ -3158,7 +3159,7 @@ public class Options extends OptionsBase {
                 +"print "
                 +"annotate "
                 +"verbose ";
-    
+
         if( phaseName.equals( "shimple" ) )
             return ""
                 +"enabled "
@@ -3166,105 +3167,105 @@ public class Options extends OptionsBase {
                 +"standard-local-names "
                 +"extended "
                 +"debug ";
-    
+
         if( phaseName.equals( "stp" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "sop" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "sop.cpf" ) )
             return ""
                 +"enabled "
                 +"prune-cfg ";
-    
+
         if( phaseName.equals( "jtp" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jop" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jop.cse" ) )
             return ""
                 +"enabled "
                 +"naive-side-effect ";
-    
+
         if( phaseName.equals( "jop.bcm" ) )
             return ""
                 +"enabled "
                 +"naive-side-effect ";
-    
+
         if( phaseName.equals( "jop.lcm" ) )
             return ""
                 +"enabled "
                 +"safety "
                 +"unroll "
                 +"naive-side-effect ";
-    
+
         if( phaseName.equals( "jop.cp" ) )
             return ""
                 +"enabled "
                 +"only-regular-locals "
                 +"only-stack-locals ";
-    
+
         if( phaseName.equals( "jop.cpf" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jop.cbf" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jop.dae" ) )
             return ""
                 +"enabled "
                 +"only-tag "
                 +"only-stack-locals ";
-    
+
         if( phaseName.equals( "jop.nce" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jop.uce1" ) )
             return ""
                 +"enabled "
                 +"remove-unreachable-traps ";
-    
+
         if( phaseName.equals( "jop.ubf1" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jop.uce2" ) )
             return ""
                 +"enabled "
                 +"remove-unreachable-traps ";
-    
+
         if( phaseName.equals( "jop.ubf2" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jop.ule" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jap" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jap.npc" ) )
             return ""
                 +"enabled "
                 +"only-array-ref "
                 +"profiling ";
-    
+
         if( phaseName.equals( "jap.npcolorer" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jap.abc" ) )
             return ""
                 +"enabled "
@@ -3276,93 +3277,93 @@ public class Options extends OptionsBase {
                 +"with-rectarray "
                 +"profiling "
                 +"add-color-tags ";
-    
+
         if( phaseName.equals( "jap.profiling" ) )
             return ""
                 +"enabled "
                 +"notmainentry ";
-    
+
         if( phaseName.equals( "jap.sea" ) )
             return ""
                 +"enabled "
                 +"naive ";
-    
+
         if( phaseName.equals( "jap.fieldrw" ) )
             return ""
                 +"enabled "
                 +"threshold ";
-    
+
         if( phaseName.equals( "jap.cgtagger" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jap.parity" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jap.pat" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jap.lvtagger" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jap.rdtagger" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jap.che" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jap.umt" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jap.lit" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "jap.aet" ) )
             return ""
                 +"enabled "
                 +"kind ";
-    
+
         if( phaseName.equals( "jap.dmt" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "gb" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "gb.a1" ) )
             return ""
                 +"enabled "
                 +"only-stack-locals ";
-    
+
         if( phaseName.equals( "gb.cf" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "gb.a2" ) )
             return ""
                 +"enabled "
                 +"only-stack-locals ";
-    
+
         if( phaseName.equals( "gb.ule" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "gop" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "bb" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "bb.lso" ) )
             return ""
                 +"enabled "
@@ -3372,208 +3373,208 @@ public class Options extends OptionsBase {
                 +"sl2 "
                 +"sll "
                 +"sll2 ";
-    
+
         if( phaseName.equals( "bb.pho" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "bb.ule" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "bb.lp" ) )
             return ""
                 +"enabled "
                 +"unsplit-original-locals ";
-    
+
         if( phaseName.equals( "bop" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "tag" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "tag.ln" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "tag.an" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "tag.dep" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "tag.fieldrw" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "db" ) )
             return ""
                 +"enabled "
                 +"source-is-javac ";
-    
+
         if( phaseName.equals( "db.transformations" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "db.renamer" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "db.deobfuscate" ) )
             return ""
                 +"enabled ";
-    
+
         if( phaseName.equals( "db.force-recompile" ) )
             return ""
                 +"enabled ";
-    
+
         // The default set of options is just enabled.
         return "enabled";
     }
 
     public static String getDefaultOptionsForPhase( String phaseName ) {
-    
+
         if( phaseName.equals( "jb" ) )
             return ""
               +"enabled:true "
               +"use-original-names:false "
               +"preserve-source-annotations:false ";
-    
+
         if( phaseName.equals( "jb.ls" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "jb.a" ) )
             return ""
               +"enabled:true "
               +"only-stack-locals:true ";
-    
+
         if( phaseName.equals( "jb.ule" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "jb.tr" ) )
             return ""
               +"enabled:true "
               +"ignore-wrong-staticness:false "
               +"use-older-type-assigner:false "
               +"compare-type-assigners:false ";
-    
+
         if( phaseName.equals( "jb.ulp" ) )
             return ""
               +"enabled:true "
               +"unsplit-original-locals:true ";
-    
+
         if( phaseName.equals( "jb.lns" ) )
             return ""
               +"enabled:true "
               +"only-stack-locals:false ";
-    
+
         if( phaseName.equals( "jb.cp" ) )
             return ""
               +"enabled:true "
               +"only-regular-locals:false "
               +"only-stack-locals:true ";
-    
+
         if( phaseName.equals( "jb.dae" ) )
             return ""
               +"enabled:true "
               +"only-stack-locals:true ";
-    
+
         if( phaseName.equals( "jb.cp-ule" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "jb.lp" ) )
             return ""
               +"enabled:false "
               +"unsplit-original-locals:false ";
-    
+
         if( phaseName.equals( "jb.ne" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "jb.uce" ) )
             return ""
               +"enabled:true "
               +"remove-unreachable-traps:true ";
-    
+
         if( phaseName.equals( "jb.tt" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "jj" ) )
             return ""
               +"enabled:true "
               +"use-original-names:true ";
-    
+
         if( phaseName.equals( "jj.ls" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "jj.a" ) )
             return ""
               +"enabled:true "
               +"only-stack-locals:true ";
-    
+
         if( phaseName.equals( "jj.ule" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "jj.tr" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "jj.ulp" ) )
             return ""
               +"enabled:false "
               +"unsplit-original-locals:false ";
-    
+
         if( phaseName.equals( "jj.lns" ) )
             return ""
               +"enabled:true "
               +"only-stack-locals:false ";
-    
+
         if( phaseName.equals( "jj.cp" ) )
             return ""
               +"enabled:true "
               +"only-regular-locals:false "
               +"only-stack-locals:true ";
-    
+
         if( phaseName.equals( "jj.dae" ) )
             return ""
               +"enabled:true "
               +"only-stack-locals:true ";
-    
+
         if( phaseName.equals( "jj.cp-ule" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "jj.lp" ) )
             return ""
               +"enabled:false "
               +"unsplit-original-locals:false ";
-    
+
         if( phaseName.equals( "jj.ne" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "jj.uce" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "wjpp" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "wspp" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "cg" ) )
             return ""
               +"enabled:true "
@@ -3585,12 +3586,12 @@ public class Options extends OptionsBase {
               +"implicit-entry:true "
               +"trim-clinit:true "
               +"guards:ignore ";
-    
+
         if( phaseName.equals( "cg.cha" ) )
             return ""
               +"enabled:true "
               +"verbose:false ";
-    
+
         if( phaseName.equals( "cg.spark" ) )
             return ""
               +"enabled:false "
@@ -3641,7 +3642,7 @@ public class Options extends OptionsBase {
               +"geom-blocking:true "
               +"geom-runs:1 "
               +"geom-app-only:true ";
-    
+
         if( phaseName.equals( "cg.paddle" ) )
             return ""
               +"enabled:false "
@@ -3678,23 +3679,23 @@ public class Options extends OptionsBase {
               +"method-context-counts:false "
               +"set-mass:false "
               +"number-nodes:true ";
-    
+
         if( phaseName.equals( "wstp" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "wsop" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "wjtp" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "wjtp.mhp" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "wjtp.tn" ) )
             return ""
               +"enabled:false "
@@ -3706,22 +3707,22 @@ public class Options extends OptionsBase {
               +"print-graph:false "
               +"print-table:false "
               +"print-debug:false ";
-    
+
         if( phaseName.equals( "wjtp.rdc" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "wjop" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "wjop.smb" ) )
             return ""
               +"enabled:false "
               +"insert-null-checks:true "
               +"insert-redundant-casts:true "
               +"allowed-modifier-changes:unsafe ";
-    
+
         if( phaseName.equals( "wjop.si" ) )
             return ""
               +"enabled:true "
@@ -3732,32 +3733,32 @@ public class Options extends OptionsBase {
               +"expansion-factor:3 "
               +"max-container-size:5000 "
               +"max-inlinee-size:20 ";
-    
+
         if( phaseName.equals( "wjap" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "wjap.ra" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "wjap.umt" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "wjap.uft" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "wjap.tqt" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "wjap.cgg" ) )
             return ""
               +"enabled:false "
               +"show-lib-meths:false ";
-    
+
         if( phaseName.equals( "wjap.purity" ) )
             return ""
               +"enabled:false "
@@ -3767,7 +3768,7 @@ public class Options extends OptionsBase {
               +"print:true "
               +"annotate:true "
               +"verbose:false ";
-    
+
         if( phaseName.equals( "shimple" ) )
             return ""
               +"enabled:true "
@@ -3775,105 +3776,105 @@ public class Options extends OptionsBase {
               +"standard-local-names:false "
               +"extended:false "
               +"debug:false ";
-    
+
         if( phaseName.equals( "stp" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "sop" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "sop.cpf" ) )
             return ""
               +"enabled:true "
               +"prune-cfg:true ";
-    
+
         if( phaseName.equals( "jtp" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "jop" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "jop.cse" ) )
             return ""
               +"enabled:false "
               +"naive-side-effect:false ";
-    
+
         if( phaseName.equals( "jop.bcm" ) )
             return ""
               +"enabled:false "
               +"naive-side-effect:false ";
-    
+
         if( phaseName.equals( "jop.lcm" ) )
             return ""
               +"enabled:false "
               +"safety:safe "
               +"unroll:true "
               +"naive-side-effect:false ";
-    
+
         if( phaseName.equals( "jop.cp" ) )
             return ""
               +"enabled:true "
               +"only-regular-locals:false "
               +"only-stack-locals:false ";
-    
+
         if( phaseName.equals( "jop.cpf" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "jop.cbf" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "jop.dae" ) )
             return ""
               +"enabled:true "
               +"only-tag:false "
               +"only-stack-locals:false ";
-    
+
         if( phaseName.equals( "jop.nce" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "jop.uce1" ) )
             return ""
               +"enabled:true "
               +"remove-unreachable-traps:false ";
-    
+
         if( phaseName.equals( "jop.ubf1" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "jop.uce2" ) )
             return ""
               +"enabled:true "
               +"remove-unreachable-traps:false ";
-    
+
         if( phaseName.equals( "jop.ubf2" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "jop.ule" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "jap" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "jap.npc" ) )
             return ""
               +"enabled:false "
               +"only-array-ref:false "
               +"profiling:false ";
-    
+
         if( phaseName.equals( "jap.npcolorer" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "jap.abc" ) )
             return ""
               +"enabled:false "
@@ -3885,93 +3886,93 @@ public class Options extends OptionsBase {
               +"with-rectarray:false "
               +"profiling:false "
               +"add-color-tags:false ";
-    
+
         if( phaseName.equals( "jap.profiling" ) )
             return ""
               +"enabled:false "
               +"notmainentry:false ";
-    
+
         if( phaseName.equals( "jap.sea" ) )
             return ""
               +"enabled:false "
               +"naive:false ";
-    
+
         if( phaseName.equals( "jap.fieldrw" ) )
             return ""
               +"enabled:false "
               +"threshold:100 ";
-    
+
         if( phaseName.equals( "jap.cgtagger" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "jap.parity" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "jap.pat" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "jap.lvtagger" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "jap.rdtagger" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "jap.che" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "jap.umt" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "jap.lit" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "jap.aet" ) )
             return ""
               +"enabled:false "
               +"kind:optimistic ";
-    
+
         if( phaseName.equals( "jap.dmt" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "gb" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "gb.a1" ) )
             return ""
               +"enabled:true "
               +"only-stack-locals:true ";
-    
+
         if( phaseName.equals( "gb.cf" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "gb.a2" ) )
             return ""
               +"enabled:true "
               +"only-stack-locals:true ";
-    
+
         if( phaseName.equals( "gb.ule" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "gop" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "bb" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "bb.lso" ) )
             return ""
               +"enabled:true "
@@ -3981,71 +3982,71 @@ public class Options extends OptionsBase {
               +"sl2:false "
               +"sll:true "
               +"sll2:false ";
-    
+
         if( phaseName.equals( "bb.pho" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "bb.ule" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "bb.lp" ) )
             return ""
               +"enabled:true "
               +"unsplit-original-locals:false ";
-    
+
         if( phaseName.equals( "bop" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "tag" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "tag.ln" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "tag.an" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "tag.dep" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "tag.fieldrw" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "db" ) )
             return ""
               +"enabled:true "
               +"source-is-javac:true ";
-    
+
         if( phaseName.equals( "db.transformations" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "db.renamer" ) )
             return ""
               +"enabled:false ";
-    
+
         if( phaseName.equals( "db.deobfuscate" ) )
             return ""
               +"enabled:true ";
-    
+
         if( phaseName.equals( "db.force-recompile" ) )
             return ""
               +"enabled:true ";
-    
+
         // The default default value is enabled.
         return "enabled";
     }
-  
+
     public void warnForeignPhase( String phaseName ) {
-    
+
         if( phaseName.equals( "jb" ) ) return;
         if( phaseName.equals( "jb.ls" ) ) return;
         if( phaseName.equals( "jb.a" ) ) return;
@@ -4157,7 +4158,7 @@ public class Options extends OptionsBase {
     }
 
     public void warnNonexistentPhase() {
-    
+
         if( !PackManager.v().hasPhase( "jb" ) )
             G.v().out.println( "Warning: Options exist for non-existent phase jb" );
         if( !PackManager.v().hasPhase( "jb.ls" ) )
@@ -4373,5 +4374,5 @@ public class Options extends OptionsBase {
         if( !PackManager.v().hasPhase( "db.force-recompile" ) )
             G.v().out.println( "Warning: Options exist for non-existent phase db.force-recompile" );
     }
-  
+
 }
