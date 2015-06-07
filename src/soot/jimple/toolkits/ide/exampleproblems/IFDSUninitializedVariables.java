@@ -52,7 +52,7 @@ import soot.jimple.toolkits.ide.DefaultJimpleIFDSTabulationProblem;
 public class IFDSUninitializedVariables extends DefaultJimpleIFDSTabulationProblem<Local,InterproceduralCFG<Unit, SootMethod>> {
 
 	public IFDSUninitializedVariables(InterproceduralCFG<Unit, SootMethod> icfg) {
-		super(icfg);
+		super(icfg);		
 	}
 
 	@Override
@@ -64,13 +64,13 @@ public class IFDSUninitializedVariables extends DefaultJimpleIFDSTabulationProbl
 				final SootMethod m = interproceduralCFG().getMethodOf(curr);
 				if(Scene.v().getEntryPoints().contains(m) && interproceduralCFG().isStartPoint(curr)) {
 					return new FlowFunction<Local>() {
-
+						
 						@Override
 						public Set<Local> computeTargets(Local source) {
 							if (source == zeroValue()) {
 								Set<Local> res = new LinkedHashSet<Local>();
 								res.addAll(m.getActiveBody().getLocals());
-								for(int i=0;i<m.getParameterCount();i++)
+								for(int i=0;i<m.getParameterCount();i++) 
 									res.remove(m.getActiveBody().getParameterLocal(i));
 								return res;
 							}
@@ -78,7 +78,7 @@ public class IFDSUninitializedVariables extends DefaultJimpleIFDSTabulationProbl
 						}
 					};
 				}
-
+				
 				if (curr instanceof DefinitionStmt) {
 					final DefinitionStmt definition = (DefinitionStmt) curr;
 					final Value leftOp = definition.getLeftOp();
@@ -93,7 +93,7 @@ public class IFDSUninitializedVariables extends DefaultJimpleIFDSTabulationProbl
 									if (valueBox.getValue().equivTo(source)) {
 										LinkedHashSet<Local> res = new LinkedHashSet<Local>();
 										res.add(source);
-										res.add(leftOpLocal);
+										res.add(leftOpLocal); 
 										return res;
 									}
 								}
@@ -138,10 +138,10 @@ public class IFDSUninitializedVariables extends DefaultJimpleIFDSTabulationProbl
 						}
 
 						if (source == zeroValue()) {
-							//gen all locals that are not parameter locals
+							//gen all locals that are not parameter locals 
 							Collection<Local> locals = destinationMethod.getActiveBody().getLocals();
 							LinkedHashSet<Local> uninitializedLocals = new LinkedHashSet<Local>(locals);
-							for(int i=0;i<destinationMethod.getParameterCount();i++) {
+							for(int i=0;i<destinationMethod.getParameterCount();i++) {								
 								uninitializedLocals.remove(destinationMethod.getActiveBody().getParameterLocal(i));
 							}
 							return uninitializedLocals;
@@ -159,23 +159,23 @@ public class IFDSUninitializedVariables extends DefaultJimpleIFDSTabulationProbl
 				if (callSite instanceof DefinitionStmt) {
 					final DefinitionStmt definition = (DefinitionStmt) callSite;
 					if(definition.getLeftOp() instanceof Local) {
-						final Local leftOpLocal = (Local) definition.getLeftOp();
+						final Local leftOpLocal = (Local) definition.getLeftOp();				
 						if (exitStmt instanceof ReturnStmt) {
 							final ReturnStmt returnStmt = (ReturnStmt) exitStmt;
 							return new FlowFunction<Local>() {
-
+		
 								@Override
 								public Set<Local> computeTargets(Local source) {
 									if (returnStmt.getOp().equivTo(source))
 										return Collections.singleton(leftOpLocal);
 									return Collections.emptySet();
 								}
-
+		
 							};
 						} else if (exitStmt instanceof ThrowStmt) {
 							//if we throw an exception, LHS of call is undefined
 							return new FlowFunction<Local>() {
-
+		
 								@Override
 								public Set<Local> computeTargets(final Local source) {
 									if (source == zeroValue())
@@ -183,12 +183,12 @@ public class IFDSUninitializedVariables extends DefaultJimpleIFDSTabulationProbl
 									else
 										return Collections.emptySet();
 								}
-
+								
 							};
 						}
 					}
 				}
-
+				
 				return KillAll.v();
 			}
 
@@ -197,7 +197,7 @@ public class IFDSUninitializedVariables extends DefaultJimpleIFDSTabulationProbl
 				if (callSite instanceof DefinitionStmt) {
 					DefinitionStmt definition = (DefinitionStmt) callSite;
 					if(definition.getLeftOp() instanceof Local) {
-						final Local leftOpLocal = (Local) definition.getLeftOp();
+						final Local leftOpLocal = (Local) definition.getLeftOp();				
 						return new Kill<Local>(leftOpLocal);
 					}
 				}
