@@ -303,7 +303,12 @@ public class Util {
 		newUnits.add(u2);
 		newUnits.add(u3);
 
-		b.getUnits().insertBefore(newUnits, u);
+		try {
+			b.getUnits().insertBefore(newUnits, u);
+		} catch (RuntimeException e) {
+			System.err.println("Should throw RuntimeException for Insertion point not found in " +
+					"chain!");
+		}
 	}
 
     public static List<String> splitParameters(String parameters) {

@@ -29,6 +29,7 @@ import soot.Value;
 import soot.baf.ThrowInst;
 import soot.grimp.NewInvokeExpr;
 import soot.jimple.ThrowStmt;
+import soot.jimple.toolkits.typing.fast.BottomType;
 
 /**
  * Abstract class implementing parts of the {@link ThrowAnalysis}
@@ -54,7 +55,7 @@ public abstract class AbstractThrowAnalysis implements ThrowAnalysis {
     public ThrowableSet mightThrowExplicitly(ThrowStmt t) {
 	Value thrownExpression = t.getOp();
 	Type thrownType = thrownExpression.getType();
-	if (thrownType == null || thrownType instanceof UnknownType) {
+	if (thrownType == null || thrownType instanceof UnknownType || thrownType instanceof BottomType) {
 	    // We can't identify the type of thrownExpression, so...
 	    return ThrowableSet.Manager.v().ALL_THROWABLES;
         } else if (thrownType instanceof NullType) {

@@ -100,6 +100,7 @@ import soot.jimple.ThrowStmt;
 import soot.jimple.UshrExpr;
 import soot.jimple.XorExpr;
 import soot.jimple.toolkits.typing.Util;
+import soot.jimple.toolkits.typing.fast.BottomType;
 
 class ConstraintChecker extends AbstractStmtSwitch {
 	private final TypeResolver resolver;
@@ -208,7 +209,8 @@ class ConstraintChecker extends AbstractStmtSwitch {
 				}
 
 				if (index instanceof Local) {
-					if (!ClassHierarchy.v().typeNode(((Local) index).getType())
+					if (index.getType() instanceof BottomType ||
+							!ClassHierarchy.v().typeNode(((Local) index).getType())
 							.hasAncestor_1(ClassHierarchy.v().INT)) {
 						if (fix) {
 							ref.setIndex(insertCast((Local) index, IntType.v(),
